@@ -5,64 +5,77 @@ use Exception;
 use Bookshelf\Controller\ErrorController;
 
 /**
- * @author Danil Vasiliev <danil.vasiliev@opensoftdev.ru>
+ * @author Aleksandr Kolobkov
  */
 class Router
 {
+    const DEFAULT_CONTROLLER = 'Main';
+
     /**
-     * @param string $controllerName
-     * @param string $actionName
+     * @param $input
      * @return mixed
      */
-    public function run($controllerName, $actionName)
+    public function handleRequest($input)
     {
-        $className = $this->getControllerName($controllerName);
-        $fullActionName = $this->getActionName($actionName);
-
         try {
-            if (class_exists($className)) {
-                $controller = new $className();
-                if (method_exists($controller, $fullActionName)) {
-                    $action = $fullActionName;
-                } else {
-                    throw new Exception('Method '.$fullActionName.' not exist');
+            $controller = $this->getControllerName($input);
+            if (class_exists($controller)) {
+                $controllerInstance = new $controller;
+                $action = $this->getActionName($input);
+                if (!method_exists($controllerInstance, $action)) {
+                    throw new Exception('Method ' . $action . ' not exist');
                 }
             } else {
-                throw new Exception('Class '.$className.' not exist');
+                throw new Exception('Class ' . $controller . ' not exist');
             }
         } catch (Exception $exception) {
-            $controller = new ErrorController();
+            $controllerInstance = new ErrorController();
             $action = 'notFoundAction';
         }
-        return $controller->$action();
+
+        return $controllerInstance->$action;
     }
 
     /**
-     * @param string $controllerName
+     * Get first part of controller name and construct full name with namespace and return this name
+     *
+     * @param $input  Had first part of controller name
      * @return string
      */
-    private function getControllerName($controllerName)
+    private function getControllerName($input)
     {
-        $fullControllerName = $controllerName . 'Controller';
-        $fullControllerName = ucfirst($fullControllerName);
-        $className = 'Bookshelf\\Controller\\' . $fullControllerName;
-        return $className;
-    }
-
-    /**
-     * @param string $actionName
-     * @return string
-     */
-    private function getActionName($actionName)
-    {
-        $explodedAction = explode("-", $actionName);
-        $actionsCount = count($explodedAction);
-        $fullActionName = $explodedAction[0];
-        for ($i = 1; $i < $actionsCount; $i++) {
-            $fullActionName .= ucfirst($explodedAction[$i]);
+        $name = self::DEFAULT_CONTROLLER;
+        if (isset($input['c'])) {
+            $name = ucfirst(strtolower($input['c']));
         }
-        $fullActionName = $fullActionName . 'Action';
-        return $fullActionName;
 
+        return 'Bookshelf\Controller\\' . $name . 'Controller';
     }
+
+    /**
+     * Get first part of action name and construct full name than return this name
+     *
+     * @param $input Had first part of action name
+     * @return string
+     */
+    private function getActionName($input)
+    {
+        $name = 'default';
+        if (isset($input['a'])) {
+            if (stripos($input['a'], '-') === false) {
+                $name = strtolower($input['a']);
+            } else {
+                $explodedAction = explode("-", strtolower($input['a']));
+                $actionCount = count($explodedAction);
+                $name = $explodedAction[0];
+                for ($i = 1; $i < $actionCount; $i++) {
+                    $name .= ucfirst($explodedAction[$i]);
+                }
+            }
+        }
+
+        return $name.'Action';
+    }
+
 }
+
