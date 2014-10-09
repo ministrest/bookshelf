@@ -1,0 +1,17 @@
+RewriteEngine On
+RewriteBase /
+
+# Обработка url вида /controller/action
+RewriteRule ^([a-zA-Z0-9]+)/([a-zA-Z0-9-_]+)/?$ ?controller=$1&action=$2 [L,END,QSA]
+
+# Обработка url вида /controller
+RewriteRule ^([a-zA-Z0-9]+)/?$ ?controller=$1&action=index [L,END,QSA]
+
+# Обработка url без параметров /
+RewriteRule ^/?$ ?controller=index&action=index [L,END,QSA]
+
+# Обработка error 404
+ErrorDocument 404 /error/not-found
+
+
+
