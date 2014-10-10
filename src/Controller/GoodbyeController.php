@@ -10,5 +10,4 @@ class GoodbyeController
     public function indexAction(){
         echo 'This is index page!';
     }
-
 }

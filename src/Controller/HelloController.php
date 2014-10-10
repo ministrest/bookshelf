@@ -14,5 +14,4 @@ class HelloController
     public function indexAction(){
         echo 'This is index page!';
     }
-
 }
