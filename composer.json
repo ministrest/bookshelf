@@ -1,0 +1,11 @@
+{
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    },
+
+    "require": {
+        "twbs/bootstrap": "3.2.*@dev"
+    }
+}

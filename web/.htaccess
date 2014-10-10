@@ -1,0 +1,14 @@
+RewriteEngine On
+RewriteBase /
+
+# Processing url : /controller/action
+RewriteRule ^([a-zA-Z0-9]+)/([a-zA-Z0-9-_]+)/?$ ?controller=$1&action=$2 [L,END,QSA]
+
+# Procassing url /controller
+RewriteRule ^([a-zA-Z0-9]+)/?$ ?controller=$1&action=index [L,END,QSA]
+
+# Processing url without parameters /
+RewriteRule ^/?$ ?controller=index&action=index [L,END,QSA]
+
+# Processing error 404
+ErrorDocument 404 /error/not-found
