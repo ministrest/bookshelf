@@ -1,5 +1,5 @@
 <?php
-namespace Controller;
+namespace Bookshelf\Controller;
 
 class IndexController
 {

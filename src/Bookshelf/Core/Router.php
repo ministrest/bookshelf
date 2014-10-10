@@ -1,6 +1,8 @@
 <?php
+namespace Bookshelf\Core;
 
-use Controller\ErrorController;
+use Exception;
+use Bookshelf\Controller\ErrorController;
 
 /**
  * @author Danil Vasiliev <danil.vasiliev@opensoftdev.ru>
@@ -43,8 +45,7 @@ class Router
     {
         $fullControllerName = $controllerName . 'Controller';
         $fullControllerName = ucfirst($fullControllerName);
-        $className = 'Controller\\' . $fullControllerName;
-
+        $className = 'Bookshelf\\Controller\\' . $fullControllerName;
         return $className;
     }
 
