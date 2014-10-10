@@ -33,7 +33,7 @@ class Router
             $action = 'notFoundAction';
         }
 
-        return $controllerInstance->$action;
+        return $controllerInstance->$action();
     }
 
     /**
@@ -61,21 +61,30 @@ class Router
     private function getActionName($input)
     {
         $name = 'default';
-        if (isset($input['a'])) {
-            if (stripos($input['a'], '-') === false) {
-                $name = strtolower($input['a']);
+        $inputinlowercase = strtolower($input['a']);
+        if (isset($inputinlowercase)&&($inputinlowercase!=='')) {
+            if (stripos($inputinlowercase, '-') === false) {
+                $name = $inputinlowercase;
             } else {
-                $explodedAction = explode("-", strtolower($input['a']));
-                $actionCount = count($explodedAction);
-                $name = $explodedAction[0];
-                for ($i = 1; $i < $actionCount; $i++) {
-                    $name .= ucfirst($explodedAction[$i]);
+                $name = $this->explodeActionName($inputinlowercase);
                 }
             }
-        }
 
         return $name.'Action';
     }
+
+    private function explodeActionName($input)
+    {
+        $explodedAction = explode("-", $input);
+        $actionCount = count($explodedAction);
+        $name = $explodedAction[0];
+        for ($i = 1; $i < $actionCount; $i++) {
+            $name .= ucfirst($explodedAction[$i]);
+        }
+
+        return $name;
+    }
+
 
 }
 
