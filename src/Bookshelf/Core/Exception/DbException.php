@@ -13,7 +13,6 @@ class DbException extends RuntimeException
     public static function executionFailed() {
         return new self('Something goes wrong');
     }
-
     public static function insertFailed($tableName, $keys, $values, Exception $previous)
     {
         return new self(
@@ -22,7 +21,6 @@ class DbException extends RuntimeException
             $previous
         );
     }
-
     public static function deleteFailed($tableName, $values, Exception $previous)
     {
         return new self(
@@ -31,7 +29,6 @@ class DbException extends RuntimeException
             $previous
         );
     }
-
     public static function updateFailed($tableName, $values, Exception $previous)
     {
         return new self(
@@ -40,4 +37,4 @@ class DbException extends RuntimeException
             $previous
         );
     }
-} 
+}

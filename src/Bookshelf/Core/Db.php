@@ -44,7 +44,6 @@ class Db
             throw DbException::executionFailed();
         }
     }
-
     /**
      * @param string $tableName
      * @return array
@@ -57,13 +56,10 @@ class Db
         } catch (DbException $e){
             $resultArray = null;
         }
-
         echo '<pre/>';
-        var_dump($resultArray);
 
         return $resultArray;
     }
-
     /**
      * @param string $tableName
      * @param $fetchArray
@@ -87,8 +83,6 @@ class Db
         } catch (DbException $e) {
             $result = null;
         }
-
-        var_dump($result);
 
         return $result;
     }
@@ -154,7 +148,6 @@ class Db
         if ($conditions == []) {
             $condition = 'TRUE';
         }
-
         $updateKeys = array_keys($newValues);
         $updateValues = array_values($newValues);
         foreach ($updateKeys as &$value) {
@@ -162,16 +155,13 @@ class Db
         }
         $values = implode($updateKeys, ', ');
 
-
         $sql = "UPDATE $tableName SET $values WHERE $condition";
-
         try {
             $valuesArray = array_merge($updateValues, $conditionValues);
             $this->execute($sql, $valuesArray);
         } catch (DbException $e) {
             throw DbException::updateFailed($tableName, implode(', ', $valuesArray), $e);
         }
-
     }
     public function getStatement(){
         try {
@@ -183,14 +173,12 @@ class Db
         }
         return $this->statement;
     }
-
     private function getConnection() {
         if (!$this->connection) {
             $this->connection = new PDO('pgsql:host=localhost; dbname=BookShelf', 'postgres', 'postgres');
         }
         return $this->connection;
     }
-
 }
 
 
