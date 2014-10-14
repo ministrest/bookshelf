@@ -39,7 +39,6 @@ class LoginController
      */
     public function loginAction($param)
     {
-        $param['form'] = $this->getForm('a', 'b');
         $this->templater->show($this->controllName,'Login',$param);
     }
 

@@ -2,8 +2,6 @@
 namespace Bookshelf\Controller;
 
 /**
- * Class ErrorController
- * @package Bookshelf\Controller
  * @author Vasiliev Daniil
  */
 class ErrorController

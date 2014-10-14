@@ -3,15 +3,16 @@
 <head lang="en">
 
     <meta charset="UTF-8">
-    <?php foreach($this->css as $value) {
-        sprintf('<link rel=' . "stylesheet" . 'type=' . "text/css" . 'href=' . "src/%cssfile" . 'media=' . "screen" . '>', $value);
-    } ?>
+    <?php foreach($this->getCssFileList() as $value): ?>
+        <link rel="stylesheet" type="text/css" href="<?php echo $value ?>" media="screen">
+    <?php endforeach; ?>
     </head>
 <body>
-Hello world
+<?php echo $param['text'] ?>
 <?php echo $param['menu'] ?>
-<?php foreach($this->js as $value) {
-    sprintf('<script type=' . "text/javascript" . 'src=' . "src/%javafile" . '></script>', $value);
-    } ?>
+<?php foreach($this->getJsFileList() as $value): ?>
+   <script type="text/javascript" src="<?php echo $value ?>"></script>
+<?php endforeach; ?>
 </body>
 </html>
+

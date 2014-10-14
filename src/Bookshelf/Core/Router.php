@@ -48,7 +48,12 @@ class Router
     {
         $name = self::DEFAULT_CONTROLLER;
         if (isset($input['c'])) {
-            $name = ucfirst(strtolower($input['c']));
+            $inputInLowerCase = strtolower($input['c']);
+            if (stripos($inputInLowerCase, '-') === false) {
+                $name = ucfirst($inputInLowerCase);
+            } else {
+                $name = $this->explodeName($inputInLowerCase);
+            }
         }
 
         return 'Bookshelf\\Controller\\' . $name . 'Controller';
@@ -68,7 +73,7 @@ class Router
             if (stripos($inputInLowerCase, '-') === false) {
                 $name = $inputInLowerCase;
             } else {
-                $name = $this->explodeActionName($inputInLowerCase);
+                $name = $this->explodeName($inputInLowerCase);
                 }
             }
 
@@ -81,7 +86,7 @@ class Router
      * @param $input get param from URL
      * @return string action name
      */
-    private function explodeActionName($input)
+    private function explodeName($input)
     {
         $explodedAction = explode('-', $input);
         $actionCount = count($explodedAction);

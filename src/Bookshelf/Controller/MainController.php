@@ -1,8 +1,10 @@
 <?php
 
 namespace Bookshelf\Controller;
-use Bookshelf\Core\Templater;
 
+use Bookshelf\Core\Templater;
+use Bookshelf\Core\TemplaterException;
+use Exception;
 /**
  * @author Aleksandr Kolobkov
  */
@@ -22,7 +24,11 @@ class MainController
      */
     public function __construct()
     {
-        $this->templater= new Templater();
+        try {
+            $this->templater = new Templater();
+        } catch(TemplaterException $e) {
+            throw new Exception ('Controller error');
+        }
     }
 
     /**
@@ -38,13 +44,12 @@ class MainController
      */
     public function indexAction()
     {
-        $para = array();
         $login = new LoginController();
         $actionName = 'index';
         $param = array(
             "title" => 'Test',
             "text" => 'This is test so relax and be happy',
-            "menu" => $login->getForm($para)
+            "menu" => $login->getForm()
         );
         $this->templater->show($this->controllName, $actionName, $param);
     }
