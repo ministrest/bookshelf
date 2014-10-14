@@ -12,10 +12,12 @@ class Router
     const DEFAULT_CONTROLLER = 'Main';
 
     /**
+     * Action that handle all request
+     *
      * @param $input
      * @return mixed
      */
-    public function handleRequest($input, $renderInstance = null)
+    public function handleRequest($input)
     {
         try {
             $controller = $this->getControllerName($input);
@@ -33,7 +35,7 @@ class Router
             $action = 'notFoundAction';
         }
 
-        return $controllerInstance->$action($renderInstance);
+        return $controllerInstance->$action();
     }
 
     /**
@@ -56,7 +58,7 @@ class Router
      * Get first part of action name and construct full name than return this name
      *
      * @param $input Had first part of action name
-     * @return string
+     * @return string action name
      */
     private function getActionName($input)
     {
@@ -73,6 +75,12 @@ class Router
         return $name . 'Action';
     }
 
+    /**
+     * Crete action name if $_GET param had '-'
+     *
+     * @param $input get param from URL
+     * @return string action name
+     */
     private function explodeActionName($input)
     {
         $explodedAction = explode('-', $input);
@@ -84,7 +92,5 @@ class Router
 
         return $name;
     }
-
-
 }
 

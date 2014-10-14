@@ -8,9 +8,18 @@ use Bookshelf\Core\Templater;
  */
 class MainController
 {
+    /**
+     * @var string default name for controller
+     */
     private $controllName='Main';
+    /**
+     * @var var for templater instance
+     */
     private $templater;
 
+    /**
+     * Magic function that create templater instance
+     */
     public function __construct()
     {
         $this->templater= new Templater();
@@ -25,7 +34,7 @@ class MainController
     }
 
     /**
-     * Return index page
+     * When execute will show Main/IndexView.html
      */
     public function indexAction()
     {

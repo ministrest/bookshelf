@@ -8,9 +8,18 @@ use Bookshelf\Core\Templater;
  */
 class LoginController
 {
+    /**
+     * @var string default name for controller
+     */
     private $controllName='Login';
+    /**
+     * @var var for Templater class instance
+     */
     private $templater;
 
+    /**
+     * Magic function that create templater class instance
+     */
     public function __construct()
     {
         $this->templater = new Templater();
@@ -24,7 +33,9 @@ class LoginController
     }
 
     /**
-     * In future will return LogIn page
+     * Show html forms for logIn
+     *
+     * @param $param
      */
     public function loginAction($param)
     {
@@ -32,6 +43,12 @@ class LoginController
         $this->templater->show($this->controllName,'Login',$param);
     }
 
+    /**
+     * Create new html forms
+     *
+     * @param null $name
+     * @param null $pass
+     */
     public function getForm($name = null, $pass = null)
     {
         return $this->templater->render($this->controllName,'Form', [$name, $pass]);
