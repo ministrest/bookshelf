@@ -1,5 +1,7 @@
-RewriteEngine on
+RewriteEngine On
+RewriteBase /
 
-RewriteRule ^([^/.]*)/([^/.]*) index.php/?c=$1&a=$2 [NC,QSA]
+RewriteRule ^([a-zA-Z0-9]+)/([a-zA-Z0-9-_]+)/?$ ?c=$1&a=$2 [L,NC,END,QSA]
 
+RewriteRule ^([a-zA-Z0-9]+)/?$ ?c=$1&a=index [L,NC,END,QSA]
 

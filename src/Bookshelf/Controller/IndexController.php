@@ -3,7 +3,14 @@ namespace Bookshelf\Controller;
 
 class IndexController
 {
+    public function defaultAction()
+    {
+        $this->indexAction();
+    }
+
     public function indexAction(){
-        echo 'This is index page!';
+        return array(
+            'user' => 'Alex'
+        );
     }
 }

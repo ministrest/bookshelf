@@ -15,12 +15,12 @@ class Router
      * @param $input
      * @return mixed
      */
-    public function handleRequest($input)
+    public function handleRequest($input, $renderInstance = null)
     {
         try {
             $controller = $this->getControllerName($input);
             if (class_exists($controller)) {
-                $controllerInstance = new $controller;
+                $controllerInstance = new $controller();
                 $action = $this->getActionName($input);
                 if (!method_exists($controllerInstance, $action)) {
                     throw new Exception('Method ' . $action . ' not exist');
@@ -33,7 +33,7 @@ class Router
             $action = 'notFoundAction';
         }
 
-        return $controllerInstance->$action();
+        return $controllerInstance->$action($renderInstance);
     }
 
     /**
@@ -49,7 +49,7 @@ class Router
             $name = ucfirst(strtolower($input['c']));
         }
 
-        return 'Bookshelf\Controller\\' . $name . 'Controller';
+        return 'Bookshelf\\Controller\\' . $name . 'Controller';
     }
 
     /**
@@ -61,21 +61,21 @@ class Router
     private function getActionName($input)
     {
         $name = 'default';
-        $inputinlowercase = strtolower($input['a']);
-        if (isset($inputinlowercase)&&($inputinlowercase!=='')) {
-            if (stripos($inputinlowercase, '-') === false) {
-                $name = $inputinlowercase;
+        if (isset($input['a'])) {
+            $inputInLowerCase = strtolower($input['a']);
+            if (stripos($inputInLowerCase, '-') === false) {
+                $name = $inputInLowerCase;
             } else {
-                $name = $this->explodeActionName($inputinlowercase);
+                $name = $this->explodeActionName($inputInLowerCase);
                 }
             }
 
-        return $name.'Action';
+        return $name . 'Action';
     }
 
     private function explodeActionName($input)
     {
-        $explodedAction = explode("-", $input);
+        $explodedAction = explode('-', $input);
         $actionCount = count($explodedAction);
         $name = $explodedAction[0];
         for ($i = 1; $i < $actionCount; $i++) {
