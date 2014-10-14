@@ -29,3 +29,4 @@ class HelloController
         echo 'This is index page!';
     }
 }
+

@@ -29,3 +29,4 @@ class GoodbyeController
         echo 'This is index page!';
     }
 }
+
