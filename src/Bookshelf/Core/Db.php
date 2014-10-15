@@ -29,10 +29,12 @@ class Db
      * @var string
      */
     private $dbName;
+
     /**
      * @var string
      */
     private $dbUser;
+
     /**
      * @var string
      */
@@ -55,7 +57,7 @@ class Db
      * @param array $options
      * @throws DbException
      */
-    public function execute($sql, $options = array())
+    public function execute($sql, $options = [])
     {
         try {
             $dbConnect = $this->getConnection($this->dbName, $this->dbUser, $this->dbPassword);
@@ -70,6 +72,7 @@ class Db
             throw DbException::executionFailed();
         }
     }
+
     /**
      * @param string $tableName
      * @return array
@@ -82,10 +85,12 @@ class Db
             $resultArray = $this->getStatement()->fetchAll(PDO::FETCH_ASSOC);
         } catch (DbException $e){
             $resultArray = [];
+            //to do logger
         }
 
         return $resultArray;
     }
+
     /**
      * @param string $tableName
      * @param $fetchOptions
@@ -96,9 +101,9 @@ class Db
         $optionKeys = array_keys($fetchOptions);
         $optionValues = array_values($fetchOptions);
         foreach ($optionKeys as &$value) {
-            $value = $value . ' = ?';
+            $value .= ' = ?';
         }
-        $condition = implode($optionKeys, ' AND ');
+        $condition = implode(' AND ', $optionKeys);
 
         $sql = "SELECT * FROM $tableName WHERE $condition LIMIT 1";
         try {
@@ -109,33 +114,38 @@ class Db
             }
         } catch (DbException $e) {
             $result = null;
+            // to do logger
         }
 
         return $result;
     }
+
     /**
      * @param string $tableName
      * @param array $deleteOptions
      */
-    public function delete($tableName, $deleteOptions = array())
+    public function delete($tableName, $deleteOptions = [])
     {
-        $optionKeys = array_keys($deleteOptions);
-        $optionValues = array_values($deleteOptions);
-        foreach ($optionKeys as &$value) {
-            $value = $value . '= ?';
-        }
-        $condition = implode($optionKeys, ' AND ');
-        if (!$condition) {
-            $condition = 'TRUE';
-        }
+        if (!$deleteOptions) {
+            $sql = "DELETE FROM $tableName";
+            $optionValues = [];
+        } else {
+            $optionKeys = array_keys($deleteOptions);
+            $optionValues = array_values($deleteOptions);
+            foreach ($optionKeys as &$value) {
+                $value = $value . '= ?';
+            }
+            $condition = implode(' AND ', $optionKeys);
 
-        $sql = "DELETE FROM $tableName WHERE $condition";
+            $sql = "DELETE FROM $tableName WHERE $condition";
+        }
         try {
             $this->execute($sql, $optionValues);
         } catch (DbException $e) {
             throw DbException::deleteFailed($tableName, implode(', ', $optionValues), $e);
         }
     }
+
     /**
      * @param string $tableName
      * @param array $insertOptions
@@ -159,30 +169,34 @@ class Db
             throw DbException::insertFailed($tableName, $keys, implode(', ', $optionValues), $e);
         }
     }
+
     /**
      * @param string $tableName
      * @param array $newValues
      * @param array $conditions
      */
-    public function update($tableName, array $newValues, array $conditions = array())
+    public function update($tableName, array $newValues, array $conditions = [])
     {
-        $conditionKeys = array_keys($conditions);
-        $conditionValues = array_values($conditions);
-        foreach ($conditionKeys as &$value) {
-            $value = $value . ' = ?';
-        }
-        $condition = implode($conditionKeys, ' AND ');
-        if (!$conditions) {
-            $condition = 'TRUE';
-        }
         $updateKeys = array_keys($newValues);
         $updateValues = array_values($newValues);
         foreach ($updateKeys as &$value) {
-            $value = $value . ' = ?';
+            $value .= ' = ?';
         }
-        $values = implode($updateKeys, ', ');
+        $values = implode(', ', $updateKeys);
 
-        $sql = "UPDATE $tableName SET $values WHERE $condition";
+        if (!$conditions) {
+            $sql = "UPDATE $tableName SET $values";
+            $conditionValues = [];
+        } else {
+            $conditionKeys = array_keys($conditions);
+            $conditionValues = array_values($conditions);
+            foreach ($conditionKeys as &$value) {
+                $value .= ' = ?';
+            }
+            $condition = implode(' AND ', $conditionKeys);
+            $sql = "UPDATE $tableName SET $values WHERE $condition";
+        }
+
         try {
             $valuesArray = array_merge($updateValues, $conditionValues);
             $this->execute($sql, $valuesArray);
@@ -200,6 +214,7 @@ class Db
         } catch (PDOException $e) {
             throw DbException::executionFailed();
         }
+
         return $this->statement;
     }
 
@@ -214,6 +229,7 @@ class Db
         if (!$this->connection) {
             $this->connection = new PDO("pgsql:host=localhost; dbname=$dbName", $dbUser, $dbPassword);
         }
+
         return $this->connection;
     }
 }

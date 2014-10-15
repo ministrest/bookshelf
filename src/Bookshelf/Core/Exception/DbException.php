@@ -10,9 +10,11 @@ use RuntimeException;
 
 class DbException extends RuntimeException
 {
-    public static function executionFailed() {
+    public static function executionFailed()
+    {
         return new self('Something goes wrong');
     }
+
     public static function insertFailed($tableName, $keys, $values, Exception $previous)
     {
         return new self(
@@ -21,18 +23,20 @@ class DbException extends RuntimeException
             $previous
         );
     }
+
     public static function deleteFailed($tableName, $values, Exception $previous)
     {
         return new self(
-            sprintf('Failed to delete row to %s. Field names are %s, values - %s', $tableName, $values),
+            sprintf('Failed to delete row to %s. Values - %s', $tableName, $values),
             null,
             $previous
         );
     }
+
     public static function updateFailed($tableName, $values, Exception $previous)
     {
         return new self(
-            sprintf('Failed to update row to %s. Field names are %s, values - %s', $tableName, $values),
+            sprintf('Failed to update row to %s. Values - %s', $tableName, $values),
             null,
             $previous
         );
