@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+
+    <meta charset="UTF-8">
+    <?php foreach($this->getCssFileList() as $value): ?>
+    <link rel="stylesheet" type="text/css" href="<?php echo $value ?>" media="screen">
+    <?php endforeach; ?>
+</head>
+<body>
+<form action="/login/register" method="post">
+    <p>Email: <input type="text" name="email" value="<?php echo $this->param['loginValue'] ?>"/></p>
+    <p>Password<input type="password" name="password" /></p>
+    <p>Confirm Password<input type="password" name="confirm_password" /></p>
+    <input type="submit" name="submit" value="Registration">
+</form>
+<?php foreach($this->getJsFileList() as $value): ?>
+    <script type="text/javascript" src="<?php echo $value ?>"></script>
+<?php endforeach; ?>
+</body>
+</html>
+
+
+

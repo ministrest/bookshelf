@@ -8,6 +8,12 @@ use Bookshelf\Core\Templater;
  */
 class LoginController
 {
+    private $userData = array(
+        'email' => 'Test',
+        'password' => '123',
+        'loginStatus' => null
+    );
+
     /**
      * @var string default name for controller
      */
@@ -27,9 +33,9 @@ class LoginController
     /**
      * Default action for $this class
      */
-    public function defaultAction()
+    public function defaultAction($param)
     {
-        $this->loginAction();
+        $this->loginAction($param);
     }
 
     /**
@@ -37,9 +43,18 @@ class LoginController
      *
      * @param $param
      */
-    public function loginAction($param)
+    public function loginAction()
     {
-        $this->templater->show($this->controllName,'Login',$param);
+        if($_POST['email'] === $this->userData['email'] && $_POST['password'] === $this->userData['password']) {
+            echo "Welcome back {$_POST['email']}";
+        } else {
+            echo 'Oops something wrong';
+        }
+    }
+
+    public function getLoginForm($param)
+    {
+        $this->templater->show($this->controllName, 'Form', $param);
     }
 
     /**
@@ -50,7 +65,7 @@ class LoginController
      */
     public function getForm($name = null, $pass = null)
     {
-        return $this->templater->render($this->controllName,'Form', [$name, $pass]);
+        return $this->templater->render($this->controllName, 'Form', [$name, $pass]);
     }
 
     /**
@@ -61,12 +76,29 @@ class LoginController
         echo "This is logout page";
     }
 
+    public function registerFormAction()
+    {
+        $this->templater->show($this->controllName, 'RegisterForm', null);
+    }
     /**
      * In future will return Register page
      */
     public function registerAction()
     {
-        echo "This is register page";
+       if($this->checkRegistrationPassword($_POST['password'], $_POST['confirm_password'])) {
+           $this->userData['email'] = $_POST['email'];
+           $this->userData['password'] = $_POST['password'];
+           echo "Welcome {$_POST['email']}";
+       } else {
+           $this->templater->param['loginValue'] = $_POST['email'];
+
+           return $this->templater->show($this->controllName, 'RegisterForm', null);
+       }
+    }
+
+    private function checkRegistrationPassword($password, $confirmPassword)
+    {
+        return ($password !== '' && $confirmPassword !== '' && $password === $confirmPassword);
     }
 }
 

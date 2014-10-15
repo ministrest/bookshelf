@@ -15,9 +15,11 @@ class Templater
      * @var template class property that will content names of all css file
      * @var string template class property that content path to template dir
      */
-    public $param = array();
-    private $jsList;
-    private $cssList;
+    public $param = array(
+        'loginValue' => null
+    );
+    private $jsList = array();
+    private $cssList = array();
     private $templateDir = '../src/Bookshelf/View/';
 
     /**
