@@ -8,6 +8,9 @@ use Bookshelf\Core\Templater;
  */
 class LoginController
 {
+    /**
+     * @var array temp var for test login function
+     */
     private $userData = array(
         'email' => 'Test',
         'password' => '123',
@@ -40,32 +43,22 @@ class LoginController
 
     /**
      * Show html forms for logIn
-     *
-     * @param $param
      */
     public function loginAction()
     {
-        if($_POST['email'] === $this->userData['email'] && $_POST['password'] === $this->userData['password']) {
+        if($this->checkUsernameAndPassword($_POST['email'], $_POST['password'])) {
             echo "Welcome back {$_POST['email']}";
         } else {
             echo 'Oops something wrong';
         }
     }
 
-    public function getLoginForm($param)
-    {
-        $this->templater->show($this->controllName, 'Form', $param);
-    }
-
     /**
-     * Create new html forms
-     *
-     * @param null $name
-     * @param null $pass
+     * Method that create login form on page
      */
-    public function getForm($name = null, $pass = null)
+    public function getLoginForm()
     {
-        return $this->templater->render($this->controllName, 'Form', [$name, $pass]);
+        return $this->templater->render($this->controllName, 'Form', null);
     }
 
     /**
@@ -76,12 +69,17 @@ class LoginController
         echo "This is logout page";
     }
 
+    /**
+     * Method that create register form
+     */
     public function registerFormAction()
     {
         $this->templater->show($this->controllName, 'RegisterForm', null);
     }
+
     /**
-     * In future will return Register page
+     * Create register page and storage user data in array( for now)
+     * If passwords don't match recreate register and fill username line with value from last try
      */
     public function registerAction()
     {
@@ -91,14 +89,32 @@ class LoginController
            echo "Welcome {$_POST['email']}";
        } else {
            $this->templater->param['loginValue'] = $_POST['email'];
-
-           return $this->templater->show($this->controllName, 'RegisterForm', null);
+           $this->templater->show($this->controllName, 'RegisterForm', null);
        }
     }
 
+    /**
+     * Method that check passwords match
+     *
+     * @param $password
+     * @param $confirmPassword
+     * @return bool
+     */
     private function checkRegistrationPassword($password, $confirmPassword)
     {
         return ($password !== '' && $confirmPassword !== '' && $password === $confirmPassword);
+    }
+
+    /**
+     * Method that check if this combination of username and password exist in our BD(in future)
+     *
+     * @param $username
+     * @param $password
+     * @return bool
+     */
+    private function checkUsernameAndPassword($username, $password)
+    {
+        return ($username === $this->userData['email'] && $password === $this->userData['password']);
     }
 }
 

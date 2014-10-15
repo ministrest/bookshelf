@@ -14,6 +14,7 @@ class MainController
      * @var string default name for controller
      */
     private $controllName='Main';
+
     /**
      * @var var for templater instance
      */
@@ -49,7 +50,7 @@ class MainController
         $param = array(
             "title" => 'Test',
             "text" => 'This is test so relax and be happy',
-            "menu" => $login->getForm()
+            "menu" => $login->getLoginForm()
         );
         $this->templater->show($this->controllName, $actionName, $param);
     }

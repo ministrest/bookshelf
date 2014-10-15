@@ -11,21 +11,32 @@ class Templater
 {
     /**
      * @var array array of params
-     * @var template class property that will content names of all js file
-     * @var template class property that will content names of all css file
      * @var string template class property that content path to template dir
      */
     public $param = array(
         'loginValue' => null
     );
+
+    /**
+     * @var array   template class property that will content names of all js file
+     */
     private $jsList = array();
+
+    /**
+     * @var array   template class property that will content names of all css file
+     */
     private $cssList = array();
+
+    /**
+     * @var null|string
+     */
     private $templateDir = '../src/Bookshelf/View/';
 
     /**
      * Magic function that check directory for templates files
      *
-     * @param null $templateDir
+     * @param null| string $templateDir
+     * @throws TemplaterException
      */
     public function __construct($templateDir = null)
     {
@@ -37,7 +48,7 @@ class Templater
     /**
      * Method that will return list of js files
      *
-     * @return mixed
+     * @return array
      */
     public function getJsFileList()
     {
@@ -47,7 +58,7 @@ class Templater
     /**
      * Method that will return list of css files
      *
-     * @return mixed
+     * @return array
      */
     public function getCssFileList()
     {
