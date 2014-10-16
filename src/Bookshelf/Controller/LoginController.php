@@ -1,6 +1,7 @@
 <?php
 
 namespace Bookshelf\Controller;
+use Bookshelf\Core\Session;
 use Bookshelf\Core\Templater;
 
 /**
@@ -17,6 +18,8 @@ class LoginController
         'loginStatus' => null
     );
 
+    private $session;
+
     /**
      * @var string default name for controller
      */
@@ -32,6 +35,7 @@ class LoginController
     public function __construct()
     {
         $this->templater = new Templater();
+        $this->session = new Session();
     }
     /**
      * Default action for $this class
@@ -47,7 +51,9 @@ class LoginController
     public function loginAction()
     {
         if($this->checkUsernameAndPassword($_POST['email'], $_POST['password'])) {
-            echo "Welcome back {$_POST['email']}";
+            $this->session->setSessionData('email', $_POST['email']);
+            $this->session->setSessionData('logInStatus', 1);
+            $this->templater->show($this->controllName, 'LoginSuccess', ['email' => $this->session->getSessionData('email')]);
         } else {
             echo 'Oops something wrong';
         }
@@ -67,6 +73,7 @@ class LoginController
     public function logoutAction()
     {
         echo "This is logout page";
+        $this->session->setSessionData('logInStatus', 0);
     }
 
     /**
@@ -91,6 +98,17 @@ class LoginController
            $this->templater->param['loginValue'] = $_POST['email'];
            $this->templater->show($this->controllName, 'RegisterForm', null);
        }
+    }
+
+    public function sessionTestAction()
+    {
+        if($this->session->getSessionData('logInStatus') === 1){
+            $param = ['email' => $this->session->getSessionData('email')];
+            $this->templater->show($this->controllName, 'SessionTest', $param);
+        } else {
+            $this->templater->show($this->controllName, 'Form', null);
+        }
+
     }
 
     /**

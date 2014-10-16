@@ -2,6 +2,7 @@
 
 namespace Bookshelf\Controller;
 
+use Bookshelf\Core\Session;
 use Bookshelf\Core\Templater;
 use Bookshelf\Core\TemplaterException;
 use Exception;
@@ -13,12 +14,14 @@ class MainController
     /**
      * @var string default name for controller
      */
-    private $controllName='Main';
+    private $controllName = 'Main';
 
     /**
      * @var var for templater instance
      */
     private $templater;
+
+    private $session;
 
     /**
      * Magic function that create templater instance
@@ -26,8 +29,9 @@ class MainController
     public function __construct()
     {
         try {
+            $this->session = new Session();
             $this->templater = new Templater();
-        } catch(TemplaterException $e) {
+        } catch (TemplaterException $e) {
             throw new Exception ('Controller error');
         }
     }
@@ -45,14 +49,18 @@ class MainController
      */
     public function indexAction()
     {
-        $login = new LoginController();
-        $actionName = 'index';
-        $param = array(
-            "title" => 'Test',
-            "text" => 'This is test so relax and be happy',
-            "menu" => $login->getLoginForm()
-        );
-        $this->templater->show($this->controllName, $actionName, $param);
+        if ($this->session->getSessionData('logInStatus') === 0) {
+            $login = new LoginController();
+            $actionName = 'index';
+            $param = array(
+                "title" => 'Test',
+                "text" => 'This is test so relax and be happy',
+                "menu" => $login->getLoginForm()
+            );
+            $this->templater->show($this->controllName, $actionName, $param);
+        } else {
+            $this->templater->show($this->controllName, 'AccountPage', ['name' => $this->session->getSessionData('email')]);
+        }
     }
 }
 
