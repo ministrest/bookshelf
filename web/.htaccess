@@ -1,14 +1,13 @@
 RewriteEngine On
 RewriteBase /
 
-# Processing url : /controller/action
-RewriteRule ^([a-zA-Z0-9]+)/([a-zA-Z0-9-_]+)/?$ ?controller=$1&action=$2 [L,END,QSA]
+# Rewrite URI like website.com/controller/action
+RewriteRule ^([a-zA-Z0-9]+)/([a-zA-Z0-9-_]+)/?$ ?c=$1&a=$2 [L,NC,END,QSA]
 
-# Procassing url /controller
-RewriteRule ^([a-zA-Z0-9]+)/?$ ?controller=$1&action=index [L,END,QSA]
+# Rewrite URI like website.com/controller or website.com
+# Attention DO NOT USE 'index' on controller place apache didn't see this
+RewriteRule ^([a-zA-Z0-9]+)/?$ ?c=$1 [L,NC,END,QSA]
 
-# Processing url without parameters /
-RewriteRule ^/?$ ?controller=index&action=index [L,END,QSA]
+# Error catcher
+ErrorDocument 404 /error/notfound
 
-# Processing error 404
-ErrorDocument 404 /error/not-found
