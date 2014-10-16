@@ -105,4 +105,5 @@ class Logger implements LoggerInterface
         $data = sprintf(date('Y-m-d H:i:s') . "\t" . $level . "\t" . $message . "\t" . $context . "\n");
         $writer->writeToFile($message, $level, $data, $context);
     }
-} 
+}
+

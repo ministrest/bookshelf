@@ -21,3 +21,4 @@ class FileWriter implements FileWriterInterface
         file_put_contents('../src/Bookshelf/Core/Logger/' . date('Y-m-d') . '.txt', $data, FILE_APPEND);
     }
 }
+
