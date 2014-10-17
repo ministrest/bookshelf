@@ -14,6 +14,12 @@ use Bookshelf\Core\Writer\Writer;
  */
 class Logger implements LoggerInterface
 {
+    private $writer;
+
+    public function __construct()
+    {
+        $this->writer = new FileWriter();
+    }
     /**
      * Function will send emergency message and Loglevel
      *
@@ -102,9 +108,8 @@ class Logger implements LoggerInterface
     {
         //write to file
         $convertedContext = $this->contextToString($context);
-        $writer = new FileWriter();
         $data = sprintf("%s \t %s \t %s \t %s \n", date('Y-m-d H:i:s'), $level, $message, $convertedContext);
-        $writer->writeToFile($message, $level, $data, $convertedContext);
+        $this->writer->writeToFile($message, $level, $data, $convertedContext);
     }
 
     /**
@@ -118,7 +123,6 @@ class Logger implements LoggerInterface
         $type = gettype($context);
         switch ($type) {
             case 'array':
-                return print_r($context, true);
             case 'object':
                 return print_r($context, true);
             default:

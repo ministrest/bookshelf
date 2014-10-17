@@ -32,9 +32,11 @@ class Router
                 $controllerInstance = new $controller();
                 $action = $this->getActionName($input);
                 if (!method_exists($controllerInstance, $action)) {
+                    $this->logger->error("Controller not found in Router:handlerequest. Reason: Method $action in $controller not exists");
                     throw new Exception('Method ' . $action . ' not exist');
                 }
             } else {
+                $this->logger->error("Controller not found in Router:handlerequest. Reason: Class $controller not exists");
                 throw new Exception('Class ' . $controller . ' not exist');
             }
         } catch (Exception $exception) {

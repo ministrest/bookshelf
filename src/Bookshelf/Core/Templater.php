@@ -2,6 +2,7 @@
 
 namespace Bookshelf\Core;
 
+use Bookshelf\Core\Logger\Logger;
 use Exception;
 
 /**
@@ -22,6 +23,8 @@ class Templater
      */
     private $jsList = array();
 
+    private $logger;
+
     /**
      * @var array   template class property that will content names of all css file
      */
@@ -40,6 +43,7 @@ class Templater
      */
     public function __construct($templateDir = null)
     {
+        $this->logger = new Logger();
         if($this->checkDir($templateDir)) {
             $this->templateDir = $templateDir;
         }
@@ -124,6 +128,7 @@ class Templater
 
                 return ob_get_clean();
             } else {
+                $this->logger->error("Can't render template in Templater:render. Reason: $templateName not exist in $this->templateDir");
                 throw new Exception('no template file ' . $templateName . ' present in directory ' . $this->templateDir);
             }
         } catch (Exception $e) {}
@@ -156,9 +161,11 @@ class Templater
 
                     return true;
                 } else {
+                    $this->logger->warning("Can't check directory in Templater:checkDir. Reason: $dir is not readable");
                     throw new TemplaterException('This ' . $dir . 'is not readable');
                 }
             } else {
+                $this->logger->warning("Can't check directory in Templater:checkDir. Reason: $dir is not exists");
                 throw new TemplaterException('This ' . $dir . ' is not exists');
             }
         }

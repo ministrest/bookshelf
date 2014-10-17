@@ -21,7 +21,7 @@ class MainController
      * @var var for templater instance
      */
     private $templater;
-
+    private $logger;
     private $session;
 
     /**
@@ -29,10 +29,12 @@ class MainController
      */
     public function __construct()
     {
+        $this->logger= new Logger();
+        $this->session = new Session();
         try {
-            $this->session = new Session();
             $this->templater = new Templater();
         } catch (TemplaterException $e) {
+            $this->logger->error("Can't create templater in MainController. Reason: $e");
             throw new Exception ('Controller error');
         }
     }
