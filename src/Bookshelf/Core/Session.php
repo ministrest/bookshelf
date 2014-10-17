@@ -9,25 +9,18 @@ namespace Bookshelf\Core;
 class Session
 {
     /**
-     * When instance class is created checking LogInStatus session.
-     * If this key don't exist in $_SESSION execute session method assign to this key value 0
-     */
-    public function __construct()
-    {
-        if(!isset($_SESSION['logInStatus'])) {
-            $this->setSessionData('logInStatus', 0);
-        }
-    }
-
-    /**
      * Method that return data in $_SESSION[$name] array
      *
      * @param $name key name
      * @return mixed value of $_SESSION[$name]
      */
-    public function getSessionData($name)
+    public function get($name, $return = null)
     {
-        return $_SESSION[$name];
+        if(isset($_SESSION[$name])) {
+            $return = $_SESSION[$name];
+        }
+
+        return $return;
     }
 
     /**
@@ -36,7 +29,7 @@ class Session
      * @param $name key name
      * @param $value value that assing to $_SESSION[$name]
      */
-    public function setSessionData($name, $value)
+    public function set($name, $value)
     {
         $_SESSION[$name] = $value;
     }
@@ -44,7 +37,7 @@ class Session
     /**
      *  Method that initilizate session if session was don't started early
      */
-    public function initSession()
+    public function init()
     {
         $session_id = session_id();
         if(empty($session_id)) session_start();
@@ -53,9 +46,19 @@ class Session
     /**
      * Method that will terminate session
      */
-    public function terminateSession()
+    public function terminate()
     {
         session_write_close();
+    }
+
+    /**
+     *
+     *
+     * @param $name
+     */
+    public function delete($name)
+    {
+        unset($_SESSION[$name]);
     }
 }
 

@@ -51,9 +51,9 @@ class LoginController
     public function loginAction()
     {
         if($this->checkUsernameAndPassword($_POST['email'], $_POST['password'])) {
-            $this->session->setSessionData('email', $_POST['email']);
-            $this->session->setSessionData('logInStatus', 1);
-            $this->templater->show($this->controllName, 'LoginSuccess', ['email' => $this->session->getSessionData('email')]);
+            $this->session->set('email', $_POST['email']);
+            $this->session->set('logInStatus', 1);
+            $this->templater->show($this->controllName, 'LoginSuccess', ['email' => $this->session->get('email')]);
         } else {
             echo 'Oops something wrong';
         }
@@ -73,7 +73,7 @@ class LoginController
     public function logoutAction()
     {
         echo "This is logout page";
-        $this->session->setSessionData('logInStatus', 0);
+        $this->session->delete('LogInStatus');
     }
 
     /**
@@ -102,8 +102,8 @@ class LoginController
 
     public function sessionTestAction()
     {
-        if($this->session->getSessionData('logInStatus') === 1){
-            $param = ['email' => $this->session->getSessionData('email')];
+        if($this->session->get('logInStatus') === 1){
+            $param = ['email' => $this->session->get('email')];
             $this->templater->show($this->controllName, 'SessionTest', $param);
         } else {
             $this->templater->show($this->controllName, 'Form', null);

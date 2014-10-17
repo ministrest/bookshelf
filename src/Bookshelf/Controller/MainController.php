@@ -2,6 +2,7 @@
 
 namespace Bookshelf\Controller;
 
+use Bookshelf\Core\Logger\Logger;
 use Bookshelf\Core\Session;
 use Bookshelf\Core\Templater;
 use Bookshelf\Core\TemplaterException;
@@ -49,8 +50,9 @@ class MainController
      */
     public function indexAction()
     {
-
-        if ($this->session->getSessionData('logInStatus') === 0) {
+        if ($this->session->get('logInStatus', 0) === 1) {
+            $this->templater->show($this->controllName, 'AccountPage', ['name' => $this->session->get('email')]);
+        } else {
             $login = new LoginController();
             $actionName = 'index';
             $param = array(
@@ -59,8 +61,6 @@ class MainController
                 "menu" => $login->getLoginForm()
             );
             $this->templater->show($this->controllName, $actionName, $param);
-        } else {
-            $this->templater->show($this->controllName, 'AccountPage', ['name' => $this->session->getSessionData('email')]);
         }
     }
 }

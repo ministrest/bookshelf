@@ -101,9 +101,29 @@ class Logger implements LoggerInterface
     public function log($level, $message, $context = null)
     {
         //write to file
+        $convertedContext = $this->contextToString($context);
         $writer = new FileWriter();
-        $data = sprintf(date('Y-m-d H:i:s') . "\t" . $level . "\t" . $message . "\t" . $context . "\n");
-        $writer->writeToFile($message, $level, $data, $context);
+        $data = sprintf("%s \t %s \t %s \t %s \n", date('Y-m-d H:i:s'), $level, $message, $convertedContext);
+        $writer->writeToFile($message, $level, $data, $convertedContext);
+    }
+
+    /**
+     * Convert
+     *
+     * @param $context
+     * @return mixed|string
+     */
+    private function contextToString($context)
+    {
+        $type = gettype($context);
+        switch ($type) {
+            case 'array':
+                return print_r($context, true);
+            case 'object':
+                return print_r($context, true);
+            default:
+                return strval($context);
+        }
     }
 }
 
