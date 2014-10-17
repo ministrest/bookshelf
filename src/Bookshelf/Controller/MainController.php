@@ -24,7 +24,7 @@ class MainController
     private $session;
 
     /**
-     * Magic function that create templater instance
+     * Magic function that create templater and session instance
      */
     public function __construct()
     {
@@ -49,6 +49,7 @@ class MainController
      */
     public function indexAction()
     {
+
         if ($this->session->getSessionData('logInStatus') === 0) {
             $login = new LoginController();
             $actionName = 'index';

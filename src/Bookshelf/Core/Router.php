@@ -2,7 +2,6 @@
 namespace Bookshelf\Core;
 
 use Bookshelf\Core\Logger\Logger;
-use Bookshelf\Core\Writer\Writer;
 use Exception;
 use Bookshelf\Controller\ErrorController;
 
@@ -13,12 +12,10 @@ class Router
 {
     const DEFAULT_CONTROLLER = 'Main';
     private $logger;
-    private $writer;
 
     public function __construct()
     {
         $this->logger = new Logger();
-        $this->writer= new Writer();
     }
 
     /**
