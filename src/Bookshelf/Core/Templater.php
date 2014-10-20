@@ -156,8 +156,8 @@ class Templater
     private function checkDir($dir)
     {
         if ($dir) {
-            if(is_dir($dir) !== false) {
-                if(is_readable($dir) !== false) {
+            if (is_dir($dir) !== false) {
+                if (is_readable($dir) !== false) {
 
                     return true;
                 } else {

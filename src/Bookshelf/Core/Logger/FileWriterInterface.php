@@ -15,6 +15,6 @@ interface FileWriterInterface
      * @param $data data that was constructed by logger
      * @param null $context some vars that will be used in future(for now this is not vars you are looking for)
      */
-    public function writeToFile($message, $level, $data, $context = null);
+    public function write($message, $level, $data, $context = null);
 }
 

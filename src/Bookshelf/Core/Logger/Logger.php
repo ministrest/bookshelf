@@ -108,13 +108,11 @@ class Logger implements LoggerInterface
     {
         //write to file
         $convertedContext = $this->contextToString($context);
-        $data = sprintf("%s \t %s \t %s \t %s \n", date('Y-m-d H:i:s'), $level, $message, $convertedContext);
-        $this->writer->writeToFile($message, $level, $data, $convertedContext);
+        $data = sprintf("%s %s %s %s \n", date('Y-m-d H:i:s'), $level, $message, $convertedContext);
+        $this->writer->write($message, $level, $data, $convertedContext);
     }
 
     /**
-     * Convert
-     *
      * @param $context
      * @return mixed|string
      */

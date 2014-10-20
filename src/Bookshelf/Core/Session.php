@@ -14,13 +14,13 @@ class Session
      * @param $name key name
      * @return mixed value of $_SESSION[$name]
      */
-    public function get($name, $return = null)
+    public function get($name, $default = null)
     {
-        if(isset($_SESSION[$name])) {
-            $return = $_SESSION[$name];
+        if (empty($_SESSION[$name])) {
+            $default = $_SESSION[$name];
         }
 
-        return $return;
+        return $default;
     }
 
     /**
@@ -40,7 +40,9 @@ class Session
     public function init()
     {
         $session_id = session_id();
-        if(empty($session_id)) session_start();
+        if (empty($session_id)) {
+            session_start();
+        }
     }
 
     /**
@@ -52,8 +54,6 @@ class Session
     }
 
     /**
-     *
-     *
      * @param $name
      */
     public function delete($name)

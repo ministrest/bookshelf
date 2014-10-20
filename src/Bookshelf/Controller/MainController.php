@@ -21,11 +21,19 @@ class MainController
      * @var var for templater instance
      */
     private $templater;
+
+    /**
+     * @var var for Logger class instance
+     */
     private $logger;
+
+    /**
+     * @var var for Session class instance
+     */
     private $session;
 
     /**
-     * Magic function that create templater and session instance
+     * Function that create templater and session instance
      */
     public function __construct()
     {

@@ -10,13 +10,13 @@ interface LoggerInterface
     /**
      * Constants for LogLevel
      */
-    const LEVEL_DEBUG = 'debug';
-    const LEVEL_INFO = 'info';
-    const LEVEL_NOTICE = 'notice';
-    const LEVEL_WARNING = 'warning';
-    const LEVEL_ERROR = 'error';
-    const LEVEL_ALERT = 'alert';
-    const LEVEL_EMERGENCY = 'emergency';
+    const LEVEL_DEBUG = 'DEBUG';
+    const LEVEL_INFO = 'INFO';
+    const LEVEL_NOTICE = 'NOTICE';
+    const LEVEL_WARNING = 'WARNING';
+    const LEVEL_ERROR = 'ERROR';
+    const LEVEL_ALERT = 'ALERT';
+    const LEVEL_EMERGENCY = 'EMERGENCY';
 
 
     /**
