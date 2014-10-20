@@ -61,4 +61,3 @@ class Session
         unset($_SESSION[$name]);
     }
 }
-

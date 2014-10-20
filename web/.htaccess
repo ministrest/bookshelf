@@ -10,4 +10,3 @@ RewriteRule ^([a-zA-Z0-9]+)/?$ ?c=$1 [L,NC,END,QSA]
 
 # Error catcher
 ErrorDocument 404 /error/notfound
-

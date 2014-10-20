@@ -143,4 +143,3 @@ class LoginController
         return ($username === $this->userData['email'] && $password === $this->userData['password']);
     }
 }
-

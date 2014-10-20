@@ -50,4 +50,3 @@ class FileWriter implements FileWriterInterface
         file_put_contents($this->pathToDir . $this->filename . '.txt', $data, FILE_APPEND);
     }
 }
-

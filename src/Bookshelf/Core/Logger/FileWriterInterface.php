@@ -17,4 +17,3 @@ interface FileWriterInterface
      */
     public function write($message, $level, $data, $context = null);
 }
-

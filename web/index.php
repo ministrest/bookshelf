@@ -8,4 +8,3 @@ $session = new Session();
 $session ->init();
 $router = new Router();
 $router->handleRequest($_GET);
-

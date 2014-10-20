@@ -13,4 +13,3 @@ class TemplaterException extends Exception
 {
 
 }
-
