@@ -41,11 +41,31 @@ class Db
     private $dbPassword;
 
     /**
+     * @var Db
+     */
+    private static $instance;
+
+    /**
+     * @param string|null $dbName
+     * @param string|null $dbUser
+     * @param string|null $dbPassword
+     * @return Db
+     */
+    public static function getInstance($dbName = null, $dbUser = null, $dbPassword = null)
+    {
+        if (!self::$instance) {
+            self::$instance = new self($dbName, $dbUser, $dbPassword);
+        }
+
+        return self::$instance;
+    }
+
+    /**
      * @param string $dbName
      * @param string $dbUser
      * @param string $dbPassword
      */
-    public function __construct($dbName, $dbUser, $dbPassword)
+    private function __construct($dbName, $dbUser, $dbPassword)
     {
         $this->dbName = $dbName;
         $this->dbUser = $dbUser;
@@ -56,11 +76,12 @@ class Db
      * @param string $sql
      * @param array $options
      * @throws DbException
+     * @return array
      */
     public function execute($sql, $options = [])
     {
         try {
-            $dbConnect = $this->getConnection($this->dbName, $this->dbUser, $this->dbPassword);
+            $dbConnect = $this->getConnection();
             $this->statement = $dbConnect->prepare($sql);
             $result = $this->statement->execute($options);
 
@@ -71,6 +92,9 @@ class Db
             //logging logic could be placed here
             throw DbException::executionFailed();
         }
+        $resultArray = $this->getStatement()->fetchAll(PDO::FETCH_ASSOC);
+
+        return $resultArray;
     }
 
     /**
@@ -219,15 +243,12 @@ class Db
     }
 
     /**
-     * @param string $dbName
-     * @param string $dbUser
-     * @param string $dbPassword
      * @return PDO
      */
-    private function getConnection($dbName, $dbUser, $dbPassword)
+    private function getConnection()
     {
         if (!$this->connection) {
-            $this->connection = new PDO("pgsql:host=localhost; dbname=$dbName", $dbUser, $dbPassword);
+            $this->connection = new PDO("pgsql:host=localhost; dbname=$this->dbName", $this->dbUser, $this->dbPassword);
         }
 
         return $this->connection;
