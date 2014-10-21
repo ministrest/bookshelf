@@ -9,4 +9,4 @@ namespace Bookshelf\Model;
 interface ModelInterface
 {
     public static function getTableName();
-} 
+}

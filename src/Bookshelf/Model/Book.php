@@ -6,41 +6,48 @@
 namespace Bookshelf\Model;
 
 use Bookshelf\Core\Db;
+use ReflectionObject;
 
 class Book implements ModelInterface
 {
     /**
-     * @var
+     * @var int
      */
     private $id;
 
     /**
-     * @var
+     * @var string
      */
     private $name;
 
     /**
-     * @var
+     * @var string
      */
     private $description;
 
     /**
-     * @var
+     * @var string
      */
     private $rating;
 
     /**
-     * @var
+     * @var string
      */
     private $link;
 
     /**
-     * @var
+     * @var string
      */
     private $author;
 
+    /**
+     * @var string
+     */
     private $category;
 
+    /**
+     * @var array
+     */
     private $users = array();
 
     /**
@@ -192,22 +199,22 @@ class Book implements ModelInterface
         return 'books';
     }
 
-    private static function factory($id, $name, $description, $rating, $link, $author, $categoryId)
+    private static function factory($values)
     {
         $book = new self();
-        $reflection = new \ReflectionObject($book);
+        $reflection = new ReflectionObject($book);
         $property = $reflection->getProperty('id');
         $property->setAccessible(true);
-        $property->setValue($book, $id);
+        $property->setValue($book, $values['id']);
         $property->setAccessible(false);
 
-        $book->setName($name);
-        $book->setDescription($description);
-        $book->setRating($rating);
-        $book->setLink($link);
-        $book->setAuthor($author);
+        $book->setName($values['name']);
+        $book->setDescription($values['description']);
+        $book->setRating($values['rating']);
+        $book->setLink($values['link']);
+        $book->setAuthor($values['author']);
 
-        $category = Category::getOneByBook($categoryId);
+        $category = Category::getOneById($values['category_id']);
         $book->setCategory($category);
 
         return $book;
@@ -219,14 +226,11 @@ class Book implements ModelInterface
         $tableBooks = self::getTableName();
 
         $sql = "SELECT * FROM $tableBooks ORDER BY category_id, author, name";
-
         $resultArray = $db->execute($sql);
 
         $books = array();
         foreach ($resultArray as $result) {
-
-            $books[] = self::factory($result['id'], $result['name'], $result['description'], $result['rating'],
-                $result['link'], $result['author'], $result['category_id']);
+            $books[] = self::factory($result);
         }
 
         return $books;

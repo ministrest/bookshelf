@@ -6,6 +6,7 @@
 namespace Bookshelf\Model;
 
 use Bookshelf\Core\Db;
+use ReflectionObject;
 
 /**
  * @author Danil Vasiliev <danil.vasiliev@opensoftdev.ru>
@@ -13,12 +14,12 @@ use Bookshelf\Core\Db;
 class Category
 {
     /**
-     * @var
+     * @var int
      */
     private $id;
 
     /**
-     * @var
+     * @var string
      */
     private $name;
 
@@ -68,21 +69,21 @@ class Category
         return 'categories';
     }
 
-    private static function factory($id, $name)
+    private static function factory($values)
     {
         $category = new self();
-        $reflection = new \ReflectionObject($category);
+        $reflection = new ReflectionObject($category);
         $property = $reflection->getProperty('id');
         $property->setAccessible(true);
-        $property->setValue($category, $id);
+        $property->setValue($category, $values['id']);
         $property->setAccessible(false);
 
-        $category->setName($name);
+        $category->setName($values['name']);
 
         return $category;
     }
 
-    public static function getOneByBook($id)
+    public static function getOneById($id)
     {
         $db = Db::getInstance();
         $tableCategories = self::getTableName();
@@ -90,7 +91,7 @@ class Category
         $sql = "SELECT * FROM $tableCategories WHERE id = $id LIMIT 1";
         $resultArray = $db->execute($sql);
         foreach ($resultArray as $result) {
-            $category = self::factory($result['id'], $result['name']);
+            $category = self::factory($result);
         }
 
         return $category;

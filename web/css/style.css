@@ -1,0 +1,37 @@
+body > .container {
+    padding-top: 130px;
+    padding-bottom: 70px;
+}
+
+.bookshelf-footer {
+    color: #ffffff;
+    text-align: center;
+    padding-top: 10px;
+}
+
+.bookshelf-search {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.bookshelf-table {
+    border: 1px solid #ddd;
+}
+
+.bookshelf-table td {
+    border: 1px solid #ddd;
+    padding: 5px 10px 5px 10px;
+
+}
+
+.bookshelf-table thead > th{
+    background-color: #000000;
+}
+
+.bookshelf-table th{
+    background-color: #f5f5f5;
+}
+
+.category {
+    padding-left: 20px !important;
+}
