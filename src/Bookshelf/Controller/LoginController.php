@@ -16,7 +16,6 @@ class LoginController
     private $userData = array(
         'email' => 'Test',
         'password' => '123',
-        'loginStatus' => null
     );
 
     /**
@@ -57,7 +56,6 @@ class LoginController
     {
         if ($this->checkLoginData($_POST['email'], $_POST['password'])) {
             $this->session->set('email', $_POST['email']);
-            $this->session->set('logInStatus', 1);
             $this->templater->show($this->controllName, 'LoginSuccess', ['email' => $this->session->get('email')]);
         } else {
             echo 'Oops something wrong';
@@ -78,7 +76,7 @@ class LoginController
     public function logoutAction()
     {
         echo "This is logout page";
-        $this->session->delete('logInStatus');
+        $this->session->delete('email');
     }
 
     /**
@@ -110,7 +108,8 @@ class LoginController
      */
     public function sessionTestAction()
     {
-        if ($this->session->get('logInStatus') === 1) {
+        $email = $this->session->get('email');
+        if (!empty($email)) {
             $param = ['email' => $this->session->get('email')];
             $this->templater->show($this->controllName, 'SessionTest', $param);
         } else {

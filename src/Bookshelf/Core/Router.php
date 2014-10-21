@@ -15,7 +15,7 @@ class Router
 
     public function __construct()
     {
-        $this->logger = new Logger();
+        $this->logger = new Logger('../logs/');
     }
 
     /**

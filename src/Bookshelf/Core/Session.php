@@ -16,7 +16,8 @@ class Session
      */
     public function get($name, $default = null)
     {
-        if (empty($_SESSION[$name])) {
+
+        if (array_key_exists($name, $_SESSION)) {
             $default = $_SESSION[$name];
         }
 

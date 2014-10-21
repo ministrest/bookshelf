@@ -14,11 +14,23 @@ use Bookshelf\Core\Writer\Writer;
  */
 class Logger implements LoggerInterface
 {
+    /**
+     * @var FileWriter
+     */
     private $writer;
 
-    public function __construct()
+    /**
+     * Create FileWriter class instance
+     *
+     * @param $pathToFile
+     * @param null $name
+     */
+    public function __construct($pathToFile, $name = null)
     {
-        $this->writer = new FileWriter();
+        if (empty($name)) {
+            $name = date('Y-m-h');
+        }
+        $this->writer = new FileWriter($pathToFile . $name . '.txt');
     }
     /**
      * Function will send emergency message and Loglevel

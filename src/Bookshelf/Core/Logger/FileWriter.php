@@ -5,38 +5,34 @@
 
 namespace Bookshelf\Core\Logger;
 
+use Bookshelf\Core\Logger\WriterException;
+
 /**
  * Class write log message in file
  */
-class FileWriter implements FileWriterInterface
+class FileWriter implements WriterInterface
 {
     /**
-     * @var string
+     * Array for improper symbols for file name
+     * @var array
      */
-    private $filename;
+    private $symbols = array('\\', '/', '"', '?', ':', '*', '<', '>', '|');
 
     /**
      * @var string
      */
-    private $pathToDir;
+    private $pathToFile;
 
 
     /**
-     * @param null $filename string
-     * @param null $pathToDir string
+     * @param $pathToFile
+     * @throws WriterException
      */
-    public function __construct($filename = null, $pathToDir =null)
+    public function __construct($pathToFile)
     {
-        if ($filename === null) {
-            $filename = date('Y-m-d');
+        if ($this->checkPathToFile($pathToFile)) {
+            $this->pathToFile = $pathToFile;
         }
-
-        if ($pathToDir === null) {
-            $pathToDir = '../src/Bookshelf/Core/Logger/';
-        }
-
-        $this->filename = $filename;
-        $this->pathToDir = $pathToDir;
     }
 
     /**
@@ -47,6 +43,25 @@ class FileWriter implements FileWriterInterface
      */
     public function write($message, $level, $data, $context = null)
     {
-        file_put_contents($this->pathToDir . $this->filename . '.txt', $data, FILE_APPEND);
+        file_put_contents($this->pathToFile . '.txt', $data, FILE_APPEND);
+    }
+
+    /**
+     * @param $pathToFile
+     * @throws WriterException
+     */
+    private function checkPathToFile($pathToFile)
+    {
+        if (is_writable(dirname($pathToFile))) {
+            foreach ($this->symbols as $value) {
+                if (strpos(basename($pathToFile), $value)) {
+                    throw new WriterException('Improper filename');
+                }
+            }
+
+            return true;
+        } else {
+            throw new WriterException("Cant write in this directory: $pathToFile");
+        }
     }
 }

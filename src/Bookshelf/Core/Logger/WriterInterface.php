@@ -5,7 +5,7 @@ namespace Bookshelf\Core\Logger;
 /**
  * @author Aleksandr Kolobkov
  */
-interface FileWriterInterface
+interface WriterInterface
 {
     /**
      * Abstract functiob that will write data from logger in file

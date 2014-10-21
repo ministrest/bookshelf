@@ -43,7 +43,7 @@ class Templater
      */
     public function __construct($templateDir = null)
     {
-        $this->logger = new Logger();
+        $this->logger = new Logger('../logs/');
         if($this->checkDir($templateDir)) {
             $this->templateDir = $templateDir;
         }
