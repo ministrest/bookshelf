@@ -11,10 +11,10 @@ use ReflectionObject;
 /**
  * @author Danil Vasiliev <danil.vasiliev@opensoftdev.ru>
  */
-class Category
+class Category implements ModelInterface
 {
     /**
-     * @var int
+     * @var integer
      */
     private $id;
 
@@ -24,7 +24,7 @@ class Category
     private $name;
 
     /**
-     * @return mixed
+     * @return integer
      */
     public function getId()
     {
@@ -32,18 +32,7 @@ class Category
     }
 
     /**
-     * @param mixed $id
-     * @return Category
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
+     * @return string
      */
     public function getName()
     {
@@ -51,8 +40,8 @@ class Category
     }
 
     /**
-     * @param mixed $name
-     * @return book
+     * @param string $name
+     * @return Category
      */
     public function setName($name)
     {
@@ -69,6 +58,10 @@ class Category
         return 'categories';
     }
 
+    /**
+     * @param $values
+     * @return Category
+     */
     private static function factory($values)
     {
         $category = new self();
@@ -87,12 +80,9 @@ class Category
     {
         $db = Db::getInstance();
         $tableCategories = self::getTableName();
-
-        $sql = "SELECT * FROM $tableCategories WHERE id = $id LIMIT 1";
-        $resultArray = $db->execute($sql);
-        foreach ($resultArray as $result) {
-            $category = self::factory($result);
-        }
+        $options = ['id' => $id];
+        $result = $db->fetchOneBy($tableCategories, $options);
+        $category = self::factory($result);
 
         return $category;
     }

@@ -92,18 +92,33 @@ class Db
             //logging logic could be placed here
             throw DbException::executionFailed();
         }
-        $resultArray = $this->getStatement()->fetchAll(PDO::FETCH_ASSOC);
 
-        return $resultArray;
     }
 
     /**
      * @param string $tableName
+     * @param array $orderBy
      * @return array
      */
-    public function fetchAll($tableName)
+    public function fetchAll($tableName, $orderBy = [])
     {
-        $sql = "SELECT * FROM $tableName";
+        if (!$orderBy) {
+            $sql = "SELECT * FROM $tableName";
+        } else {
+            $optionKeys = array_keys($orderBy);
+            $orderConditions = [];
+            foreach ($optionKeys as $key) {
+                $sortOrder = strtoupper($orderBy[$key]);
+                if (!in_array($sortOrder, ['ASC', 'DESC'])) {
+                    $sortOrder = 'ASC';
+                }
+                $orderConditions[] = sprintf('%s %s', $key, $sortOrder);
+            }
+            $orderCondition = implode(', ', $orderConditions);
+
+            $sql = "SELECT * FROM $tableName ORDER BY $orderCondition";
+        }
+
         try {
             $this->execute($sql);
             $resultArray = $this->getStatement()->fetchAll(PDO::FETCH_ASSOC);
@@ -117,7 +132,7 @@ class Db
 
     /**
      * @param string $tableName
-     * @param $fetchOptions
+     * @param array $fetchOptions
      * @return array
      */
     public function fetchOneBy($tableName, $fetchOptions)
@@ -187,6 +202,12 @@ class Db
         $values = implode(', ', $bindArray);
 
         $sql = "INSERT INTO $tableName ($keys) VALUES($values)";
+
+        echo '<pre/>';
+        print_r($sql);
+        print_r($optionValues);
+
+
         try {
             $this->execute($sql, $optionValues);
         } catch (DbException $e) {

@@ -5,13 +5,13 @@
 
 namespace Bookshelf\Model;
 
-use Bookshelf\Core\Db;
 use ReflectionObject;
+use Bookshelf\Core\Db;
 
 class Book implements ModelInterface
 {
     /**
-     * @var int
+     * @var integer
      */
     private $id;
 
@@ -51,7 +51,7 @@ class Book implements ModelInterface
     private $users = array();
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCategory()
     {
@@ -59,8 +59,8 @@ class Book implements ModelInterface
     }
 
     /**
-     * @param mixed $category
-     * @return book
+     * @param string $category
+     * @return Book
      */
     public function setCategory($category)
     {
@@ -79,7 +79,7 @@ class Book implements ModelInterface
 
     /**
      * @param array $users
-     * @return book
+     * @return Book
      */
     public function setUsers($users)
     {
@@ -89,7 +89,7 @@ class Book implements ModelInterface
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getAuthor()
     {
@@ -97,7 +97,7 @@ class Book implements ModelInterface
     }
 
     /**
-     * @param mixed $author
+     * @param string $author
      * @return Book
      */
     public function setAuthor($author)
@@ -108,7 +108,7 @@ class Book implements ModelInterface
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getDescription()
     {
@@ -116,7 +116,7 @@ class Book implements ModelInterface
     }
 
     /**
-     * @param mixed $description
+     * @param string $description
      * @return Book
      */
     public function setDescription($description)
@@ -127,7 +127,7 @@ class Book implements ModelInterface
     }
 
     /**
-     * @return mixed
+     * @return integer
      */
     public function getId()
     {
@@ -135,7 +135,7 @@ class Book implements ModelInterface
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getLink()
     {
@@ -143,7 +143,7 @@ class Book implements ModelInterface
     }
 
     /**
-     * @param mixed $link
+     * @param string $link
      * @return Book
      */
     public function setLink($link)
@@ -154,7 +154,7 @@ class Book implements ModelInterface
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getName()
     {
@@ -162,7 +162,7 @@ class Book implements ModelInterface
     }
 
     /**
-     * @param mixed $name
+     * @param string $name
      * @return Book
      */
     public function setName($name)
@@ -173,7 +173,7 @@ class Book implements ModelInterface
     }
 
     /**
-     * @return mixed
+     * @return integer
      */
     public function getRating()
     {
@@ -181,7 +181,7 @@ class Book implements ModelInterface
     }
 
     /**
-     * @param mixed $rating
+     * @param integer $rating
      * @return Book
      */
     public function setRating($rating)
@@ -199,6 +199,10 @@ class Book implements ModelInterface
         return 'books';
     }
 
+    /**
+     * @param  string $values
+     * @return Book
+     */
     private static function factory($values)
     {
         $book = new self();
@@ -220,13 +224,20 @@ class Book implements ModelInterface
         return $book;
     }
 
-    public static function fetchAllBooks()
+    /**
+     * @return array
+     */
+    public static function fetchAll()
     {
         $db = Db::getInstance();
         $tableBooks = self::getTableName();
 
-        $sql = "SELECT * FROM $tableBooks ORDER BY category_id, author, name";
-        $resultArray = $db->execute($sql);
+        $orderByOptions = [
+            'category_id' => 'ASC',
+            'author' => 'ASC',
+            'name' => 'ASC'
+        ];
+        $resultArray = $db->fetchAll($tableBooks, $orderByOptions);
 
         $books = array();
         foreach ($resultArray as $result) {
