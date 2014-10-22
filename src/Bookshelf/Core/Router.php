@@ -1,6 +1,7 @@
 <?php
 namespace Bookshelf\Core;
 
+use Bookshelf\Core\Logger\Logger;
 use Exception;
 use Bookshelf\Controller\ErrorController;
 
@@ -10,6 +11,12 @@ use Bookshelf\Controller\ErrorController;
 class Router
 {
     const DEFAULT_CONTROLLER = 'Main';
+    private $logger;
+
+    public function __construct()
+    {
+        $this->logger = new Logger('../logs/');
+    }
 
     /**
      * Action that handle all request
@@ -25,9 +32,11 @@ class Router
                 $controllerInstance = new $controller();
                 $action = $this->getActionName($input);
                 if (!method_exists($controllerInstance, $action)) {
+                    $this->logger->error("Controller not found in Router:handlerequest. Reason: Method $action in $controller not exists");
                     throw new Exception('Method ' . $action . ' not exist');
                 }
             } else {
+                $this->logger->error("Controller not found in Router:handlerequest. Reason: Class $controller not exists");
                 throw new Exception('Class ' . $controller . ' not exist');
             }
         } catch (Exception $exception) {
@@ -98,4 +107,3 @@ class Router
         return $name;
     }
 }
-

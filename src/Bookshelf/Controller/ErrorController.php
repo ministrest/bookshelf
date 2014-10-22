@@ -14,4 +14,3 @@ class ErrorController
         echo 'This page is not found(error 404)!';
     }
 }
-
