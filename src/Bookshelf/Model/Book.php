@@ -5,6 +5,7 @@
 
 namespace Bookshelf\Model;
 
+use PDO;
 use ReflectionObject;
 use Bookshelf\Core\Db;
 
@@ -51,7 +52,7 @@ class Book implements ModelInterface
     private $users = array();
 
     /**
-     * @return string
+     * @return Category
      */
     public function getCategory()
     {
@@ -247,4 +248,54 @@ class Book implements ModelInterface
         return $books;
     }
 
+    /**
+     * @param array $orderBy
+     * @param array $searchParameters
+     * @return Book[]
+     */
+    public static function search(array $orderBy = [], array $searchParameters = [])
+    {
+        $db = Db::getInstance();
+        $tableBooks = self::getTableName();
+        $tableCategories = Category::getTableName();
+
+        if (!$searchParameters) {
+            $searchCondition = '';
+        } else {
+            $searchConditions = [];
+            foreach ($searchParameters as $key => $value) {
+                $searchConditions[] = "$key LIKE '%$value%'";
+            }
+            $searchCondition = ' WHERE ' . implode(' OR ', $searchConditions);
+        }
+
+        $optionKeys = array_keys($orderBy);
+        $orderConditions = [];
+        foreach ($optionKeys as $key) {
+            $sortOrder = strtoupper($orderBy[$key]);
+            if (!in_array($sortOrder, ['ASC', 'DESC'])) {
+                $sortOrder = 'ASC';
+            }
+            $orderConditions[] = sprintf('%s %s', $key, $sortOrder);
+        }
+        $orderCondition = implode(', ', $orderConditions);
+
+        $sql = "SELECT
+                    b.id, b.category_id, b.name, b.description, b.rating, b.link,
+                    b.owner_id, b.author, c.name as category_name
+                FROM $tableBooks as b
+                    JOIN $tableCategories as c ON (c.id = b.category_id)
+                    $searchCondition
+                    ORDER BY $orderCondition";
+
+        $db->execute($sql);
+        $resultArray = $db->getStatement()->fetchAll(PDO::FETCH_ASSOC);
+
+        $books = array();
+        foreach ($resultArray as $result) {
+            $books[] = self::factory($result);
+        }
+
+        return $books;
+    }
 }

@@ -133,6 +133,42 @@ class Db
     /**
      * @param string $tableName
      * @param array $fetchOptions
+     * @param integer $limit
+     * @return array
+     */
+    public function fetchBy($tableName, $fetchOptions, $limit = NULL)
+    {
+        if (!$limit) {
+            $limitCondition = '';
+        } else {
+            $limitCondition = ' LIMIT ' . $limit;
+        }
+
+        $optionKeys = array_keys($fetchOptions);
+        $optionValues = array_values($fetchOptions);
+        foreach ($optionKeys as &$value) {
+            $value .= ' = ?';
+        }
+        $condition = implode(' AND ', $optionKeys);
+
+        $sql = "SELECT * FROM $tableName WHERE $condition $limitCondition";
+        try {
+            $this->execute($sql, $optionValues);
+            $result = $this->getStatement()->fetchAll(PDO::FETCH_ASSOC);
+            if ($result === false) {
+                $result = null;
+            }
+        } catch (DbException $e) {
+            $result = null;
+            // to do logger
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $tableName
+     * @param array $fetchOptions
      * @return array
      */
     public function fetchOneBy($tableName, $fetchOptions)

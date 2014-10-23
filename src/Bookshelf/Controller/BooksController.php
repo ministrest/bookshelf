@@ -34,7 +34,13 @@ class BooksController
 
     public function defaultAction()
     {
-        $books = Book::fetchAllBooks();
+        $orderBy = [
+            'category_id' => 'ASC',
+            'author' => 'ASC',
+            'name' => 'ASC'
+        ];
+
+        $books = Book::search($orderBy);
         $result = [];
 
         foreach ($books as $book) {
@@ -47,4 +53,32 @@ class BooksController
 
         return $this->templater->show($this->controllerName, 'Default', $result);
     }
+
+    public function searchAction()
+    {
+        $searchParameters = [
+            'b.name' => $_POST['search'],
+            'author' => $_POST['search'],
+            'c.name' => $_POST['search']
+        ];
+
+        $orderBy = [
+            'category_id' => 'ASC',
+            'author' => 'ASC',
+            'name' => 'ASC'
+        ];
+        $books = Book::search($orderBy, $searchParameters);
+
+        $result = [];
+        foreach ($books as $book) {
+            $categoryName = $book->getCategory()->getName();
+            if (!array_key_exists($categoryName, $result)) {
+                $result[$categoryName] = array();
+            }
+            $result[$categoryName][] = $book;
+        }
+
+        return $this->templater->show($this->controllerName, 'Default', $result);
+    }
+
 }
