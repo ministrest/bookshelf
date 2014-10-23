@@ -1,43 +1,72 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: aleksandr.kolobkov
- * Date: 17.10.2014
- * Time: 20:18
- */
 
 namespace Bookshelf\Model;
 
+use Bookshelf\Core\Db;
 
-class Contact extends ActiveRecord
+/**
+ * @author Kolobkov Aleksandr
+ */
+class Contacts extends ActiveRecord
 {
-    private $name;
+    /**
+     * Property for user contact name
+     *
+     * @var string
+     */
+    private $contactName;
+
+    /**
+     * Property for value of user contact
+     *
+     * @var string
+     */
     private $value;
 
-    public function __construct($name = null, $value = null)
+    /**
+     * Property for id of user contact
+     *
+     * @var int
+     */
+    private $id;
+
+    /**
+     * Property very storage user id who had this contact
+     *
+     * @var int
+     */
+    private $userId;
+
+    /**
+     * @return string
+     */
+    public function getUserId()
     {
-        $this->name = $name;
-        $this->value = $value;
-        parent::__construct();
+        return $this->userId;
     }
 
-
-
+    /**
+     * @param string $userId
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+    }
 
     /**
      * @return mixed
      */
-    public function getName()
+    public function getContactName()
     {
-        return $this->name;
+        return $this->contactName;
     }
 
     /**
      * @param mixed $name
      */
-    public function setName($name)
+    public function setContactName($name)
     {
-        $this->name = $name;
+        $this->contactName = $name;
     }
 
     /**
@@ -49,6 +78,22 @@ class Contact extends ActiveRecord
     }
 
     /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
      * @param mixed $value
      */
     public function setValue($value)
@@ -56,24 +101,51 @@ class Contact extends ActiveRecord
         $this->value = $value;
     }
 
-
-
-
-
-
+    /**
+     * Method that return all contacts that have user with $userId
+     *
+     * @param $userId
+     * @return array
+     */
+    public function getContactDataByUser($userId)
+    {
+        $db = Db::getInstance();
+        $resultArray = $db->fetchBy($this->getTableName(), ['user_id' => $userId]);
+        $contacts = [];
+        foreach ($resultArray as $value) {
+            $contacts["{$value['id']}"] = new Contacts();
+            $contacts["{$value['id']}"]->setState($value);
+        }
+        return $contacts;
+    }
+    /**
+     * Function that return array with all property value for contact with $id
+     *
+     * @return array
+     */
     protected function getState()
     {
-        return ['name' => $this->name, 'value' => $this->value];
+        return ['name' => $this->contactName, 'value' => $this->value, 'user_id' => $this->userId, 'id' => $this->id];
     }
 
+    /**
+     * @return string
+     */
     protected function getTableName()
     {
         return 'contacts';
     }
 
-    protected  function setState($array)
+    /**
+     * Method that set value in property for class instance
+     *
+     * @param $array
+     */
+    protected function setState($array)
     {
+        $this->contactName = $array['name'];
         $this->value = $array['value'];
-        $this->name = $array['name'];
+        $this->userId = $array['user_id'];
+        $this->id = $array['id'];
     }
-} 
+}
