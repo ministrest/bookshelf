@@ -226,29 +226,6 @@ class Book implements ModelInterface
     }
 
     /**
-     * @return array
-     */
-    public static function fetchAll()
-    {
-        $db = Db::getInstance();
-        $tableBooks = self::getTableName();
-
-        $orderByOptions = [
-            'category_id' => 'ASC',
-            'author' => 'ASC',
-            'name' => 'ASC'
-        ];
-        $resultArray = $db->fetchAll($tableBooks, $orderByOptions);
-
-        $books = array();
-        foreach ($resultArray as $result) {
-            $books[] = self::factory($result);
-        }
-
-        return $books;
-    }
-
-    /**
      * @param array $orderBy
      * @param array $searchParameters
      * @return Book[]
@@ -269,16 +246,20 @@ class Book implements ModelInterface
             $searchCondition = ' WHERE ' . implode(' OR ', $searchConditions);
         }
 
-        $optionKeys = array_keys($orderBy);
-        $orderConditions = [];
-        foreach ($optionKeys as $key) {
-            $sortOrder = strtoupper($orderBy[$key]);
-            if (!in_array($sortOrder, ['ASC', 'DESC'])) {
-                $sortOrder = 'ASC';
+        if (empty($orderBy)) {
+            $orderCondition = '';
+        } else {
+            $optionKeys = array_keys($orderBy);
+            $orderConditions = [];
+            foreach ($optionKeys as $key) {
+                $sortOrder = strtoupper($orderBy[$key]);
+                if (!in_array($sortOrder, ['ASC', 'DESC'])) {
+                    $sortOrder = 'ASC';
+                }
+                $orderConditions[] = sprintf('%s %s', $key, $sortOrder);
             }
-            $orderConditions[] = sprintf('%s %s', $key, $sortOrder);
+            $orderCondition = ' ORDER BY ' . implode(', ', $orderConditions);
         }
-        $orderCondition = implode(', ', $orderConditions);
 
         $sql = "SELECT
                     b.id, b.category_id, b.name, b.description, b.rating, b.link,
@@ -286,7 +267,7 @@ class Book implements ModelInterface
                 FROM $tableBooks as b
                     JOIN $tableCategories as c ON (c.id = b.category_id)
                     $searchCondition
-                    ORDER BY $orderCondition";
+                    $orderCondition";
 
         $db->execute($sql);
         $resultArray = $db->getStatement()->fetchAll(PDO::FETCH_ASSOC);

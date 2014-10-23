@@ -136,7 +136,7 @@ class Db
      * @param integer $limit
      * @return array
      */
-    public function fetchBy($tableName, $fetchOptions, $limit = NULL)
+    public function fetchBy($tableName, $fetchOptions, $limit = null)
     {
         if (!$limit) {
             $limitCondition = '';
@@ -238,12 +238,6 @@ class Db
         $values = implode(', ', $bindArray);
 
         $sql = "INSERT INTO $tableName ($keys) VALUES($values)";
-
-        echo '<pre/>';
-        print_r($sql);
-        print_r($optionValues);
-
-
         try {
             $this->execute($sql, $optionValues);
         } catch (DbException $e) {

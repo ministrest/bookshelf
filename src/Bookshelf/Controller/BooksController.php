@@ -34,40 +34,23 @@ class BooksController
 
     public function defaultAction()
     {
+
         $orderBy = [
             'category_id' => 'ASC',
             'author' => 'ASC',
             'name' => 'ASC'
         ];
 
-        $books = Book::search($orderBy);
-        $result = [];
-
-        foreach ($books as $book) {
-            $categoryName = $book->getCategory()->getName();
-            if (!array_key_exists($categoryName, $result)) {
-                $result[$categoryName] = array();
-            }
-            $result[$categoryName][] = $book;
+        if (!$_POST['search']) {
+            $books = Book::search($orderBy);
+        } else {
+            $searchParameters = [
+                'b.name' => $_POST['search'],
+                'author' => $_POST['search'],
+                'c.name' => $_POST['search']
+            ];
+            $books = Book::search($orderBy, $searchParameters);
         }
-
-        return $this->templater->show($this->controllerName, 'Default', $result);
-    }
-
-    public function searchAction()
-    {
-        $searchParameters = [
-            'b.name' => $_POST['search'],
-            'author' => $_POST['search'],
-            'c.name' => $_POST['search']
-        ];
-
-        $orderBy = [
-            'category_id' => 'ASC',
-            'author' => 'ASC',
-            'name' => 'ASC'
-        ];
-        $books = Book::search($orderBy, $searchParameters);
 
         $result = [];
         foreach ($books as $book) {
