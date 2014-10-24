@@ -138,9 +138,8 @@ class Db
      */
     public function fetchBy($tableName, $fetchOptions, $limit = null)
     {
-        if (!$limit) {
-            $limitCondition = '';
-        } else {
+        $limitCondition = '';
+        if (!empty($limit)) {
             $limitCondition = ' LIMIT ' . $limit;
         }
 
