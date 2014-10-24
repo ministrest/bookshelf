@@ -41,11 +41,31 @@ class Db
     private $dbPassword;
 
     /**
+     * @var Db
+     */
+    private static $instance;
+
+    /**
+     * @param string|null $dbName
+     * @param string|null $dbUser
+     * @param string|null $dbPassword
+     * @return Db
+     */
+    public static function getInstance($dbName = null, $dbUser = null, $dbPassword = null)
+    {
+        if (!self::$instance) {
+            self::$instance = new self($dbName, $dbUser, $dbPassword);
+        }
+
+        return self::$instance;
+    }
+
+    /**
      * @param string $dbName
      * @param string $dbUser
      * @param string $dbPassword
      */
-    public function __construct($dbName, $dbUser, $dbPassword)
+    private function __construct($dbName, $dbUser, $dbPassword)
     {
         $this->dbName = $dbName;
         $this->dbUser = $dbUser;
@@ -56,11 +76,12 @@ class Db
      * @param string $sql
      * @param array $options
      * @throws DbException
+     * @return array
      */
     public function execute($sql, $options = [])
     {
         try {
-            $dbConnect = $this->getConnection($this->dbName, $this->dbUser, $this->dbPassword);
+            $dbConnect = $this->getConnection();
             $this->statement = $dbConnect->prepare($sql);
             $result = $this->statement->execute($options);
 
@@ -71,15 +92,33 @@ class Db
             //logging logic could be placed here
             throw DbException::executionFailed();
         }
+
     }
 
     /**
      * @param string $tableName
+     * @param array $orderBy
      * @return array
      */
-    public function fetchAll($tableName)
+    public function fetchAll($tableName, $orderBy = [])
     {
-        $sql = "SELECT * FROM $tableName";
+        if (!$orderBy) {
+            $sql = "SELECT * FROM $tableName";
+        } else {
+            $optionKeys = array_keys($orderBy);
+            $orderConditions = [];
+            foreach ($optionKeys as $key) {
+                $sortOrder = strtoupper($orderBy[$key]);
+                if (!in_array($sortOrder, ['ASC', 'DESC'])) {
+                    $sortOrder = 'ASC';
+                }
+                $orderConditions[] = sprintf('%s %s', $key, $sortOrder);
+            }
+            $orderCondition = implode(', ', $orderConditions);
+
+            $sql = "SELECT * FROM $tableName ORDER BY $orderCondition";
+        }
+
         try {
             $this->execute($sql);
             $resultArray = $this->getStatement()->fetchAll(PDO::FETCH_ASSOC);
@@ -93,7 +132,42 @@ class Db
 
     /**
      * @param string $tableName
-     * @param $fetchOptions
+     * @param array $fetchOptions
+     * @param integer $limit
+     * @return array
+     */
+    public function fetchBy($tableName, $fetchOptions, $limit = null)
+    {
+        $limitCondition = '';
+        if (!empty($limit)) {
+            $limitCondition = ' LIMIT ' . $limit;
+        }
+
+        $optionKeys = array_keys($fetchOptions);
+        $optionValues = array_values($fetchOptions);
+        foreach ($optionKeys as &$value) {
+            $value .= ' = ?';
+        }
+        $condition = implode(' AND ', $optionKeys);
+
+        $sql = "SELECT * FROM $tableName WHERE $condition $limitCondition";
+        try {
+            $this->execute($sql, $optionValues);
+            $result = $this->getStatement()->fetchAll(PDO::FETCH_ASSOC);
+            if ($result === false) {
+                $result = null;
+            }
+        } catch (DbException $e) {
+            $result = null;
+            // to do logger
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $tableName
+     * @param array $fetchOptions
      * @return array
      */
     public function fetchOneBy($tableName, $fetchOptions)
@@ -219,15 +293,12 @@ class Db
     }
 
     /**
-     * @param string $dbName
-     * @param string $dbUser
-     * @param string $dbPassword
      * @return PDO
      */
-    private function getConnection($dbName, $dbUser, $dbPassword)
+    private function getConnection()
     {
         if (!$this->connection) {
-            $this->connection = new PDO("pgsql:host=localhost; dbname=$dbName", $dbUser, $dbPassword);
+            $this->connection = new PDO("pgsql:host=localhost; dbname=$this->dbName", $this->dbUser, $this->dbPassword);
         }
 
         return $this->connection;
