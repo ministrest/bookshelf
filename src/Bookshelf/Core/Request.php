@@ -57,7 +57,7 @@ class Request
      */
     public function isGet()
     {
-        return (strtoupper($_SERVER['REQUEST_METHOD']) === self::GET_METHOD);
+        return ($this->getMethod() === self::GET_METHOD);
     }
 
     /**
@@ -65,9 +65,8 @@ class Request
      */
     public function isPost()
     {
-        return (strtoupper($_SERVER['REQUEST_METHOD']) === self::POST_METHOD);
+        return ($this->getMethod() === self::POST_METHOD);
     }
-
 
     /**
      * @return string
