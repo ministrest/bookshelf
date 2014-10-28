@@ -6,10 +6,9 @@
 namespace Bookshelf\Model;
 
 use PDO;
-use ReflectionObject;
 use Bookshelf\Core\Db;
 
-class Book implements ModelInterface
+class Book extends ActiveRecord
 {
     /**
      * @var integer
@@ -195,34 +194,9 @@ class Book implements ModelInterface
     /**
      * @return string
      */
-    public static function getTableName()
+    public function getTableName()
     {
         return 'books';
-    }
-
-    /**
-     * @param  string $values
-     * @return Book
-     */
-    private static function factory($values)
-    {
-        $book = new self();
-        $reflection = new ReflectionObject($book);
-        $property = $reflection->getProperty('id');
-        $property->setAccessible(true);
-        $property->setValue($book, $values['id']);
-        $property->setAccessible(false);
-
-        $book->setName($values['name']);
-        $book->setDescription($values['description']);
-        $book->setRating($values['rating']);
-        $book->setLink($values['link']);
-        $book->setAuthor($values['author']);
-
-        $category = Category::getOneById($values['category_id']);
-        $book->setCategory($category);
-
-        return $book;
     }
 
     /**
@@ -230,14 +204,14 @@ class Book implements ModelInterface
      * @param array $searchParameters
      * @return Book[]
      */
-    public static function search(array $orderBy = [], array $searchParameters = [])
+    public function search(array $orderBy = [], array $searchParameters = [])
     {
         $db = Db::getInstance();
-        $tableBooks = self::getTableName();
+        $tableBooks = $this->getTableName();
         $tableCategories = Category::getTableName();
 
-        list($searchCondition, $searchValues) = self::parseSearch($searchParameters);
-        $orderCondition = self::parseOrderBy($orderBy);
+        list($searchCondition, $searchValues) = $this->parseSearch($searchParameters);
+        $orderCondition = $this->parseOrderBy($orderBy);
 
         $sql = "SELECT
                     b.id, b.category_id, b.name, b.description, b.rating, b.link,
@@ -252,7 +226,9 @@ class Book implements ModelInterface
 
         $books = array();
         foreach ($resultArray as $result) {
-            $books[] = self::factory($result);
+            $book = New Book();
+            $book->setState($result);
+            $books[] = $book;
         }
 
         return $books;
@@ -262,7 +238,7 @@ class Book implements ModelInterface
      * @param array $searchParameters
      * @return array
      */
-    private static function parseSearch($searchParameters)
+    private function parseSearch($searchParameters)
     {
         $searchValues = [];
         $searchCondition = '';
@@ -286,7 +262,7 @@ class Book implements ModelInterface
      * @param array $orderBy
      * @return string
      */
-    private static function parseOrderBy($orderBy)
+    private function parseOrderBy($orderBy)
     {
         $orderCondition = '';
         $optionKeys = array_keys($orderBy);
@@ -304,4 +280,37 @@ class Book implements ModelInterface
 
         return $orderCondition;
     }
+
+    /**
+     * Function that return array with all property value for contact with $id
+     *
+     * @return array
+     */
+    protected function getState()
+    {
+        return ['id' => $this->id, 'category_id' => $this->category_id, 'name' => $this->name, 'description' => $this->description,
+            'rating' => $this->rating, 'link' => $this->link, 'author' => $this->author];
+    }
+
+    /**
+     * Method that set value in property for class instance
+     *
+     * @param $array
+     * @return mixed|void
+     */
+    protected function setState($array)
+    {
+        $this->name = $array['name'];
+        $this->description = $array['description'];
+        $this->rating = $array['rating'];
+        $this->link = $array['link'];
+        $this->author = $array['author'];
+        $this->id = $array['id'];
+
+        $category = New Category();
+        $this->category = $category->find($array['category_id']);
+    }
+
 }
+
+
