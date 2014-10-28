@@ -236,36 +236,8 @@ class Book implements ModelInterface
         $tableBooks = self::getTableName();
         $tableCategories = Category::getTableName();
 
-        //parse search
-        $searchValues = [];
-        $searchCondition = '';
-
-        $searchConditions = [];
-        foreach ($searchParameters as $key => $value) {
-            if ($value === null) {
-                continue;
-            }
-            $searchValues[] = "%$value%";
-            $searchConditions[] = "$key LIKE ? ";
-        }
-        if ($searchConditions) {
-            $searchCondition = ' WHERE ' . implode(' OR ', $searchConditions);
-        }
-
-        //parse order by
-        $orderCondition = '';
-        $optionKeys = array_keys($orderBy);
-        $orderConditions = [];
-        foreach ($optionKeys as $key) {
-            $sortOrder = strtoupper($orderBy[$key]);
-            if (!in_array($sortOrder, ['ASC', 'DESC'])) {
-                $sortOrder = 'ASC';
-            }
-            $orderConditions[] = sprintf('%s %s', $key, $sortOrder);
-        }
-        if ($orderConditions) {
-            $orderCondition = ' ORDER BY ' . implode(', ', $orderConditions);
-        }
+        list($searchCondition, $searchValues) = self::parseSearch($searchParameters);
+        $orderCondition = self::parseOrderBy($orderBy);
 
         $sql = "SELECT
                     b.id, b.category_id, b.name, b.description, b.rating, b.link,
@@ -284,5 +256,52 @@ class Book implements ModelInterface
         }
 
         return $books;
+    }
+
+    /**
+     * @param array $searchParameters
+     * @return array
+     */
+    private static function parseSearch($searchParameters)
+    {
+        $searchValues = [];
+        $searchCondition = '';
+
+        $searchConditions = [];
+        foreach ($searchParameters as $key => $value) {
+            if ($value === null) {
+                continue;
+            }
+            $searchValues[] = "%$value%";
+            $searchConditions[] = "$key LIKE ? ";
+        }
+        if ($searchConditions) {
+            $searchCondition = ' WHERE ' . implode(' OR ', $searchConditions);
+        }
+
+        return array($searchCondition, $searchValues);
+    }
+
+    /**
+     * @param array $orderBy
+     * @return string
+     */
+    private static function parseOrderBy($orderBy)
+    {
+        $orderCondition = '';
+        $optionKeys = array_keys($orderBy);
+        $orderConditions = [];
+        foreach ($optionKeys as $key) {
+            $sortOrder = strtoupper($orderBy[$key]);
+            if (!in_array($sortOrder, ['ASC', 'DESC'])) {
+                $sortOrder = 'ASC';
+            }
+            $orderConditions[] = sprintf('%s %s', $key, $sortOrder);
+        }
+        if ($orderConditions) {
+            $orderCondition = ' ORDER BY ' . implode(', ', $orderConditions);
+        }
+
+        return $orderCondition;
     }
 }

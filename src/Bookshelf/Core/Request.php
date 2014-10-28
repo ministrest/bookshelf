@@ -30,7 +30,7 @@ class Request
 
     /**
      * @param string $key
-     * @param string null $default
+     * @param string|null $default
      * @return string
      */
     public function get($key, $default = null)
@@ -84,12 +84,8 @@ class Request
      * @param string $key
      * @return bool
      */
-    public function hasKey($key)
+    public function has($key)
     {
-        if (array_key_exists($key, $this->data)){
-            return true;
-        } else {
-            return false;
-        }
+        return (array_key_exists($key, $this->data));
     }
 }
