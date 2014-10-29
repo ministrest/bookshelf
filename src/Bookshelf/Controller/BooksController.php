@@ -8,6 +8,7 @@ namespace Bookshelf\Controller;
 use Bookshelf\Core\Request;
 use Bookshelf\Core\Templater;
 use Bookshelf\Model\Book;
+use Bookshelf\Model\Category;
 
 /**
  * @author Danil Vasiliev <daniil.vasilev@opensoftdev.ru>
@@ -68,5 +69,30 @@ class BooksController
         }
 
         return $this->templater->show($this->controllerName, 'Default', $result);
+    }
+
+    public function addAction()
+    {
+
+        if ($this->request->isPost()) {
+
+            $this->request->data['id'] = 0;
+            $book = New Book();
+            $book->add($this->request->data);
+        }
+
+        return $this->templater->show($this->controllerName, 'Add', $this->fetchCategoriesList());
+    }
+
+    private function fetchCategoriesList()
+    {
+        $category = new Category();
+        $array = $category->findAll();
+        $categories =[];
+        foreach ($array as $category) {
+            $categories[] = $category->getName();
+        }
+
+        return $categories;
     }
 }

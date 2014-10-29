@@ -199,6 +199,14 @@ class Book extends ActiveRecord
         return 'books';
     }
 
+    public function add($insertValues)
+    {
+        $book = New Book();
+        $book->setState($insertValues);
+        $book->save();
+
+    }
+
     /**
      * @param array $orderBy
      * @param array $searchParameters
@@ -228,6 +236,8 @@ class Book extends ActiveRecord
         foreach ($resultArray as $result) {
             $book = New Book();
             $book->setState($result);
+            $category = New Category();
+            $book->category = $category->find($result['category_id']);
             $books[] = $book;
         }
 
@@ -288,7 +298,7 @@ class Book extends ActiveRecord
      */
     protected function getState()
     {
-        return ['id' => $this->id, 'category_id' => $this->category_id, 'name' => $this->name, 'description' => $this->description,
+        return ['id' => $this->id, 'category_id' => $this->category, 'name' => $this->name, 'description' => $this->description,
             'rating' => $this->rating, 'link' => $this->link, 'author' => $this->author];
     }
 
@@ -307,10 +317,8 @@ class Book extends ActiveRecord
         $this->author = $array['author'];
         $this->id = $array['id'];
 
-        $category = New Category();
-        $this->category = $category->find($array['category_id']);
+        $this->category = $array['category_id'];
+
     }
 
 }
-
-

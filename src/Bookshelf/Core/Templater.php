@@ -141,7 +141,7 @@ class Templater
      * @param $actionName
      * @param $param
      */
-    public function show($controllerName, $actionName, $param)
+    public function show($controllerName, $actionName, $param = [])
     {
         echo $this->render($controllerName, $actionName, $param);
     }
