@@ -10,15 +10,15 @@ use Bookshelf\Core\Db;
 abstract class ActiveRecord
 {
     /**
-     * @return mixed
+     * @return int
      */
     abstract public function getId();
 
     /**
      * Method that will find object from Database by id
      *
-     * @param $id
-     * @return ActiveRecord
+     * @param $id int
+     * @return object
      */
     public static function find($id)
     {
@@ -28,8 +28,8 @@ abstract class ActiveRecord
     /**
      * Method that will find object from database by $key with value = $name
      *
-     * @param $key
-     * @param $name
+     * @param $key string
+     * @param $name string
      * @return static
      */
     public static function findBy($key, $name)
@@ -86,14 +86,14 @@ abstract class ActiveRecord
     /**
      * Abstract method for get property for object
      *
-     * @return mixed
+     * @return array
      */
     abstract protected function getState();
 
     /**
      * Abstract method for get table name
      *
-     * @return mixed
+     * @return string
      */
     abstract protected function getTableName();
 
@@ -101,7 +101,6 @@ abstract class ActiveRecord
      * Abstract method that will set value in object property
      *
      * @param $array
-     * @return mixed
      */
     abstract protected function setState($array);
 }

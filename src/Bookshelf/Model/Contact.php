@@ -7,7 +7,7 @@ use Bookshelf\Core\Db;
 /**
  * @author Kolobkov Aleksandr
  */
-class Contacts extends ActiveRecord
+class Contact extends ActiveRecord
 {
     /**
      * Property for user contact name
@@ -54,7 +54,7 @@ class Contacts extends ActiveRecord
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getContactName()
     {
@@ -62,7 +62,7 @@ class Contacts extends ActiveRecord
     }
 
     /**
-     * @param mixed $name
+     * @param string $name
      */
     public function setContactName($name)
     {
@@ -70,7 +70,7 @@ class Contacts extends ActiveRecord
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValue()
     {
@@ -78,7 +78,7 @@ class Contacts extends ActiveRecord
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getId()
     {
@@ -86,7 +86,7 @@ class Contacts extends ActiveRecord
     }
 
     /**
-     * @param mixed $id
+     * @param int $id
      */
     public function setId($id)
     {
@@ -113,11 +113,14 @@ class Contacts extends ActiveRecord
         $resultArray = $db->fetchBy($this->getTableName(), ['user_id' => $userId]);
         $contacts = [];
         foreach ($resultArray as $value) {
-            $contacts["{$value['id']}"] = new Contacts();
+            $contacts["{$value['id']}"] = new Contact();
             $contacts["{$value['id']}"]->setState($value);
         }
+
+
         return $contacts;
     }
+
     /**
      * Function that return array with all property value for contact with $id
      *
@@ -125,7 +128,12 @@ class Contacts extends ActiveRecord
      */
     protected function getState()
     {
-        return ['name' => $this->contactName, 'value' => $this->value, 'user_id' => $this->userId, 'id' => $this->id];
+        return [
+            'name' => $this->contactName,
+            'value' => $this->value,
+            'user_id' => $this->userId,
+            'id' => $this->id
+        ];
     }
 
     /**

@@ -51,7 +51,7 @@ class Db
      * @param string|null $dbPassword
      * @return Db
      */
-    public static function getInstance($dbName = 'bookshelf', $dbUser = 'hantim', $dbPassword = 'uNjUDY0q')
+    public static function getInstance($dbName = null, $dbUser = null, $dbPassword = null)
     {
         if (!self::$instance) {
             self::$instance = new self($dbName, $dbUser, $dbPassword);

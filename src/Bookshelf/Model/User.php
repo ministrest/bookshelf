@@ -8,6 +8,21 @@ namespace Bookshelf\Model;
 class User extends ActiveRecord
 {
     /**
+     * Data about user contacts will be placed here
+     *
+     * @var array
+     */
+    private $contactData;
+
+    /**
+     * Data about user books will be placed here
+     *
+     * @var
+     */
+    private $booksData;
+
+
+    /**
      * Property for user firstname
      *
      * @var string
@@ -43,7 +58,62 @@ class User extends ActiveRecord
     private $id;
 
     /**
-     * @return mixed
+     * Method that will return data about user books()
+     *
+     * @return array
+     */
+    public function getBooksData()
+    {
+        return $this->booksData;
+    }
+
+    /**
+     * Method that will fill data about user books from outside
+     *
+     * @param array $booksData
+     */
+    public function setBooksData($booksData)
+    {
+        $this->booksData = $booksData;
+    }
+
+    /**
+     * Method that return data about user contacts
+     *
+     * @return array
+     */
+    public function getContactData()
+    {
+        if (empty($this->contactData)) {
+            $this->takeContactsData();
+        }
+
+        return $this->contactData;
+    }
+
+    /**
+     * Method that will data about user contacts from outside
+     *
+     * @param mixed $contactData
+     */
+    public function setContactData($array)
+    {
+        switch (count($array)) {
+            case 0:
+                break;
+            case 1:
+                $this->contactData = $array;
+                break;
+            default:
+                foreach (array_keys($array) as $value) {
+                    $this->contactData[$value] = $array[$value];
+                }
+                break;
+        }
+    }
+
+    /**
+     * @return int
      */
     public function getId()
     {
@@ -51,7 +121,7 @@ class User extends ActiveRecord
     }
 
     /**
-     * @param mixed $id
+     * @param int $id
      */
     public function setId($id)
     {
@@ -107,7 +177,7 @@ class User extends ActiveRecord
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getEmail()
     {
@@ -129,7 +199,13 @@ class User extends ActiveRecord
      */
     protected function getState()
     {
-        return ['firstname' => $this->firstName, 'lastname' => $this->lastName, 'email' => $this->email, 'password' => $this->password, 'id' => $this->id];
+        return [
+            'firstname' => $this->firstName,
+            'lastname' => $this->lastName,
+            'email' => $this->email,
+            'password' => $this->password,
+            'id' => $this->id
+        ];
     }
 
     /**
@@ -152,5 +228,31 @@ class User extends ActiveRecord
         $this->email = $array['email'];
         $this->password = $array['password'];
         $this->id = $array['id'];
+    }
+
+    /**
+     * Method that will take data from books table and fill property for class instance
+     */
+    private function takeBooksData()
+    {
+
+    }
+
+    /**
+     * Method that will take data from contacts table and fill property for class instance
+     */
+    private function takeContactsData()
+    {
+        $contactData = [];
+        $contact = Contact::findBy('user_id', $this->getId());
+        $data = $contact->getContactDataByUser($this->getId());
+        foreach (array_keys($data) as $value) {
+            $contactData[$value] = [
+                'contact_type' => $data[$value]->getContactName(),
+                'value' => $data[$value]->getValue(),
+                'id' => $data[$value]->getId()
+            ];
+        }
+        $this->contactData = $contactData;
     }
 }
