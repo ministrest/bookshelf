@@ -12,14 +12,14 @@ class User extends ActiveRecord
      *
      * @var array
      */
-    private $contactData;
+    private $contacts;
 
     /**
      * Data about user books will be placed here
      *
      * @var
      */
-    private $booksData;
+    private $books;
 
 
     /**
@@ -62,9 +62,9 @@ class User extends ActiveRecord
      *
      * @return array
      */
-    public function getBooksData()
+    public function getBooks()
     {
-        return $this->booksData;
+        return $this->books;
     }
 
     /**
@@ -72,9 +72,9 @@ class User extends ActiveRecord
      *
      * @param array $booksData
      */
-    public function setBooksData($booksData)
+    public function setBooks($booksData)
     {
-        $this->booksData = $booksData;
+        $this->books = $booksData;
     }
 
     /**
@@ -82,31 +82,31 @@ class User extends ActiveRecord
      *
      * @return array
      */
-    public function getContactData()
+    public function getContacts()
     {
-        if (empty($this->contactData)) {
-            $this->takeContactsData();
+        if (empty($this->contacts)) {
+            $this->fetchContactsData();
         }
 
-        return $this->contactData;
+        return $this->contacts;
     }
 
     /**
      * Method that will data about user contacts from outside
      *
-     * @param mixed $contactData
+     * @param $array array
      */
-    public function setContactData($array)
+    public function setContacts($array)
     {
         switch (count($array)) {
             case 0:
                 break;
             case 1:
-                $this->contactData = $array;
+                $this->contacts = $array;
                 break;
             default:
                 foreach (array_keys($array) as $value) {
-                    $this->contactData[$value] = $array[$value];
+                    $this->contacts[$value] = $array[$value];
                 }
                 break;
         }
@@ -241,18 +241,8 @@ class User extends ActiveRecord
     /**
      * Method that will take data from contacts table and fill property for class instance
      */
-    private function takeContactsData()
+    private function fetchContactsData()
     {
-        $contactData = [];
-        $contact = Contact::findBy('user_id', $this->getId());
-        $data = $contact->getContactDataByUser($this->getId());
-        foreach (array_keys($data) as $value) {
-            $contactData[$value] = [
-                'contact_type' => $data[$value]->getContactName(),
-                'value' => $data[$value]->getValue(),
-                'id' => $data[$value]->getId()
-            ];
-        }
-        $this->contactData = $contactData;
+        $this->contacts = Contact::findBy('user_id', $this->getId());
     }
 }

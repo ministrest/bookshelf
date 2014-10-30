@@ -102,26 +102,6 @@ class Contact extends ActiveRecord
     }
 
     /**
-     * Method that return all contacts that have user with $userId
-     *
-     * @param $userId
-     * @return array
-     */
-    public function getContactDataByUser($userId)
-    {
-        $db = Db::getInstance();
-        $resultArray = $db->fetchBy($this->getTableName(), ['user_id' => $userId]);
-        $contacts = [];
-        foreach ($resultArray as $value) {
-            $contacts["{$value['id']}"] = new Contact();
-            $contacts["{$value['id']}"]->setState($value);
-        }
-
-
-        return $contacts;
-    }
-
-    /**
      * Function that return array with all property value for contact with $id
      *
      * @return array

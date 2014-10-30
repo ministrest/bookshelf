@@ -10,11 +10,6 @@ use Bookshelf\Core\Db;
 abstract class ActiveRecord
 {
     /**
-     * @return int
-     */
-    abstract public function getId();
-
-    /**
      * Method that will find object from Database by id
      *
      * @param $id int
@@ -22,23 +17,42 @@ abstract class ActiveRecord
      */
     public static function find($id)
     {
-        return self::findBy('id', $id);
+        return self::findOneBy('id', $id);
     }
 
     /**
-     * Method that will find object from database by $key with value = $name
+     * Method that will find and return only 1 object from database
      *
      * @param $key string
      * @param $name string
      * @return static
      */
-    public static function findBy($key, $name)
+    public static function findOneBy($key, $name)
     {
         $object = new static();
         $array = Db::getInstance()->fetchOneBy($object->getTableName(), [$key => $name]);
         $object->setState($array);
 
         return $object;
+    }
+    /**
+     * Method that will find and return all objects from database by $key with value = $name
+     *
+     * @param $key string
+     * @param $name string
+     * @return array
+     */
+    public static function findBy($key, $name)
+    {
+        $objectArray = [];
+        $object = new static;
+        $array = Db::getInstance()->fetchBy($object->getTableName(), [$key => $name]);
+        foreach ($array as $value) {
+            $objectArray[$value['id']] = new static;
+            $objectArray[$value['id']]->setState($value);
+        }
+
+        return $objectArray;
     }
 
     /**
@@ -66,12 +80,12 @@ abstract class ActiveRecord
      */
     public function save()
     {
-        $array = $this->getState();
-        if (empty($array['id'])) {
-            unset($array['id']);
-            Db::getInstance()->insert($this->getTableName(), $array);
+        $propertyArray = $this->getState();
+        if (empty($propertyArray['id'])) {
+            unset($propertyArray['id']);
+            Db::getInstance()->insert($this->getTableName(), $propertyArray);
         } else {
-            Db::getInstance()->update($this->getTableName(), $array, ['id' => $array['id']]);
+            Db::getInstance()->update($this->getTableName(), $propertyArray, ['id' => $propertyArray['id']]);
         }
     }
 
@@ -82,6 +96,11 @@ abstract class ActiveRecord
     {
         Db::getInstance()->delete($this->getTableName(), ['id' => $this->getId()]);
     }
+
+    /**
+     * @return int
+     */
+    abstract public function getId();
 
     /**
      * Abstract method for get property for object
