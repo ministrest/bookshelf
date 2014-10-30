@@ -7,6 +7,12 @@ namespace Bookshelf\Controller;
 
 use Bookshelf\Core\Request;
 use Bookshelf\Core\Templater;
+use Bookshelf\Core\Validation\Constraint\CategoryIssetConstraint;
+use Bookshelf\Core\Validation\Constraint\LinkConstraint;
+use Bookshelf\Core\Validation\Constraint\NotBlankConstraint;
+use Bookshelf\Core\Validation\Constraint\RatingConstraint;
+use Bookshelf\Core\Validation\Constraint\UniqueFieldConstraint;
+use Bookshelf\Core\Validation\Validator;
 use Bookshelf\Model\Book;
 use Bookshelf\Model\Category;
 
@@ -56,7 +62,7 @@ class BooksController
                 'c.name' => $search
             ];
         }
-        $bookObject = New Book();
+        $bookObject = new Book();
         $books = $bookObject->search($orderBy, $searchParameters);
 
         $result = [];
@@ -73,26 +79,46 @@ class BooksController
 
     public function addAction()
     {
+        $this->request->data['id'] = null;
+        $errors = [];
+
+        $category = new Category();
+        $categories = $category->findAll();
 
         if ($this->request->isPost()) {
 
-            $this->request->data['id'] = 0;
-            $book = New Book();
-            $book->add($this->request->data);
+            $book = new Book();
+            $book->setName($this->request->get('name'));
+            $book->setAuthor($this->request->get('author'));
+            $book->setCategory($this->request->get('category_id'));
+            $book->setDescription($this->request->get('description'));
+            $book->setRating($this->request->get('rating'));
+            $book->setLink($this->request->get('link'));
+
+
+            $nameNotBlank = new NotBlankConstraint($book, 'name');
+            $nameUnique = new UniqueFieldConstraint($book, 'name');
+            $authorNotBlank = new NotBlankConstraint($book, 'author');
+            $linkCorrect = new LinkConstraint($book, 'link');
+            $ratingCorrect = new RatingConstraint($book, 'rating');
+            $categoryIsset = new CategoryIssetConstraint($category, 'category');
+
+            $validator = new Validator();
+            $validator->addConstraint($nameNotBlank);
+            $validator->addConstraint($nameUnique);
+            $validator->addConstraint($authorNotBlank);
+            $validator->addConstraint($linkCorrect);
+            $validator->addConstraint($ratingCorrect);
+            $validator->addConstraint($categoryIsset);
+
+            $errors = $validator->validate();
+            if (!$errors) {
+                $book->save();
+                return $this->defaultAction();
+            }
         }
 
-        return $this->templater->show($this->controllerName, 'Add', $this->fetchCategoriesList());
+        return $this->templater->show($this->controllerName, 'Add', ['errors' => $errors, 'categories' => $categories]);
     }
 
-    private function fetchCategoriesList()
-    {
-        $category = new Category();
-        $array = $category->findAll();
-        $categories =[];
-        foreach ($array as $category) {
-            $categories[] = $category->getName();
-        }
-
-        return $categories;
-    }
 }
