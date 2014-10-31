@@ -80,6 +80,7 @@ class Db
      */
     public function execute($sql, $options = [])
     {
+
         try {
             $dbConnect = $this->getConnection();
             $this->statement = $dbConnect->prepare($sql);

@@ -7,7 +7,16 @@ namespace Bookshelf\Controller;
 
 use Bookshelf\Core\Request;
 use Bookshelf\Core\Templater;
+use Bookshelf\Core\Validation\Constraint\CategoryExistsConstraint;
+use Bookshelf\Core\Validation\Constraint\CategoryIssetConstraint;
+use Bookshelf\Core\Validation\Constraint\LinkConstraint;
+use Bookshelf\Core\Validation\Constraint\NotBlankConstraint;
+use Bookshelf\Core\Validation\Constraint\RatingConstraint;
+use Bookshelf\Core\Validation\Constraint\UniqueConstraint;
+use Bookshelf\Core\Validation\Constraint\UniqueFieldConstraint;
+use Bookshelf\Core\Validation\Validator;
 use Bookshelf\Model\Book;
+use Bookshelf\Model\Category;
 
 /**
  * @author Danil Vasiliev <daniil.vasilev@opensoftdev.ru>
@@ -55,7 +64,8 @@ class BooksController
                 'c.name' => $search
             ];
         }
-        $books = Book::search($orderBy, $searchParameters);
+        $bookObject = new Book();
+        $books = $bookObject->search($orderBy, $searchParameters);
 
         $result = [];
         foreach ($books as $book) {
@@ -67,5 +77,59 @@ class BooksController
         }
 
         return $this->templater->show($this->controllerName, 'Default', $result);
+    }
+
+    public function addAction()
+    {
+        $this->request->data['id'] = null;
+        $errors = [];
+
+        $category = new Category();
+        $categories = $category->findAll();
+
+        if ($this->request->isPost()) {
+
+            $book = new Book();
+            $book->setName($this->request->get('name'));
+            $book->setAuthor($this->request->get('author'));
+            $book->setCategory(Category::find($this->request->get('category_id')));
+            $book->setDescription($this->request->get('description'));
+            $book->setRating($this->request->get('rating'));
+            $book->setLink($this->request->get('link'));
+
+            $errors = $this->validation($book);
+            if (!$errors) {
+                $book->save();
+                return $this->defaultAction();
+            }
+        }
+
+        return $this->templater->show($this->controllerName, 'Add', ['errors' => $errors, 'categories' => $categories]);
+    }
+
+    /**
+     * @param Book $book
+     * @return array
+     */
+    private function validation($book)
+    {
+        $nameNotBlank = new NotBlankConstraint($book, 'name');
+        $nameUnique = new UniqueConstraint($book, 'name');
+        $authorNotBlank = new NotBlankConstraint($book, 'author');
+        $linkCorrect = new LinkConstraint($book, 'link');
+        $ratingCorrect = new RatingConstraint($book, 'rating');
+        $categoryIsset = new CategoryExistsConstraint($book->getCategory(), 'id');
+
+        $validator = new Validator();
+        $validator->addConstraint($nameNotBlank);
+        $validator->addConstraint($nameUnique);
+        $validator->addConstraint($authorNotBlank);
+        $validator->addConstraint($linkCorrect);
+        $validator->addConstraint($ratingCorrect);
+        $validator->addConstraint($categoryIsset);
+
+        $errors = $validator->validate();
+
+        return $errors;
     }
 }
