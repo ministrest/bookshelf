@@ -58,7 +58,7 @@ class User extends ActiveRecord
     private $id;
 
     /**
-     * Method that will return data about user books()
+     * Method that will return array of book instances
      *
      * @return array
      */
@@ -85,30 +85,21 @@ class User extends ActiveRecord
     public function getContacts()
     {
         if (empty($this->contacts)) {
-            $this->fetchContactsData();
+            $this->fetchContacts();
         }
 
         return $this->contacts;
     }
 
     /**
-     * Method that will data about user contacts from outside
+     * Method that will take data about user contacts from outside
      *
      * @param $array array
      */
     public function setContacts($array)
     {
-        switch (count($array)) {
-            case 0:
-                break;
-            case 1:
-                $this->contacts = $array;
-                break;
-            default:
-                foreach (array_keys($array) as $value) {
-                    $this->contacts[$value] = $array[$value];
-                }
-                break;
+        foreach ($array as $value) {
+            $this->addContactToUser($value);
         }
     }
 
@@ -233,16 +224,24 @@ class User extends ActiveRecord
     /**
      * Method that will take data from books table and fill property for class instance
      */
-    private function takeBooksData()
+    private function fetchBooks()
     {
-
+        // TODO will be added code that will search book database for all books for this user
     }
 
     /**
      * Method that will take data from contacts table and fill property for class instance
      */
-    private function fetchContactsData()
+    private function fetchContacts()
     {
         $this->contacts = Contact::findBy('user_id', $this->getId());
+    }
+
+    private function addContactToUser($array)
+    {
+        $contact = new Contact();
+        $contact->addContact($array);
+        $contact->getId();
+        $this->contacts[] = $contact;
     }
 }

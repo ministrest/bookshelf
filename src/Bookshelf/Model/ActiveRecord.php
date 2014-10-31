@@ -3,6 +3,7 @@
 namespace Bookshelf\Model;
 
 use Bookshelf\Core\Db;
+use Bookshelf\Core\Exception\DbException;
 
 /**
  * @author Aleksandr Kolobkov
@@ -23,36 +24,36 @@ abstract class ActiveRecord
     /**
      * Method that will find and return only 1 object from database
      *
-     * @param $key string
-     * @param $name string
+     * @param $field string
+     * @param $value string
      * @return static
      */
-    public static function findOneBy($key, $name)
+    public static function findOneBy($field, $value)
     {
         $object = new static();
-        $array = Db::getInstance()->fetchOneBy($object->getTableName(), [$key => $name]);
-        $object->setState($array);
+        $fetchResult = Db::getInstance()->fetchOneBy($object->getTableName(), [$field => $value]);
+        $object->setState($fetchResult);
 
         return $object;
     }
     /**
      * Method that will find and return all objects from database by $key with value = $name
      *
-     * @param $key string
-     * @param $name string
+     * @param $field string
+     * @param $value string
      * @return array
      */
-    public static function findBy($key, $name)
+    public static function findBy($field, $value)
     {
-        $objectArray = [];
+        $ArrayOfObjects = [];
         $object = new static;
-        $array = Db::getInstance()->fetchBy($object->getTableName(), [$key => $name]);
-        foreach ($array as $value) {
-            $objectArray[$value['id']] = new static;
-            $objectArray[$value['id']]->setState($value);
+        $fetchResult = Db::getInstance()->fetchBy($object->getTableName(), [$field => $value]);
+        foreach ($fetchResult as $array) {
+            $object = new static;
+            $ArrayOfObjects[$array['id']] = $object->setState($array);
         }
 
-        return $objectArray;
+        return $ArrayOfObjects;
     }
 
     /**
@@ -63,29 +64,36 @@ abstract class ActiveRecord
     public static function findAll()
     {
         $model = new static();
-        $array = Db::getInstance()->fetchAll($model->getTableName());
-        $length = count($array);
-        $arrayObjects = [];
-        for ($i = 0; $i < $length; $i++) {
+        $fetchResult = Db::getInstance()->fetchAll($model->getTableName());
+        $ArrayOfObjects = [];
+        foreach ($fetchResult as $value) {
             $object = new static();
-            $object->setState($array[$i]);
-            $arrayObjects[$i] = $object;
+            $ArrayOfObjects[] = $object->setState($value);
         }
 
-        return $arrayObjects;
+        return $ArrayOfObjects;
     }
 
     /**
      * Method that insert data in database if $id empty, if $id not empty will update data
+     *
+     * @return bool
      */
     public function save()
     {
-        $propertyArray = $this->getState();
-        if (empty($propertyArray['id'])) {
-            unset($propertyArray['id']);
-            Db::getInstance()->insert($this->getTableName(), $propertyArray);
-        } else {
-            Db::getInstance()->update($this->getTableName(), $propertyArray, ['id' => $propertyArray['id']]);
+        try {
+            $propertyArray = $this->getState();
+            if (empty($propertyArray['id'])) {
+                unset($propertyArray['id']);
+                Db::getInstance()->insert($this->getTableName(), $propertyArray);
+            } else {
+                Db::getInstance()->update($this->getTableName(), $propertyArray, ['id' => $propertyArray['id']]);
+            }
+
+            return true;
+        } catch (DbException $e) {
+
+            return false;
         }
     }
 
@@ -103,21 +111,21 @@ abstract class ActiveRecord
     abstract public function getId();
 
     /**
-     * Abstract method for get property for object
+     * Return value of object property
      *
      * @return array
      */
     abstract protected function getState();
 
     /**
-     * Abstract method for get table name
+     * Return object table name
      *
      * @return string
      */
     abstract protected function getTableName();
 
     /**
-     * Abstract method that will set value in object property
+     * Set value for object properties
      *
      * @param $array
      */

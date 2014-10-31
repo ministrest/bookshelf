@@ -118,7 +118,7 @@ class Templater
      * @param $actionName
      * @param $param
      */
-    public function render($controllerName, $actionName, $param)
+    public function render($controllerName, $actionName, $params)
     {
         $templateName = $this->templateDir . $controllerName . DIRECTORY_SEPARATOR . ucfirst($actionName) . 'View.html';
         try {
@@ -141,9 +141,10 @@ class Templater
      * @param $actionName
      * @param $param
      */
-    public function show($controllerName, $actionName, $param = null)
+
+    public function show($controllerName, $actionName, $params = null)
     {
-        echo $this->render($controllerName, $actionName, $param);
+        echo $this->render($controllerName, $actionName, $params);
     }
 
     /**

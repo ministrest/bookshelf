@@ -2,8 +2,6 @@
 
 namespace Bookshelf\Model;
 
-use Bookshelf\Core\Db;
-
 /**
  * @author Kolobkov Aleksandr
  */
@@ -14,7 +12,7 @@ class Contact extends ActiveRecord
      *
      * @var string
      */
-    private $contactName;
+    private $type;
 
     /**
      * Property for value of user contact
@@ -56,17 +54,17 @@ class Contact extends ActiveRecord
     /**
      * @return string
      */
-    public function getContactName()
+    public function getType()
     {
-        return $this->contactName;
+        return $this->type;
     }
 
     /**
      * @param string $name
      */
-    public function setContactName($name)
+    public function setType($name)
     {
-        $this->contactName = $name;
+        $this->type = $name;
     }
 
     /**
@@ -101,6 +99,14 @@ class Contact extends ActiveRecord
         $this->value = $value;
     }
 
+    public function addContact($array)
+    {
+        $this->type = $array['contact_type'];
+        $this->value = $array['value'];
+        $this->userId = $array['user_id'];
+        $this->save();
+    }
+
     /**
      * Function that return array with all property value for contact with $id
      *
@@ -109,7 +115,7 @@ class Contact extends ActiveRecord
     protected function getState()
     {
         return [
-            'name' => $this->contactName,
+            'name' => $this->type,
             'value' => $this->value,
             'user_id' => $this->userId,
             'id' => $this->id
@@ -131,7 +137,7 @@ class Contact extends ActiveRecord
      */
     protected function setState($array)
     {
-        $this->contactName = $array['name'];
+        $this->type = $array['name'];
         $this->value = $array['value'];
         $this->userId = $array['user_id'];
         $this->id = $array['id'];
