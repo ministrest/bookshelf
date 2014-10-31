@@ -33,11 +33,12 @@ class CategoryIssetConstraint implements ConstraintInterface
      */
     public function validate(array &$errors)
     {
-        $value = $this->model->getName();
+        $accessor = 'get' . ucfirst($this->propertyName);
+        $value = $this->model->$accessor();
         $query = $this->model->find($value);
-        $property = $query->getName();
-        if ($property) {
-            $errors[$this->propertyName][] = $this->message;
+        $property = $query->$accessor();
+        if (!$property) {
+            $errors['category'][] = $this->message;
         }
     }
 }

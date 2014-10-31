@@ -90,28 +90,12 @@ class BooksController
             $book = new Book();
             $book->setName($this->request->get('name'));
             $book->setAuthor($this->request->get('author'));
-            $book->setCategory($this->request->get('category_id'));
+            $book->setCategory(Category::find($this->request->get('category_id')));
             $book->setDescription($this->request->get('description'));
             $book->setRating($this->request->get('rating'));
             $book->setLink($this->request->get('link'));
 
-
-            $nameNotBlank = new NotBlankConstraint($book, 'name');
-            $nameUnique = new UniqueFieldConstraint($book, 'name');
-            $authorNotBlank = new NotBlankConstraint($book, 'author');
-            $linkCorrect = new LinkConstraint($book, 'link');
-            $ratingCorrect = new RatingConstraint($book, 'rating');
-            $categoryIsset = new CategoryIssetConstraint($category, 'category');
-
-            $validator = new Validator();
-            $validator->addConstraint($nameNotBlank);
-            $validator->addConstraint($nameUnique);
-            $validator->addConstraint($authorNotBlank);
-            $validator->addConstraint($linkCorrect);
-            $validator->addConstraint($ratingCorrect);
-            $validator->addConstraint($categoryIsset);
-
-            $errors = $validator->validate();
+            $errors = $this->validation($book);
             if (!$errors) {
                 $book->save();
                 return $this->defaultAction();
@@ -119,6 +103,32 @@ class BooksController
         }
 
         return $this->templater->show($this->controllerName, 'Add', ['errors' => $errors, 'categories' => $categories]);
+    }
+
+    /**
+     * @param Book $book
+     * @return array
+     */
+    private function validation($book)
+    {
+        $nameNotBlank = new NotBlankConstraint($book, 'name');
+        $nameUnique = new UniqueFieldConstraint($book, 'name');
+        $authorNotBlank = new NotBlankConstraint($book, 'author');
+        $linkCorrect = new LinkConstraint($book, 'link');
+        $ratingCorrect = new RatingConstraint($book, 'rating');
+        $categoryIsset = new CategoryIssetConstraint($book->getCategory(), 'id');
+
+        $validator = new Validator();
+        $validator->addConstraint($nameNotBlank);
+        $validator->addConstraint($nameUnique);
+        $validator->addConstraint($authorNotBlank);
+        $validator->addConstraint($linkCorrect);
+        $validator->addConstraint($ratingCorrect);
+        $validator->addConstraint($categoryIsset);
+
+        $errors = $validator->validate();
+
+        return $errors;
     }
 
 }
