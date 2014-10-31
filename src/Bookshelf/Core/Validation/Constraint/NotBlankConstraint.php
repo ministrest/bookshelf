@@ -29,12 +29,12 @@ class NotBlankConstraint implements ConstraintInterface
 
     /**
      * @param array $errors
-     * @return boolean
+     * @return void
      */
     public function validate(array &$errors)
     {
-        $accessor = 'get' . ucfirst($this->propertyName);
-        $value = $this->model->$accessor();
+        $getter = 'get' . ucfirst($this->propertyName);
+        $value = $this->model->$getter();
         if (!$value) {
             $errors[$this->propertyName][] = $this->message;
         }

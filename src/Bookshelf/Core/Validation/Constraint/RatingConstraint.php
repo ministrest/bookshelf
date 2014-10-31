@@ -7,11 +7,13 @@ namespace Bookshelf\Core\Validation\Constraint;
 
 use Bookshelf\Model\ActiveRecord;
 
-class RatingConstraint implements ConstraintInterface{
+class RatingConstraint implements ConstraintInterface
+{
 
     private $model;
     private $propertyName;
     private $message = 'Недопустимое значение рейтинга';
+    private $availableValues = [0, 1, 2, 3, 4, 5];
 
     /**
      * @param ActiveRecord $model
@@ -29,15 +31,14 @@ class RatingConstraint implements ConstraintInterface{
 
     /**
      * @param array $errors
-     * @return boolean
+     * @return void
      */
     public function validate(array &$errors)
     {
-        $accessor = 'get' . ucfirst($this->propertyName);
-        $rating = $this->model->$accessor();
-        $allowableValues = [0, 1, 2, 3, 4, 5];
+        $getter = 'get' . ucfirst($this->propertyName);
+        $rating = $this->model->$getter();
 
-        if ($rating && !in_array($rating, $allowableValues)) {
+        if ($rating && !in_array($rating, $this->availableValues)) {
             $errors[$this->propertyName][] = $this->message;
         }
     }

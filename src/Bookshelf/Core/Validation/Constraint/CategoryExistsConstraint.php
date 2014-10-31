@@ -5,14 +5,13 @@
 
 namespace Bookshelf\Core\Validation\Constraint;
 
-
 use Bookshelf\Model\ActiveRecord;
 
-class UniqueFieldConstraint implements ConstraintInterface
+class CategoryExistsConstraint implements ConstraintInterface
 {
     private $model;
     private $propertyName;
-    private $message = 'Это название занято';
+    private $message = 'Несуществующая категория';
 
     /**
      * @param ActiveRecord $model
@@ -30,16 +29,15 @@ class UniqueFieldConstraint implements ConstraintInterface
 
     /**
      * @param array $errors
-     * @return boolean
+     * @return void
      */
     public function validate(array &$errors)
     {
-        $accessor = 'get' . ucfirst($this->propertyName);
-        $value = $this->model->$accessor();
-        $query = $this->model->findBy($this->propertyName, $value);
-        $property = $query->$accessor();
-        if ($property) {
-            $errors[$this->propertyName][] = $this->message;
+        $getter = 'get' . ucfirst($this->propertyName);
+        $value = $this->model->$getter();
+        $query = $this->model->find($value);
+        if (empty($query)) {
+            $errors['category'][] = $this->message;
         }
     }
 }

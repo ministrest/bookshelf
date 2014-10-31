@@ -7,10 +7,12 @@ namespace Bookshelf\Controller;
 
 use Bookshelf\Core\Request;
 use Bookshelf\Core\Templater;
+use Bookshelf\Core\Validation\Constraint\CategoryExistsConstraint;
 use Bookshelf\Core\Validation\Constraint\CategoryIssetConstraint;
 use Bookshelf\Core\Validation\Constraint\LinkConstraint;
 use Bookshelf\Core\Validation\Constraint\NotBlankConstraint;
 use Bookshelf\Core\Validation\Constraint\RatingConstraint;
+use Bookshelf\Core\Validation\Constraint\UniqueConstraint;
 use Bookshelf\Core\Validation\Constraint\UniqueFieldConstraint;
 use Bookshelf\Core\Validation\Validator;
 use Bookshelf\Model\Book;
@@ -112,11 +114,11 @@ class BooksController
     private function validation($book)
     {
         $nameNotBlank = new NotBlankConstraint($book, 'name');
-        $nameUnique = new UniqueFieldConstraint($book, 'name');
+        $nameUnique = new UniqueConstraint($book, 'name');
         $authorNotBlank = new NotBlankConstraint($book, 'author');
         $linkCorrect = new LinkConstraint($book, 'link');
         $ratingCorrect = new RatingConstraint($book, 'rating');
-        $categoryIsset = new CategoryIssetConstraint($book->getCategory(), 'id');
+        $categoryIsset = new CategoryExistsConstraint($book->getCategory(), 'id');
 
         $validator = new Validator();
         $validator->addConstraint($nameNotBlank);
@@ -130,5 +132,4 @@ class BooksController
 
         return $errors;
     }
-
 }

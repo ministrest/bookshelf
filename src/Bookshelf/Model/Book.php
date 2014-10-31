@@ -210,8 +210,8 @@ class Book extends ActiveRecord
         $tableBooks = $this->getTableName();
         $tableCategories = Category::getTableName();
 
-        list($searchCondition, $searchValues) = $this->parseSearch($searchParameters);
-        $orderCondition = $this->parseOrderBy($orderBy);
+        list($searchCondition, $searchValues) = $this->combineSearchCondition($searchParameters);
+        $orderCondition = $this->combineOrderByCondition($orderBy);
 
         $sql = "SELECT
                     b.id, b.category_id, b.name, b.description, b.rating, b.link,
@@ -239,7 +239,7 @@ class Book extends ActiveRecord
      * @param array $searchParameters
      * @return array
      */
-    private function parseSearch($searchParameters)
+    private function combineSearchCondition($searchParameters)
     {
         $searchValues = [];
         $searchCondition = '';
@@ -263,7 +263,7 @@ class Book extends ActiveRecord
      * @param array $orderBy
      * @return string
      */
-    private function parseOrderBy($orderBy)
+    private function combineOrderByCondition($orderBy)
     {
         $orderCondition = '';
         $optionKeys = array_keys($orderBy);
@@ -289,13 +289,15 @@ class Book extends ActiveRecord
      */
     protected function getState()
     {
-        return ['id' => $this->id,
+        return [
+            'id' => $this->id,
             'category_id' => $this->category->getId(),
             'name' => $this->name,
             'description' => $this->description,
             'rating' => $this->rating,
             'link' => $this->link,
-            'author' => $this->author];
+            'author' => $this->author
+        ];
     }
 
     /**

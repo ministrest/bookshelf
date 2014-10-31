@@ -60,14 +60,17 @@ class Category extends ActiveRecord
 
     protected function getState()
     {
-        return ['id' => $this->id, 'name' => $this->name];
+        return [
+            'id' => $this->id,
+            'name' => $this->name
+        ];
     }
 
     /**
      * Method that set value in property for class instance
      *
      * @param $array
-     * @return mixed|void
+     * @return void
      */
     protected function setState($array)
     {

@@ -7,7 +7,8 @@ namespace Bookshelf\Core\Validation\Constraint;
 
 use Bookshelf\Model\ActiveRecord;
 
-class LinkConstraint implements ConstraintInterface{
+class LinkConstraint implements ConstraintInterface
+{
 
     private $model;
     private $propertyName;
@@ -29,12 +30,12 @@ class LinkConstraint implements ConstraintInterface{
 
     /**
      * @param array $errors
-     * @return boolean
+     * @return void
      */
     public function validate(array &$errors)
     {
-        $accessor = 'get' . ucfirst($this->propertyName);
-        $value = $this->model->$accessor();
+        $getter = 'get' . ucfirst($this->propertyName);
+        $value = $this->model->$getter();
 
         if ($value && !preg_match('/^\S+\.\S+$/', $value)) {
             $errors[$this->propertyName][] = $this->message;
