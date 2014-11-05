@@ -9,8 +9,17 @@ use Bookshelf\Model\ActiveRecord;
 
 class NotBlankConstraint implements ConstraintInterface
 {
+    /**
+     * @var ActiveRecord
+     */
     private $model;
+    /**
+     * @var string
+     */
     private $propertyName;
+    /**
+     * @var null|string
+     */
     private $message = 'Это поле не может быть пустым';
 
     /**
@@ -29,7 +38,6 @@ class NotBlankConstraint implements ConstraintInterface
 
     /**
      * @param array $errors
-     * @return void
      */
     public function validate(array &$errors)
     {

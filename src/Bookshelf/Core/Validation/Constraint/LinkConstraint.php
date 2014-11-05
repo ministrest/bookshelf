@@ -9,9 +9,17 @@ use Bookshelf\Model\ActiveRecord;
 
 class LinkConstraint implements ConstraintInterface
 {
-
+    /**
+     * @var ActiveRecord
+     */
     private $model;
+    /**
+     * @var string
+     */
     private $propertyName;
+    /**
+     * @var null|string
+     */
     private $message = 'Несуществующая ссылка';
 
     /**
@@ -30,14 +38,16 @@ class LinkConstraint implements ConstraintInterface
 
     /**
      * @param array $errors
-     * @return void
      */
     public function validate(array &$errors)
     {
         $getter = 'get' . ucfirst($this->propertyName);
-        $value = $this->model->$getter();
+        $url = $this->model->$getter();
+        if (!strstr($url,"://")){
+            $url="http://" . $url;
+        }
 
-        if ($value && !preg_match('/^\S+\.\S+$/', $value)) {
+        if ($url && !@get_headers($url)) {
             $errors[$this->propertyName][] = $this->message;
         }
     }

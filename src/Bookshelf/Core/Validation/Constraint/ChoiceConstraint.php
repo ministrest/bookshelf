@@ -7,21 +7,34 @@ namespace Bookshelf\Core\Validation\Constraint;
 
 use Bookshelf\Model\ActiveRecord;
 
-class RatingConstraint implements ConstraintInterface
+class ChoiceConstraint implements ConstraintInterface
 {
-
+    /**
+     * @var ActiveRecord
+     */
     private $model;
+    /**
+     * @var string
+     */
     private $propertyName;
-    private $message = 'Недопустимое значение рейтинга';
-    private $availableValues = [0, 1, 2, 3, 4, 5];
+    /**
+     * @var null|string
+     */
+    private $message = 'Недопустимое значение';
+    /**
+     * @var array
+     */
+    private $availableValues;
 
     /**
      * @param ActiveRecord $model
      * @param string $propertyName
+     * @param string $availableValues
      * @param string|null $message
      */
-    public function __construct(ActiveRecord $model, $propertyName, $message = null)
+    public function __construct(ActiveRecord $model, $propertyName, $availableValues, $message = null)
     {
+        $this->availableValues = $availableValues;
         $this->model = $model;
         $this->propertyName = $propertyName;
         if ($message) {
@@ -31,7 +44,6 @@ class RatingConstraint implements ConstraintInterface
 
     /**
      * @param array $errors
-     * @return void
      */
     public function validate(array &$errors)
     {

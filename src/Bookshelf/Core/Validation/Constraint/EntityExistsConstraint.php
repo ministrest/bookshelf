@@ -7,19 +7,34 @@ namespace Bookshelf\Core\Validation\Constraint;
 
 use Bookshelf\Model\ActiveRecord;
 
-class CategoryExistsConstraint implements ConstraintInterface
+class EntityExistsConstraint implements ConstraintInterface
 {
+    /**
+     * @var ActiveRecord
+     */
     private $model;
+    /**
+     * @var string
+     */
     private $propertyName;
+    /**
+     * @var string
+     */
+    private $errorKey;
+    /**
+     * @var null|string
+     */
     private $message = 'Несуществующая категория';
 
     /**
      * @param ActiveRecord $model
      * @param string $propertyName
+     * @param string $errorKey
      * @param string|null $message
      */
-    public function __construct(ActiveRecord $model, $propertyName, $message = null)
+    public function __construct(ActiveRecord $model, $propertyName, $errorKey, $message = null)
     {
+        $this->errorKey = $errorKey;
         $this->model = $model;
         $this->propertyName = $propertyName;
         if ($message) {
@@ -29,15 +44,14 @@ class CategoryExistsConstraint implements ConstraintInterface
 
     /**
      * @param array $errors
-     * @return void
      */
     public function validate(array &$errors)
     {
         $getter = 'get' . ucfirst($this->propertyName);
         $value = $this->model->$getter();
-        $query = $this->model->find($value);
-        if (empty($query)) {
-            $errors['category'][] = $this->message;
+        $resultModel = $this->model->find($value);
+        if (empty($resultModel)) {
+            $errors[$this->errorKey][] = $this->message;
         }
     }
 }

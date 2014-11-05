@@ -9,8 +9,17 @@ use Bookshelf\Model\ActiveRecord;
 
 class UniqueConstraint implements ConstraintInterface
 {
+    /**
+     * @var ActiveRecord
+     */
     private $model;
+    /**
+     * @var string
+     */
     private $propertyName;
+    /**
+     * @var null|string
+     */
     private $message = 'Это название занято';
 
     /**
@@ -29,14 +38,13 @@ class UniqueConstraint implements ConstraintInterface
 
     /**
      * @param array $errors
-     * @return void
      */
     public function validate(array &$errors)
     {
         $getter = 'get' . ucfirst($this->propertyName);
         $value = $this->model->$getter();
-        $query = $this->model->findBy($this->propertyName, $value);
-        $property = $query->$getter();
+        $resultModel = $this->model->findBy($this->propertyName, $value);
+        $property = $resultModel->$getter();
         if ($property) {
             $errors[$this->propertyName][] = $this->message;
         }

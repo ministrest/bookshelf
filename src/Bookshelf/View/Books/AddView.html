@@ -3,29 +3,32 @@
 <div class="container">
     <legend>Добавление книги</legend>
     <form class="form-horizontal" role="form" method="post" action="/books/add">
-        <div class="form-group">
+        <div class="form-group <?php if (isset($param['errors']['name'])) { echo 'has-error'; }?>">
+
             <label for="name" class="col-sm-2 control-label">Название * </label>
             <div class="col-sm-10">
                 <input type="text" required class="form-control" id="name" name="name"
                        value="<?php if (isset($_POST['name'])) { echo $_POST['name']; }?>">
+                <?php if (isset($param['errors']['name'])):?>
+                    <span class="help-block"> <?php echo $param['errors']['name'][0]; ?> </span>
+                <?php endif;?>
             </div>
         </div>
-        <?php if (isset($param['errors']['name'])):?>
-            <div class="alert alert-danger"> <?php echo $param['errors']['name'][0]; ?> </div>
-        <?php endif;?>
 
-        <div class="form-group">
+
+        <div class="form-group <?php if (isset($param['errors']['author'])) { echo 'has-error'; }?>">
             <label for="name" class="col-sm-2 control-label">Автор * </label>
             <div class="col-sm-10">
                 <input type="text" required class="form-control" id="author" name="author"
                        value="<?php if (isset($_POST['author'])) { echo $_POST['author']; }?>">
+                <?php if (isset($param['errors']['author'])):?>
+                    <span class="help-block"> <?php echo $param['errors']['author'][0]; ?> </span>
+                <?php endif;?>
             </div>
         </div>
-        <?php if (isset($param['errors']['author'])):?>
-            <div class="alert alert-danger"> <?php echo $param['errors']['author'][0]; ?> </div>
-        <?php endif;?>
 
-        <div class="form-group">
+
+        <div class="form-group <?php if (isset($param['errors']['category'])) { echo 'has-error'; }?>">
             <label for="name" class="col-sm-2 control-label">Категория * </label>
             <div class="col-sm-10">
                 <select class="form-control" id="category_id" name="category_id">
@@ -33,11 +36,12 @@
                     <option value="<?php echo $category->getId()?>"> <?php echo $category->getName() ?> </option>
                     <?php endforeach; ?>
                 </select>
+                <?php if (isset($param['errors']['category'])):?>
+                    <span class="help-block"> <?php echo $param['errors']['category'][0]; ?> </span>
+                <?php endif;?>
             </div>
         </div>
-        <?php if (isset($param['errors']['category'])):?>
-            <div class="alert alert-danger"> <?php echo $param['errors']['category'][0]; ?> </div>
-        <?php endif;?>
+
 
         <div class="form-group">
             <label for="name" class="col-sm-2 control-label">Аннотация</label>
@@ -46,7 +50,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group <?php if (isset($param['errors']['rating'])) { echo 'has-error'; }?>">
             <label for="name" class="col-sm-2 control-label">Рейтинг</label>
             <div class="col-sm-10">
                 <select class="form-control" id="rating" name="rating">
@@ -57,24 +61,24 @@
                     <option>4</option>
                     <option>5</option>
                 </select>
+                <?php if (isset($param['errors']['rating'])):?>
+                    <span class="help-block"> <?php echo $param['errors']['rating'][0]; ?> </span>
+                <?php endif;?>
+
             </div>
         </div>
-        <?php if (isset($param['errors']['rating'])):?>
-            <div class="alert alert-danger"> <?php echo $param['errors']['rating'][0]; ?> </div>
-        <?php endif;?>
 
-        <div class="form-group">
+        <div class="form-group <?php if (isset($param['errors']['link'])) { echo 'has-error'; }?>">
             <label for="name" class="col-sm-2 control-label">Ссылка</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="link" name="link"
                     value="<?php if (isset($_POST['link'])) { echo $_POST['link']; }?>">
+                <?php if (isset($param['errors']['link'])):?>
+                    <span class="help-block"> <?php echo $param['errors']['link'][0]; ?> </span>
+                <?php endif;?>
             </div>
         </div>
-        <?php if (isset($param['errors']['link'])):?>
-            <div class="alert alert-danger"> <?php echo $param['errors']['link'][0]; ?> </div>
-        <?php endif;?>
 
-        </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-primary">Добавить</button>

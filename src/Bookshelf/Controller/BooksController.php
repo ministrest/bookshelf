@@ -7,11 +7,11 @@ namespace Bookshelf\Controller;
 
 use Bookshelf\Core\Request;
 use Bookshelf\Core\Templater;
-use Bookshelf\Core\Validation\Constraint\CategoryExistsConstraint;
+use Bookshelf\Core\Validation\Constraint\EntityExistsConstraint;
 use Bookshelf\Core\Validation\Constraint\CategoryIssetConstraint;
 use Bookshelf\Core\Validation\Constraint\LinkConstraint;
 use Bookshelf\Core\Validation\Constraint\NotBlankConstraint;
-use Bookshelf\Core\Validation\Constraint\RatingConstraint;
+use Bookshelf\Core\Validation\Constraint\ChoiceConstraint;
 use Bookshelf\Core\Validation\Constraint\UniqueConstraint;
 use Bookshelf\Core\Validation\Constraint\UniqueFieldConstraint;
 use Bookshelf\Core\Validation\Validator;
@@ -84,11 +84,9 @@ class BooksController
         $this->request->data['id'] = null;
         $errors = [];
 
-        $category = new Category();
-        $categories = $category->findAll();
+        $categories = Category::findAll();
 
         if ($this->request->isPost()) {
-
             $book = new Book();
             $book->setName($this->request->get('name'));
             $book->setAuthor($this->request->get('author'));
@@ -97,7 +95,7 @@ class BooksController
             $book->setRating($this->request->get('rating'));
             $book->setLink($this->request->get('link'));
 
-            $errors = $this->validation($book);
+            $errors = $this->validate($book);
             if (!$errors) {
                 $book->save();
                 return $this->defaultAction();
@@ -111,14 +109,15 @@ class BooksController
      * @param Book $book
      * @return array
      */
-    private function validation($book)
+    private function validate($book)
     {
         $nameNotBlank = new NotBlankConstraint($book, 'name');
         $nameUnique = new UniqueConstraint($book, 'name');
         $authorNotBlank = new NotBlankConstraint($book, 'author');
         $linkCorrect = new LinkConstraint($book, 'link');
-        $ratingCorrect = new RatingConstraint($book, 'rating');
-        $categoryIsset = new CategoryExistsConstraint($book->getCategory(), 'id');
+        $availableValues = [0, 1, 2, 3, 4, 5];
+        $ratingCorrect = new ChoiceConstraint($book, 'rating', $availableValues);
+        $categoryIsset = new EntityExistsConstraint($book->getCategory(), 'id', 'category');
 
         $validator = new Validator();
         $validator->addConstraint($nameNotBlank);
