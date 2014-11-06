@@ -115,8 +115,7 @@ class BooksController
         $nameUnique = new UniqueConstraint($book, 'name');
         $authorNotBlank = new NotBlankConstraint($book, 'author');
         $linkCorrect = new LinkConstraint($book, 'link');
-        $availableValues = [0, 1, 2, 3, 4, 5];
-        $ratingCorrect = new ChoiceConstraint($book, 'rating', $availableValues);
+        $ratingCorrect = new ChoiceConstraint($book, 'rating', $book->availableValues);
         $categoryIsset = new EntityExistsConstraint($book->getCategory(), 'id', 'category');
 
         $validator = new Validator();

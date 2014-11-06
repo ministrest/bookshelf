@@ -49,6 +49,10 @@ class Book extends ActiveRecord
      * @var array
      */
     private $users = array();
+    /**
+     * @var array
+     */
+    public $availableValues = [0, 1, 2, 3, 4, 5];
 
     /**
      * @return Category

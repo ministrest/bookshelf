@@ -13,19 +13,21 @@ class UniqueConstraint implements ConstraintInterface
      * @var ActiveRecord
      */
     private $model;
+
     /**
      * @var string
      */
     private $propertyName;
+
     /**
-     * @var null|string
+     * @var string
      */
     private $message = 'Это название занято';
 
     /**
      * @param ActiveRecord $model
      * @param string $propertyName
-     * @param string|null $message
+     * @param string $message
      */
     public function __construct(ActiveRecord $model, $propertyName, $message = null)
     {

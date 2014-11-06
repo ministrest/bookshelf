@@ -13,16 +13,19 @@ class EntityExistsConstraint implements ConstraintInterface
      * @var ActiveRecord
      */
     private $model;
+
     /**
      * @var string
      */
     private $propertyName;
+
     /**
      * @var string
      */
     private $errorKey;
+
     /**
-     * @var null|string
+     * @var string
      */
     private $message = 'Несуществующая категория';
 
@@ -30,7 +33,7 @@ class EntityExistsConstraint implements ConstraintInterface
      * @param ActiveRecord $model
      * @param string $propertyName
      * @param string $errorKey
-     * @param string|null $message
+     * @param string $message
      */
     public function __construct(ActiveRecord $model, $propertyName, $errorKey, $message = null)
     {
@@ -50,7 +53,8 @@ class EntityExistsConstraint implements ConstraintInterface
         $getter = 'get' . ucfirst($this->propertyName);
         $value = $this->model->$getter();
         $resultModel = $this->model->find($value);
-        if (empty($resultModel)) {
+        $property = $resultModel->$getter();
+        if (!$property) {
             $errors[$this->errorKey][] = $this->message;
         }
     }

@@ -13,14 +13,17 @@ class ChoiceConstraint implements ConstraintInterface
      * @var ActiveRecord
      */
     private $model;
+
     /**
      * @var string
      */
     private $propertyName;
+
     /**
-     * @var null|string
+     * @var string
      */
     private $message = 'Недопустимое значение';
+
     /**
      * @var array
      */
@@ -30,7 +33,7 @@ class ChoiceConstraint implements ConstraintInterface
      * @param ActiveRecord $model
      * @param string $propertyName
      * @param string $availableValues
-     * @param string|null $message
+     * @param string $message
      */
     public function __construct(ActiveRecord $model, $propertyName, $availableValues, $message = null)
     {
