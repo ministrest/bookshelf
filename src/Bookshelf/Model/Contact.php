@@ -99,20 +99,12 @@ class Contact extends ActiveRecord
         $this->value = $value;
     }
 
-    public function addContact($array)
-    {
-        $this->type = $array['contact_type'];
-        $this->value = $array['value'];
-        $this->userId = $array['user_id'];
-        $this->save();
-    }
-
     /**
      * Function that return array with all property value for contact with $id
      *
      * @return array
      */
-    protected function getState()
+    protected function toArray()
     {
         return [
             'name' => $this->type,
@@ -135,7 +127,7 @@ class Contact extends ActiveRecord
      *
      * @param $array
      */
-    protected function setState($array)
+    protected function initStateFromArray($array)
     {
         $this->type = $array['name'];
         $this->value = $array['value'];

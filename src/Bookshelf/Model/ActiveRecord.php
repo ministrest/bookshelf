@@ -32,28 +32,29 @@ abstract class ActiveRecord
     {
         $object = new static();
         $fetchResult = Db::getInstance()->fetchOneBy($object->getTableName(), [$field => $value]);
-        $object->setState($fetchResult);
+        $object->initStateFromArray($fetchResult);
 
         return $object;
     }
+
     /**
-     * Method that will find and return all objects from database by $key with value = $name
+     * Method that will return array of objects
+     * property for this objects will be found(or not) in database
      *
-     * @param $field string
-     * @param $value string
+     * @param array $condition
      * @return array
      */
-    public static function findBy($field, $value)
+    public static function findBy(array $condition)
     {
-        $ArrayOfObjects = [];
+        $arrayOfObjects = [];
         $object = new static;
-        $fetchResult = Db::getInstance()->fetchBy($object->getTableName(), [$field => $value]);
-        foreach ($fetchResult as $array) {
+        $fetchResult = Db::getInstance()->fetchBy($object->getTableName(), $condition);
+        foreach ($fetchResult as $objectState) {
             $object = new static;
-            $ArrayOfObjects[$array['id']] = $object->setState($array);
+            $arrayOfObjects[$objectState['id']] = $object->initStateFromArray($objectState);
         }
 
-        return $ArrayOfObjects;
+        return $arrayOfObjects;
     }
 
     /**
@@ -65,13 +66,13 @@ abstract class ActiveRecord
     {
         $model = new static();
         $fetchResult = Db::getInstance()->fetchAll($model->getTableName());
-        $ArrayOfObjects = [];
-        foreach ($fetchResult as $value) {
+        $arrayOfObjects = [];
+        foreach ($fetchResult as $objectState) {
             $object = new static();
-            $ArrayOfObjects[] = $object->setState($value);
+            $arrayOfObjects[] = $object->initStateFromArray($objectState);
         }
 
-        return $ArrayOfObjects;
+        return $arrayOfObjects;
     }
 
     /**
@@ -82,12 +83,12 @@ abstract class ActiveRecord
     public function save()
     {
         try {
-            $propertyArray = $this->getState();
-            if (empty($propertyArray['id'])) {
-                unset($propertyArray['id']);
-                Db::getInstance()->insert($this->getTableName(), $propertyArray);
+            $instanceState = $this->toArray();
+            if (empty($instanceState['id'])) {
+                unset($instanceState['id']);
+                Db::getInstance()->insert($this->getTableName(), $instanceState);
             } else {
-                Db::getInstance()->update($this->getTableName(), $propertyArray, ['id' => $propertyArray['id']]);
+                Db::getInstance()->update($this->getTableName(), $instanceState, ['id' => $instanceState['id']]);
             }
 
             return true;
@@ -115,7 +116,7 @@ abstract class ActiveRecord
      *
      * @return array
      */
-    abstract protected function getState();
+    abstract protected function toArray();
 
     /**
      * Return object table name
@@ -129,5 +130,5 @@ abstract class ActiveRecord
      *
      * @param $array
      */
-    abstract protected function setState($array);
+    abstract protected function initStateFromArray($array);
 }

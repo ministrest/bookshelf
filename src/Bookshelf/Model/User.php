@@ -10,14 +10,14 @@ class User extends ActiveRecord
     /**
      * Data about user contacts will be placed here
      *
-     * @var array
+     * @var Contact[]
      */
     private $contacts;
 
     /**
      * Data about user books will be placed here
      *
-     * @var
+     * @var Book[]
      */
     private $books;
 
@@ -92,14 +92,17 @@ class User extends ActiveRecord
     }
 
     /**
-     * Method that will take data about user contacts from outside
+     * Method that will add contacts to user
      *
-     * @param $array array
+     * @param $arrayOfContacts array
      */
-    public function setContacts($array)
+    public function setContacts($arrayOfContacts)
     {
-        foreach ($array as $value) {
-            $this->addContactToUser($value);
+        foreach ($arrayOfContacts as $contact) {
+            $contact->setUserId($this->getId());
+            $contact->save();
+            $contact->getId();
+            $this->contacts[] = $contact;
         }
     }
 
@@ -188,7 +191,7 @@ class User extends ActiveRecord
      *
      * @return array
      */
-    protected function getState()
+    protected function toArray()
     {
         return [
             'firstname' => $this->firstName,
@@ -212,7 +215,7 @@ class User extends ActiveRecord
      *
      * @param $array
      */
-    protected function setState($array)
+    protected function initStateFromArray($array)
     {
         $this->firstName = $array['firstname'];
         $this->lastName = $array['lastname'];
@@ -234,14 +237,6 @@ class User extends ActiveRecord
      */
     private function fetchContacts()
     {
-        $this->contacts = Contact::findBy('user_id', $this->getId());
-    }
-
-    private function addContactToUser($array)
-    {
-        $contact = new Contact();
-        $contact->addContact($array);
-        $contact->getId();
-        $this->contacts[] = $contact;
+        $this->contacts = Contact::findBy(['user_id' => $this->getId()]);
     }
 }
