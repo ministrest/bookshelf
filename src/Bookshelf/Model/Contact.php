@@ -2,19 +2,17 @@
 
 namespace Bookshelf\Model;
 
-use Bookshelf\Core\Db;
-
 /**
  * @author Kolobkov Aleksandr
  */
-class Contacts extends ActiveRecord
+class Contact extends ActiveRecord
 {
     /**
      * Property for user contact name
      *
      * @var string
      */
-    private $contactName;
+    private $type;
 
     /**
      * Property for value of user contact
@@ -54,23 +52,23 @@ class Contacts extends ActiveRecord
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getContactName()
+    public function getType()
     {
-        return $this->contactName;
+        return $this->type;
     }
 
     /**
-     * @param mixed $name
+     * @param string $name
      */
-    public function setContactName($name)
+    public function setType($name)
     {
-        $this->contactName = $name;
+        $this->type = $name;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValue()
     {
@@ -78,7 +76,7 @@ class Contacts extends ActiveRecord
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getId()
     {
@@ -86,7 +84,7 @@ class Contacts extends ActiveRecord
     }
 
     /**
-     * @param mixed $id
+     * @param int $id
      */
     public function setId($id)
     {
@@ -102,30 +100,18 @@ class Contacts extends ActiveRecord
     }
 
     /**
-     * Method that return all contacts that have user with $userId
-     *
-     * @param $userId
-     * @return array
-     */
-    public function getContactDataByUser($userId)
-    {
-        $db = Db::getInstance();
-        $resultArray = $db->fetchBy($this->getTableName(), ['user_id' => $userId]);
-        $contacts = [];
-        foreach ($resultArray as $value) {
-            $contacts["{$value['id']}"] = new Contacts();
-            $contacts["{$value['id']}"]->setState($value);
-        }
-        return $contacts;
-    }
-    /**
      * Function that return array with all property value for contact with $id
      *
      * @return array
      */
-    protected function getState()
+    protected function toArray()
     {
-        return ['name' => $this->contactName, 'value' => $this->value, 'user_id' => $this->userId, 'id' => $this->id];
+        return [
+            'name' => $this->type,
+            'value' => $this->value,
+            'user_id' => $this->userId,
+            'id' => $this->id
+        ];
     }
 
     /**
@@ -141,9 +127,9 @@ class Contacts extends ActiveRecord
      *
      * @param $array
      */
-    protected function setState($array)
+    protected function initStateFromArray($array)
     {
-        $this->contactName = $array['name'];
+        $this->type = $array['name'];
         $this->value = $array['value'];
         $this->userId = $array['user_id'];
         $this->id = $array['id'];

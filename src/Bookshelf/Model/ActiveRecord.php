@@ -3,6 +3,7 @@
 namespace Bookshelf\Model;
 
 use Bookshelf\Core\Db;
+use Bookshelf\Core\Exception\DbException;
 
 /**
  * @author Aleksandr Kolobkov
@@ -10,35 +11,50 @@ use Bookshelf\Core\Db;
 abstract class ActiveRecord
 {
     /**
-     * @return mixed
-     */
-    abstract public function getId();
-
-    /**
      * Method that will find object from Database by id
      *
-     * @param $id
-     * @return ActiveRecord
+     * @param $id int
+     * @return object
      */
     public static function find($id)
     {
-        return self::findBy('id', $id);
+        return self::findOneBy('id', $id);
     }
 
     /**
-     * Method that will find object from database by $key with value = $name
+     * Method that will find and return only 1 object from database
      *
-     * @param $key
-     * @param $name
+     * @param $field string
+     * @param $value string
      * @return static
      */
-    public static function findBy($key, $name)
+    public static function findOneBy($field, $value)
     {
         $object = new static();
-        $array = Db::getInstance()->fetchOneBy($object->getTableName(), [$key => $name]);
-        $object->setState($array);
+        $fetchResult = Db::getInstance()->fetchOneBy($object->getTableName(), [$field => $value]);
+        $object->initStateFromArray($fetchResult);
 
         return $object;
+    }
+
+    /**
+     * Method that will return array of objects
+     * property for this objects will be found(or not) in database
+     *
+     * @param array $condition
+     * @return array
+     */
+    public static function findBy(array $condition)
+    {
+        $arrayOfObjects = [];
+        $object = new static;
+        $fetchResult = Db::getInstance()->fetchBy($object->getTableName(), $condition);
+        foreach ($fetchResult as $objectState) {
+            $object = new static;
+            $arrayOfObjects[$objectState['id']] = $object->initStateFromArray($objectState);
+        }
+
+        return $arrayOfObjects;
     }
 
     /**
@@ -49,29 +65,36 @@ abstract class ActiveRecord
     public static function findAll()
     {
         $model = new static();
-        $array = Db::getInstance()->fetchAll($model->getTableName());
-        $length = count($array);
-        $arrayObjects = [];
-        for ($i = 0; $i < $length; $i++) {
+        $fetchResult = Db::getInstance()->fetchAll($model->getTableName());
+        $arrayOfObjects = [];
+        foreach ($fetchResult as $objectState) {
             $object = new static();
-            $object->setState($array[$i]);
-            $arrayObjects[$i] = $object;
+            $arrayOfObjects[] = $object->initStateFromArray($objectState);
         }
 
-        return $arrayObjects;
+        return $arrayOfObjects;
     }
 
     /**
      * Method that insert data in database if $id empty, if $id not empty will update data
+     *
+     * @return bool
      */
     public function save()
     {
-        $array = $this->getState();
-        if (empty($array['id'])) {
-            unset($array['id']);
-            Db::getInstance()->insert($this->getTableName(), $array);
-        } else {
-            Db::getInstance()->update($this->getTableName(), $array, ['id' => $array['id']]);
+        try {
+            $instanceState = $this->toArray();
+            if (empty($instanceState['id'])) {
+                unset($instanceState['id']);
+                Db::getInstance()->insert($this->getTableName(), $instanceState);
+            } else {
+                Db::getInstance()->update($this->getTableName(), $instanceState, ['id' => $instanceState['id']]);
+            }
+
+            return true;
+        } catch (DbException $e) {
+
+            return false;
         }
     }
 
@@ -84,24 +107,28 @@ abstract class ActiveRecord
     }
 
     /**
-     * Abstract method for get property for object
-     *
-     * @return mixed
+     * @return int
      */
-    abstract protected function getState();
+    abstract public function getId();
 
     /**
-     * Abstract method for get table name
+     * Return value of object property
      *
-     * @return mixed
+     * @return array
+     */
+    abstract protected function toArray();
+
+    /**
+     * Return object table name
+     *
+     * @return string
      */
     abstract protected function getTableName();
 
     /**
-     * Abstract method that will set value in object property
+     * Set value for object properties
      *
      * @param $array
-     * @return mixed
      */
-    abstract protected function setState($array);
+    abstract protected function initStateFromArray($array);
 }
