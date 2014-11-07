@@ -26,12 +26,15 @@ abstract class ActiveRecord
      *
      * @param $field string
      * @param $value string
-     * @return static
+     * @return static|null
      */
     public static function findOneBy($field, $value)
     {
         $object = new static();
         $fetchResult = Db::getInstance()->fetchOneBy($object->getTableName(), [$field => $value]);
+        if (empty($fetchResult)) {
+            return null;
+        }
         $object->initStateFromArray($fetchResult);
 
         return $object;
@@ -42,16 +45,20 @@ abstract class ActiveRecord
      * property for this objects will be found(or not) in database
      *
      * @param array $condition
-     * @return array
+     * @return array|null
      */
     public static function findBy(array $condition)
     {
         $arrayOfObjects = [];
         $object = new static;
         $fetchResult = Db::getInstance()->fetchBy($object->getTableName(), $condition);
+        if (empty($fetchResult)) {
+
+            return null;
+        }
         foreach ($fetchResult as $objectState) {
-            $object = new static;
-            $arrayOfObjects[$objectState['id']] = $object->initStateFromArray($objectState);
+            $arrayOfObjects[$objectState['id']] = new static;
+            $arrayOfObjects[$objectState['id']]->initStateFromArray($objectState);
         }
 
         return $arrayOfObjects;
@@ -60,16 +67,22 @@ abstract class ActiveRecord
     /**
      * Method that find All data from table
      *
-     * @return array of objects
+     * @return array|null
      */
     public static function findAll()
     {
         $model = new static();
         $fetchResult = Db::getInstance()->fetchAll($model->getTableName());
+        if (empty($fetchResult)) {
+
+            return null;
+        }
+
         $arrayOfObjects = [];
         foreach ($fetchResult as $objectState) {
             $object = new static();
-            $arrayOfObjects[] = $object->initStateFromArray($objectState);
+            $object->initStateFromArray($objectState);
+            $arrayOfObjects[] = $object;
         }
 
         return $arrayOfObjects;
