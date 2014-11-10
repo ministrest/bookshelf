@@ -2,6 +2,7 @@
 
 namespace Bookshelf\Model;
 use Bookshelf\Core\Db;
+use InvalidArgumentException;
 
 /**
  * @author Aleksandr Kolobkov
@@ -103,11 +104,15 @@ class User extends ActiveRecord
      */
     public function createContact($type, $value)
     {
-        $contact = new Contact($this);
-        $contact->setType($type);
-        $contact->setValue($value);
+        if (in_array($type, Contact::$allowableTypes)) {
+            $contact = new Contact($this);
+            $contact->setType($type);
+            $contact->setValue($value);
 
-        return $contact;
+            return $contact;
+        } else {
+            throw new InvalidArgumentException('Improper contact type');
+        }
     }
 
     /**
@@ -246,7 +251,7 @@ class User extends ActiveRecord
         foreach ($fetchResult as $contactData) {
             $contact = $this->createContact($contactData['name'], $contactData['value']);
             $contact->setId($contactData['id']);
-            $this->contacts[$contact->getId()] = $contact;
+            $this->contacts[] = $contact;
         }
     }
 }

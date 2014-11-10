@@ -18,20 +18,19 @@ abstract class ActiveRecord
      */
     public static function find($id)
     {
-        return self::findOneBy('id', $id);
+        return self::findOneBy(['id' => $id]);
     }
 
     /**
      * Method that will find and return only 1 object from database
      *
-     * @param $field string
-     * @param $value string
-     * @return static|null
+     * @param array $conditions
+     * @return null|static
      */
-    public static function findOneBy($field, $value)
+    public static function findOneBy(array $conditions)
     {
         $object = new static();
-        $fetchResult = Db::getInstance()->fetchOneBy($object->getTableName(), [$field => $value]);
+        $fetchResult = Db::getInstance()->fetchOneBy($object->getTableName(), $conditions);
         if (!$fetchResult) {
             return null;
         }
@@ -44,20 +43,21 @@ abstract class ActiveRecord
      * Method that will return array of objects
      * property for this objects will be found(or not) in database
      *
-     * @param array $condition
+     * @param array $conditions
      * @return array|null
      */
-    public static function findBy(array $condition)
+    public static function findBy(array $conditions)
     {
         $arrayOfObjects = [];
         $object = new static;
-        $fetchResult = Db::getInstance()->fetchBy($object->getTableName(), $condition);
+        $fetchResult = Db::getInstance()->fetchBy($object->getTableName(), $conditions);
         if (!$fetchResult) {
             return null;
         }
         foreach ($fetchResult as $objectState) {
-            $arrayOfObjects[$objectState['id']] = new static;
-            $arrayOfObjects[$objectState['id']]->initStateFromArray($objectState);
+            $object = new static;
+            $object->initStateFromArray($objectState);
+            $arrayOfObjects[] = $object;
         }
 
         return $arrayOfObjects;
