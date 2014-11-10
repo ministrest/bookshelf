@@ -18,20 +18,22 @@ abstract class ActiveRecord
      */
     public static function find($id)
     {
-        return self::findOneBy('id', $id);
+        return self::findOneBy(['id' => $id]);
     }
 
     /**
      * Method that will find and return only 1 object from database
      *
-     * @param $field string
-     * @param $value string
-     * @return static
+     * @param array $conditions
+     * @return null|static
      */
-    public static function findOneBy($field, $value)
+    public static function findOneBy(array $conditions)
     {
         $object = new static();
-        $fetchResult = Db::getInstance()->fetchOneBy($object->getTableName(), [$field => $value]);
+        $fetchResult = Db::getInstance()->fetchOneBy($object->getTableName(), $conditions);
+        if (!$fetchResult) {
+            return null;
+        }
         $object->initStateFromArray($fetchResult);
 
         return $object;
@@ -41,17 +43,21 @@ abstract class ActiveRecord
      * Method that will return array of objects
      * property for this objects will be found(or not) in database
      *
-     * @param array $condition
-     * @return array
+     * @param array $conditions
+     * @return array|null
      */
-    public static function findBy(array $condition)
+    public static function findBy(array $conditions)
     {
         $arrayOfObjects = [];
         $object = new static;
-        $fetchResult = Db::getInstance()->fetchBy($object->getTableName(), $condition);
+        $fetchResult = Db::getInstance()->fetchBy($object->getTableName(), $conditions);
+        if (!$fetchResult) {
+            return null;
+        }
         foreach ($fetchResult as $objectState) {
             $object = new static;
-            $arrayOfObjects[$objectState['id']] = $object->initStateFromArray($objectState);
+            $object->initStateFromArray($objectState);
+            $arrayOfObjects[] = $object;
         }
 
         return $arrayOfObjects;
@@ -60,16 +66,20 @@ abstract class ActiveRecord
     /**
      * Method that find All data from table
      *
-     * @return array of objects
+     * @return array|null
      */
     public static function findAll()
     {
         $model = new static();
         $fetchResult = Db::getInstance()->fetchAll($model->getTableName());
+        if (!$fetchResult) {
+            return null;
+        }
         $arrayOfObjects = [];
         foreach ($fetchResult as $objectState) {
             $object = new static();
-            $arrayOfObjects[] = $object->initStateFromArray($objectState);
+            $object->initStateFromArray($objectState);
+            $arrayOfObjects[] = $object;
         }
 
         return $arrayOfObjects;
@@ -93,7 +103,6 @@ abstract class ActiveRecord
 
             return true;
         } catch (DbException $e) {
-
             return false;
         }
     }

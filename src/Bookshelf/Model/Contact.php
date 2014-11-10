@@ -7,6 +7,10 @@ namespace Bookshelf\Model;
  */
 class Contact extends ActiveRecord
 {
+    const SKYPE_TYPE = 'Skype';
+    const PHONE_TYPE = 'Телефон';
+    const EMAIL_TYPE = 'Email';
+
     /**
      * Property for user contact name
      *
@@ -31,24 +35,23 @@ class Contact extends ActiveRecord
     /**
      * Property very storage user id who had this contact
      *
-     * @var int
+     * @var User
      */
-    private $userId;
+    private $user;
 
-    /**
-     * @return string
-     */
-    public function getUserId()
+    public  static $allowableTypes = array(self::SKYPE_TYPE, self::PHONE_TYPE, self::EMAIL_TYPE);
+
+    public function __construct($user)
     {
-        return $this->userId;
+        $this->user = $user;
     }
 
     /**
-     * @param string $userId
+     * @return User
      */
-    public function setUserId($userId)
+    public function getUser()
     {
-        $this->userId = $userId;
+        return $this->user;
     }
 
     /**
@@ -92,7 +95,7 @@ class Contact extends ActiveRecord
     }
 
     /**
-     * @param mixed $value
+     * @param string $value
      */
     public function setValue($value)
     {
@@ -109,7 +112,7 @@ class Contact extends ActiveRecord
         return [
             'name' => $this->type,
             'value' => $this->value,
-            'user_id' => $this->userId,
+            'user_id' => $this->user->getId(),
             'id' => $this->id
         ];
     }
@@ -131,7 +134,6 @@ class Contact extends ActiveRecord
     {
         $this->type = $array['name'];
         $this->value = $array['value'];
-        $this->userId = $array['user_id'];
         $this->id = $array['id'];
     }
 }

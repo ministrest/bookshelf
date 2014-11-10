@@ -1,6 +1,8 @@
 <?php
 
 namespace Bookshelf\Model;
+use Bookshelf\Core\Db;
+use InvalidArgumentException;
 
 /**
  * @author Aleksandr Kolobkov
@@ -64,6 +66,10 @@ class User extends ActiveRecord
      */
     public function getBooks()
     {
+        if (empty($this->books)) {
+            $this->fetchBooks();
+        }
+
         return $this->books;
     }
 
@@ -92,17 +98,20 @@ class User extends ActiveRecord
     }
 
     /**
-     * Method that will add contacts to user
-     *
-     * @param $arrayOfContacts array
+     * @param string $type
+     * @param string $value
+     * @return Contact
      */
-    public function setContacts($arrayOfContacts)
+    public function createContact($type, $value)
     {
-        foreach ($arrayOfContacts as $contact) {
-            $contact->setUserId($this->getId());
-            $contact->save();
-            $contact->getId();
-            $this->contacts[] = $contact;
+        if (in_array($type, Contact::$allowableTypes)) {
+            $contact = new Contact($this);
+            $contact->setType($type);
+            $contact->setValue($value);
+
+            return $contact;
+        } else {
+            throw new InvalidArgumentException('Improper contact type');
         }
     }
 
@@ -229,7 +238,7 @@ class User extends ActiveRecord
      */
     private function fetchBooks()
     {
-        // TODO will be added code that will search book database for all books for this user
+        $this->books = Book::findBy(['owner_id' => $this->getId()]);
     }
 
     /**
@@ -237,6 +246,12 @@ class User extends ActiveRecord
      */
     private function fetchContacts()
     {
-        $this->contacts = Contact::findBy(['user_id' => $this->getId()]);
+        // TODO Find way for sending contacts table name in user model
+        $fetchResult = Db::getInstance()->fetchBy('contacts', ['user_id' => $this->getId()]);
+        foreach ($fetchResult as $contactData) {
+            $contact = $this->createContact($contactData['name'], $contactData['value']);
+            $contact->setId($contactData['id']);
+            $this->contacts[] = $contact;
+        }
     }
 }
