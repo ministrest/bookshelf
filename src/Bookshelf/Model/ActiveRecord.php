@@ -32,7 +32,7 @@ abstract class ActiveRecord
     {
         $object = new static();
         $fetchResult = Db::getInstance()->fetchOneBy($object->getTableName(), [$field => $value]);
-        if (empty($fetchResult)) {
+        if (!$fetchResult) {
             return null;
         }
         $object->initStateFromArray($fetchResult);
@@ -52,8 +52,7 @@ abstract class ActiveRecord
         $arrayOfObjects = [];
         $object = new static;
         $fetchResult = Db::getInstance()->fetchBy($object->getTableName(), $condition);
-        if (empty($fetchResult)) {
-
+        if (!$fetchResult) {
             return null;
         }
         foreach ($fetchResult as $objectState) {
@@ -73,11 +72,9 @@ abstract class ActiveRecord
     {
         $model = new static();
         $fetchResult = Db::getInstance()->fetchAll($model->getTableName());
-        if (empty($fetchResult)) {
-
+        if (!$fetchResult) {
             return null;
         }
-
         $arrayOfObjects = [];
         foreach ($fetchResult as $objectState) {
             $object = new static();
@@ -106,7 +103,6 @@ abstract class ActiveRecord
 
             return true;
         } catch (DbException $e) {
-
             return false;
         }
     }

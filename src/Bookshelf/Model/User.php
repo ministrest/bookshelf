@@ -241,6 +241,7 @@ class User extends ActiveRecord
      */
     private function fetchContacts()
     {
+        // TODO Find way for sending contacts table name in user model
         $fetchResult = Db::getInstance()->fetchBy('contacts', ['user_id' => $this->getId()]);
         foreach ($fetchResult as $contactData) {
             $contact = $this->createContact($contactData['name'], $contactData['value']);
