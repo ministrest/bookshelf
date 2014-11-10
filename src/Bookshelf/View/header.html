@@ -19,26 +19,39 @@
     <div class="navbar-link navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="row">
-                <div class="col-md-10">
+                <div class="col-md-9">
                     <div class="navbar-header">
                         <a class="navbar-brand" href="/books">Book Shelf</a>
                     </div>
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
                             <li><a href="/books/add">Добавить книгу</a></li>
-                            <li class="active"><a href="/books">Книги</a></li>
+                            <li><a href="/books">Книги</a></li>
                         </ul>
                     </div><!--/.nav-collapse -->
+
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <div class="navbar-collapse collapse navbar-right">
                         <ul class="nav navbar-nav">
-                            <li class="bookshelf-login"><a href="#">Log In</a></li>
-
-                            </li>
+                            <?php if (!empty($_SESSION['email'])):  ?>
+                                <?php echo sprintf('<li><a href="/user">%s</li></a>', $_SESSION['firstname']) ?>
+                                <li><a href="/login/logout">Выйти</a></li>
+                            <?php else: ?>
+                               <li><a href="/login/register-form">Регистрация</a></li>
+                               <li><a href="/login">Вoйти</a></li>
+                            <?php endif; ?>
                         </ul>
                     </div><!--/.nav-collapse -->
                 </div>
             </div>
-         </div>
+        </div>
     </div>
+
+    <script type="text/javascript">
+        $('div.navbar-collapse li').each(function () {
+            if (this.getElementsByTagName("a")[0].href == location.href) {
+                this.className = "active";
+            }
+        });
+    </script>

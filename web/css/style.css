@@ -54,6 +54,38 @@ table.bookshelf-table td:nth-of-type(2n+1) {
     display: block !important;
 }
 
-.typeahead:hover {
-    background-color: grey;
+#bookshelf-user {
+    padding-top: 15px;
+    color: #fff;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+
+}
+.form-signin input[type="text"] {
+    margin-bottom: 30px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+span.glyphicon-chevron-left {
+    font-size: 3em;
 }

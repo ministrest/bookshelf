@@ -1,8 +1,26 @@
-<form action="/login/login" method="post">
-    <p>Email: <input type="text" name="email" /></p>
-    <p>Password<input type="password" name="password" /></p>
-    <input type="submit" name="submit" value="Login">
-</form>
-<form action="/login/register-form" method="post">
-    <input type="submit" name="submit" value="Register">
-</form>
+<?php include(__DIR__ . '/../header.html'); ?>
+
+<div class="container">
+    <form class="form-signin" action="/login/login" method="post">
+        <div class="form-group <?php echo (isset($params['errors']) && !empty($params['errors']['email'])) ? 'has-error' : ''; ?>">
+            <label class="control-label" for="email">Email</label>
+            <?php if (isset($params['errors']) && !empty($params['errors']['email'])): ?>
+                <span class="help-block"><?php echo $params['errors']['email'][0]?></span>
+            <?php endif; ?>
+            <input type="email" id="email" class="form-control" placeholder="Email" name="email" value="<?php echo $params['email'] ?>" autofocus/>
+        </div>
+
+        <div class="form-group <?php echo (isset($params['errors']) && !empty($params['errors']['password'])) ? 'has-error' : '' ?>">
+            <label class="control-label" for="password">Пароль</label>
+            <?php if (isset($params['errors']) && !empty($params['errors']['password'])): ?>
+                <span class="help-block"><?php echo $params['errors']['password'][0]?></span>
+            <?php endif; ?>
+            <input type="password" id="password" class="form-control" placeholder="Пароль" name="password" />
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" name="submit" value="Login">Войти</button>
+    </form>
+    <div class="form-signin">
+
+    </div>
+</div>
+<?php include(__DIR__ . '/../footer.html'); ?>

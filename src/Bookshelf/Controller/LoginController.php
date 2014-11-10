@@ -2,8 +2,18 @@
 
 namespace Bookshelf\Controller;
 
+use Bookshelf\Core\Logger\Logger;
+use Bookshelf\Core\Request;
+use Bookshelf\Core\Validation\Constraint\EmailConstraint;
+use Bookshelf\Core\Validation\Constraint\AlphabeticalConstraint;
 use Bookshelf\Core\Session;
 use Bookshelf\Core\Templater;
+use Bookshelf\Core\Validation\Constraint\NotBlankConstraint;
+use Bookshelf\Core\Validation\Constraint\ConfirmConstraint;
+use Bookshelf\Core\Validation\Constraint\UniqueConstraint;
+use Bookshelf\Core\Validation\Validator;
+use Bookshelf\Model\User;
+use Bookshelf\Model\ActiveRecord;
 
 /**
  * @author Aleksandr Kolobkov
@@ -11,26 +21,28 @@ use Bookshelf\Core\Templater;
 class LoginController
 {
     /**
-     * @var array temp var for test login function
-     */
-    private $userData = array(
-        'email' => 'Test',
-        'password' => '123',
-    );
-
-    /**
-     * @var var for session class instance
+     * @var Session
      */
     private $session;
 
     /**
      * @var string default name for controller
      */
-    private $controllName='Login';
+    private $controllName = 'Login';
     /**
-     * @var var for Templater class instance
+     * @var Templater
      */
     private $templater;
+
+    /**
+     * @var Request
+     */
+    private $request;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * Function that create templater class instance
@@ -38,45 +50,60 @@ class LoginController
     public function __construct()
     {
         $this->templater = new Templater();
+        $this->request = new Request($_GET, $_POST);
         $this->session = new Session();
+        $this->logger = new Logger('../logs/');
     }
 
     /**
      * Default action for $this class
      */
-    public function defaultAction($param)
+    public function defaultAction()
     {
-        $this->loginAction($param);
+        $this->showLoginForm();
     }
 
     /**
-     * Show html forms for logIn
+     * Search user in Db and set email and firstname in session
      */
     public function loginAction()
     {
-        if ($this->checkLoginData($_POST['email'], $_POST['password'])) {
-            $this->session->set('email', $_POST['email']);
-            $this->templater->show($this->controllName, 'LoginSuccess', ['email' => $this->session->get('email')]);
-        } else {
-            echo 'Oops something wrong';
+        $user = new User;
+        $user->setEmail($this->request->get('email'));
+        $user->setPassword($this->request->get('password'));
+        $errorArray = $this->loginValidate($user);
+        if ($errorArray) {
+            $params = [
+                'email' => $this->request->get('email'),
+                'errors' => $errorArray
+            ];
+
+            return $this->templater->show($this->controllName, 'Form', $params);
         }
+        $user = User::findOneBy(['email' => $this->request->get('email')]);
+        $this->session->set('email', $user->getEmail());
+        $this->session->set('firstname', $user->getFirstName());
+        header("Location: /");
+        exit;
     }
 
     /**
      * Method that create login form on page
      */
-    public function getLoginForm()
+    public function showLoginForm()
     {
-        return $this->templater->render($this->controllName, 'Form', null);
+        return $this->templater->show($this->controllName, 'Form');
     }
 
     /**
-     * In future will return LogOut page
+     * Delete email from session
      */
     public function logoutAction()
     {
-        echo "This is logout page";
         $this->session->delete('email');
+        $this->session->delete('firstname');
+        header("Location: /");
+        exit;
     }
 
     /**
@@ -84,61 +111,102 @@ class LoginController
      */
     public function registerFormAction()
     {
-        $this->templater->show($this->controllName, 'RegisterForm', null);
+        $user = new User();
+        $this->templater->show($this->controllName, 'RegisterForm', ['user' => $user]);
     }
 
     /**
-     * Create register page and storage user data in array( for now)
-     * If passwords don't match recreate register and fill username line with value from last try
+     * Create register page
+     * If found error then recreate register and fill username line with value from last try
      */
     public function registerAction()
     {
-       if ($this->passwordCheck($_POST['password'], $_POST['confirm_password'])) {
-           $this->userData['email'] = $_POST['email'];
-           $this->userData['password'] = $_POST['password'];
-           echo "Welcome {$_POST['email']}";
-       } else {
-           $this->templater->param['loginValue'] = $_POST['email'];
-           $this->templater->show($this->controllName, 'RegisterForm', null);
-       }
-    }
+        $user = new User();
+        $user->setFirstName($this->request->get('firstname'));
+        $user->setEmail($this->request->get('email'));
+        $user->setLastName($this->request->get('lastname'));
+        $user->setPassword($this->request->get('password'));
+        $params['user'] = $user;
 
-    /**
-     * Test function will be deleted in futher for now just show how work Session
-     */
-    public function sessionTestAction()
-    {
-        $email = $this->session->get('email');
-        if (!empty($email)) {
-            $param = ['email' => $this->session->get('email')];
-            $this->templater->show($this->controllName, 'SessionTest', $param);
+        $errorArray = $this->registrationValidate($user);
+        if ($errorArray) {
+            $params['errors'] = $errorArray;
+
+            return $this->templater->show($this->controllName, 'RegisterForm', $params);
+        }
+        if ($user->save()) {
+            $this->session->set('email', $user->getEmail());
+            $this->session->set('firstname', $user->getFirstName());
+            header("Location: /");
+            exit;
         } else {
-            $this->templater->show($this->controllName, 'Form', null);
+            $params['errors']['save_fail'][] = 'На данный момент регистрация не возможна, пожалуйста повторите попытку позднее';
+            $this->logger->emergency('Cant save user in DataBase');
+            return $this->templater->show($this->controllName, 'RegisterForm', $params);
         }
 
     }
 
     /**
-     * Method that check passwords match
+     * Method that used constraints from array for data validate
      *
-     * @param $password
-     * @param $confirmPassword
-     * @return bool
+     * @param $constraints array
+     * @return array
      */
-    private function passwordCheck($password, $confirmPassword)
+    private function validate($constraints)
     {
-        return ($password !== '' && $confirmPassword !== '' && $password === $confirmPassword);
+        $validator = new Validator();
+        foreach ($constraints as $constraint) {
+            $validator->addConstraint($constraint);
+        }
+
+        return $validator->validate();
     }
 
     /**
-     * Method that check if this combination of username and password exist in our BD(in future)
-     *
-     * @param $username
-     * @param $password
-     * @return bool
+     * @param ActiveRecord $model
+     * @return array
      */
-    private function checkLoginData($username, $password)
+    private function loginValidate(ActiveRecord $model)
     {
-        return ($username === $this->userData['email'] && $password === $this->userData['password']);
+        $constraintList = [
+            'emailBlank' => new NotBlankConstraint($model, 'email'),
+            'passwordBlank' => new NotBlankConstraint($model, 'password'),
+        ];
+        $errors = $this->validate($constraintList);
+        if ($errors) {
+            return $errors;
+        }
+
+        $user = User::findOneBy(['email' => $this->request->get('email')]);
+        if ($user) {
+            $constraintList['password'] = new ConfirmConstraint($model, $user->getPassword(), 'password', 'Неверный пароль');
+
+            return $this->validate($constraintList);
+        }
+        $errors['email'][] = 'Пользователя с таким Email не существует';
+
+        return $errors;
+    }
+
+    /**
+     * @param ActiveRecord $model
+     * @return array
+     */
+    private function registrationValidate(ActiveRecord $model)
+    {
+        $constraintList = [
+            'firstnameBlank' => new NotBlankConstraint($model, 'firstname'),
+            'lastnameBlank' => new NotBlankConstraint($model, 'lastname'),
+            'emailBlank' => new NotBlankConstraint($model, 'email'),
+            'passwordBlank' => new NotBlankConstraint($model, 'password'),
+            'firstname' => new AlphabeticalConstraint($model, 'firstname', "Имя должно состоять только из букв"),
+            'lastname' => new AlphabeticalConstraint($model, 'lastname', "Фамилия должна состоять только из букв"),
+            'emailUnique' => new UniqueConstraint($model, 'email'),
+            'emailName' => new EmailConstraint($model, 'email'),
+            'passwordConfirm' => new ConfirmConstraint($model, $this->request->get('confirm_password'), 'password')
+        ];
+
+        return $this->validate($constraintList);
     }
 }

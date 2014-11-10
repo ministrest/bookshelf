@@ -8,7 +8,7 @@ namespace Bookshelf\Core\Logger;
 interface WriterInterface
 {
     /**
-     * Abstract functiob that will write data from logger in file
+     * Abstract function that will write data from logger in file
      *
      * @param $message log message
      * @param $level log level
