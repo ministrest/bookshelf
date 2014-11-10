@@ -68,7 +68,7 @@ class Book extends ActiveRecord
      */
     public function setCategory($category)
     {
-        $this->category = $category;
+        $this->category = Category::find($category);
 
         return $this;
     }
@@ -136,6 +136,17 @@ class Book extends ActiveRecord
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @param int $id
+     * @return Book
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -318,6 +329,17 @@ class Book extends ActiveRecord
         $this->link = $array['link'];
         $this->author = $array['author'];
         $this->id = $array['id'];
-        $this->category = $array['category_id'];
+        $this->category = Category::find($array['category_id']);
+    }
+
+    public static function getAvailableTags()
+    {
+        $books = Book::findAll();
+        $availableTags = [];
+        foreach ($books as $book) {
+            $availableTags[] = $book->getAuthor();
+        }
+
+        return json_encode($availableTags);
     }
 }
