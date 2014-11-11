@@ -35,11 +35,6 @@ table.bookshelf-table td:nth-of-type(2n+1) {
     padding-left: 20px !important;
 }
 
-.navbar-nav>li>a:active{
-    color: #fff;
-    background-color: #000;
-}
-
 .tt-dropdown-menu {
     width: 422px;
     margin-top: 12px;

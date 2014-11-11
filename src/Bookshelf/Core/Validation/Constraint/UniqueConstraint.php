@@ -45,10 +45,9 @@ class UniqueConstraint implements ConstraintInterface
     {
         $getter = 'get' . ucfirst($this->propertyName);
         $value = $this->model->$getter();
-        $resultModel = $this->model->findBy($this->propertyName, $value);
-        $parameterExists = $resultModel->$getter();
+        $resultModel = $this->model->findOneBy([$this->propertyName => $value]);
 
-        if ($parameterExists) {
+        if ($resultModel) {
             if (!$this->model->getId() || ($this->model->getId() && $this->model->getId() != $resultModel->getId())) {
                 $errors[$this->propertyName][] = $this->message;
             }

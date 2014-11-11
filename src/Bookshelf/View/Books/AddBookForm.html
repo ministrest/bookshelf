@@ -1,49 +1,43 @@
-<script src="/js/typeahead.bundle.min.js"></script>
-<script>
-    var tags = <?php echo $param['model']->getAvailableTags();?>;
-</script>
-<script src="/js/typeahead.js"></script>
-
 <form class="form-horizontal" role="form" method="post" action="<?php echo $action; ?>">
-    <div class="form-group <?php echo (isset($param['errors']['name'])) ? ' has-error' : ''; ?>">
+    <div class="form-group <?php echo (isset($params['errors']['name'])) ? ' has-error' : ''; ?>">
 
         <label for="name" class="col-sm-2 control-label">Название * </label>
         <div class="col-sm-10">
             <input type="text" required class="form-control" id="name" name="name"
-                   value="<?php echo $param['model']->getName(); ?>">
-            <?php if (isset($param['errors']['name'])):?>
-                <span class="help-block"> <?php echo $param['errors']['name'][0]; ?> </span>
+                   value="<?php echo $params['model']->getName(); ?>">
+            <?php if (isset($params['errors']['name'])):?>
+                <span class="help-block"> <?php echo $params['errors']['name'][0]; ?> </span>
             <?php endif;?>
         </div>
     </div>
 
-    <div class="form-group <?php echo isset($param['errors']['author']) ? 'has-error' : ''; ?>">
+    <div class="form-group <?php echo isset($params['errors']['author']) ? 'has-error' : ''; ?>">
         <label for="author" class="col-sm-2 control-label">Автор * </label>
         <div class="col-sm-10">
             <input type="text" required class="form-control" id="author" name="author"
-                   value="<?php echo $param['model']->getAuthor(); ?>">
-            <?php if (isset($param['errors']['author'])):?>
-                <span class="help-block"> <?php echo $param['errors']['author'][0]; ?> </span>
+                   value="<?php echo $params['model']->getAuthor(); ?>">
+            <?php if (isset($params['errors']['author'])):?>
+                <span class="help-block"> <?php echo $params['errors']['author'][0]; ?> </span>
             <?php endif;?>
         </div>
     </div>
 
-    <div class="form-group <?php echo isset($param['errors']['category']) ? 'has-error' : ''; ?>">
+    <div class="form-group <?php echo isset($params['errors']['category']) ? 'has-error' : ''; ?>">
         <label for="category" class="col-sm-2 control-label">Категория * </label>
         <div class="col-sm-10">
             <select class="form-control" id="category_id" name="category_id">
-                <?php foreach ($param['categories'] as $category):?>
-                    <option <?php $categoryObject = $param['model']->getCategory();
+                <?php foreach ($params['categories'] as $category):?>
+                    <option <?php $categoryObject = $params['model']->getCategory();
                     if ($categoryObject):
-                        echo ($param['model']->getCategory()->getName() == $category->getName()) ? 'selected' : '';
+                        echo ($params['model']->getCategory()->getName() == $category->getName()) ? 'selected' : '';
                     endif; ?>
                         value="<?php echo $category->getId()?>">
                         <?php echo $category->getName() ?>
                     </option>
                 <?php endforeach; ?>
             </select>
-            <?php if (isset($param['errors']['category'])):?>
-                <span class="help-block"> <?php echo $param['errors']['category'][0]; ?> </span>
+            <?php if (isset($params['errors']['category'])):?>
+                <span class="help-block"> <?php echo $params['errors']['category'][0]; ?> </span>
             <?php endif;?>
         </div>
     </div>
@@ -51,34 +45,34 @@
     <div class="form-group">
         <label for="name" class="col-sm-2 control-label">Аннотация</label>
         <div class="col-sm-10">
-            <textarea class="form-control" id="description" name="description"><?php echo $param['model']->getDescription(); ?></textarea>
+            <textarea class="form-control" id="description" name="description"><?php echo $params['model']->getDescription(); ?></textarea>
         </div>
     </div>
 
-    <div class="form-group <?php echo isset($param['errors']['rating']) ? 'has-error' : ''; ?>">
+    <div class="form-group <?php echo isset($params['errors']['rating']) ? 'has-error' : ''; ?>">
         <label for="name" class="col-sm-2 control-label">Рейтинг</label>
         <div class="col-sm-10">
             <select class="form-control" id="rating" name="rating">
-                <?php foreach ($param['model']->availableValues as $value):?>
-                    <option <?php echo ($param['model']->getRating() == $value) ? 'selected' : ''; ?> >
+                <?php foreach ($params['model']->availableValues as $value):?>
+                    <option <?php echo ($params['model']->getRating() == $value) ? 'selected' : ''; ?> >
                         <?php echo $value?>
                     </option>
                 <?php endforeach; ?>
             </select>
-            <?php if (isset($param['errors']['rating'])):?>
-                <span class="help-block"> <?php echo $param['errors']['rating'][0]; ?> </span>
+            <?php if (isset($params['errors']['rating'])):?>
+                <span class="help-block"> <?php echo $params['errors']['rating'][0]; ?> </span>
             <?php endif;?>
 
         </div>
     </div>
 
-    <div class="form-group <?php echo isset($param['errors']['link']) ? 'has-error' : ''; ?>">
+    <div class="form-group <?php echo isset($params['errors']['link']) ? 'has-error' : ''; ?>">
         <label for="name" class="col-sm-2 control-label">Ссылка</label>
         <div class="col-sm-10">
             <input type="text" class="form-control" id="link" name="link"
-                   value="<?php echo $param['model']->getLink(); ?>">
-            <?php if (isset($param['errors']['link'])):?>
-                <span class="help-block"> <?php echo $param['errors']['link'][0]; ?> </span>
+                   value="<?php echo $params['model']->getLink(); ?>">
+            <?php if (isset($params['errors']['link'])):?>
+                <span class="help-block"> <?php echo $params['errors']['link'][0]; ?> </span>
             <?php endif;?>
         </div>
     </div>
@@ -89,3 +83,9 @@
         </div>
     </div>
 </form>
+
+<script src="/js/typeahead.bundle.min.js"></script>
+<script>
+    var tags = <?php echo $params['availableAuthors'];?>;
+</script>
+<script src="/js/typeahead.js"></script>

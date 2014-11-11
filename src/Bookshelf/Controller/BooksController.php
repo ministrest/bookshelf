@@ -96,7 +96,8 @@ class BooksController
         return $this->templater->show($this->controllerName, 'Add', [
             'errors' => $errors,
             'categories' =>  Category::findAll(),
-            'model' => $book
+            'model' => $book,
+            'availableAuthors' => $this->getAvailableAuthors()
         ]);
     }
 
@@ -117,8 +118,9 @@ class BooksController
 
         return $this->templater->show($this->controllerName, 'Update', [
             'errors' => $errors,
-            'categories' =>  Category::findAll(),
-            'model' => $book
+            'categories' => Category::findAll(),
+            'model' => $book,
+            'availableAuthors' => $this->getAvailableAuthors()
         ]);
     }
 
@@ -127,7 +129,7 @@ class BooksController
         $book = Book::find($this->request->get('id'));
         $book->delete();
 
-        header('Location: /books');
+        return header('Location: /books');
     }
 
     /**
@@ -170,5 +172,16 @@ class BooksController
         $errors = $validator->validate();
 
         return $errors;
+    }
+
+    public static function getAvailableAuthors()
+    {
+        $books = Book::findAll();
+        $availableTags = [];
+        foreach ($books as $book) {
+            $availableTags[] = $book->getAuthor();
+        }
+
+        return json_encode($availableTags);
     }
 }

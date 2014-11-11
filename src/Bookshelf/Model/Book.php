@@ -242,7 +242,7 @@ class Book extends ActiveRecord
         $books = array();
         foreach ($resultArray as $result) {
             $book = new Book();
-            $book->setState($result);
+            $book->initStateFromArray($result);
             $book->category = Category::find($result['category_id']);
             $books[] = $book;
         }
@@ -302,7 +302,7 @@ class Book extends ActiveRecord
      *
      * @return array
      */
-    protected function getState()
+    protected function toArray()
     {
         return [
             'id' => $this->id,
@@ -321,7 +321,7 @@ class Book extends ActiveRecord
      * @param $array
      * @return mixed|void
      */
-    protected function setState($array)
+    protected function initStateFromArray($array)
     {
         $this->name = $array['name'];
         $this->description = $array['description'];
@@ -331,15 +331,5 @@ class Book extends ActiveRecord
         $this->id = $array['id'];
         $this->category = Category::find($array['category_id']);
     }
-
-    public static function getAvailableTags()
-    {
-        $books = Book::findAll();
-        $availableTags = [];
-        foreach ($books as $book) {
-            $availableTags[] = $book->getAuthor();
-        }
-
-        return json_encode($availableTags);
-    }
 }
+
