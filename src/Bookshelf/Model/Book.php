@@ -139,17 +139,6 @@ class Book extends ActiveRecord
     }
 
     /**
-     * @param int $id
-     * @return Book
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getLink()
@@ -332,4 +321,3 @@ class Book extends ActiveRecord
         $this->category = Category::find($array['category_id']);
     }
 }
-

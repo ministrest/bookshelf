@@ -182,6 +182,6 @@ class BooksController
             $availableTags[] = $book->getAuthor();
         }
 
-        return json_encode($availableTags);
+        return $availableTags;
     }
 }

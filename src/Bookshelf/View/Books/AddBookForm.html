@@ -86,6 +86,6 @@
 
 <script src="/js/typeahead.bundle.min.js"></script>
 <script>
-    var tags = <?php echo $params['availableAuthors'];?>;
+    var tags = <?php echo json_encode($params['availableAuthors']);?>;
 </script>
 <script src="/js/typeahead.js"></script>
