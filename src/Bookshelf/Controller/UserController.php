@@ -86,7 +86,7 @@ class UserController
         $user->setEmail($this->request->get('email'));
         $user->setLastName($this->request->get('lastname'));
         $user->setPassword($this->request->get('password'));
-        $errorArray = $this->changeDataValidation($user);
+        $errorArray = $this->validateUserUpdate($user);
 
         $userFromDb = User::findOneBy(['email' => $this->session->get('email')]);
         $userFromDb->getContacts();
@@ -124,7 +124,7 @@ class UserController
         return $validator->validate();
     }
 
-    private function changeDataValidation($user)
+    private function validateUserUpdate($user)
     {
         $constraints = [
             'firstname' => new AlphabeticalConstraint($user, 'firstname', "Имя должно состоять только из букв"),
