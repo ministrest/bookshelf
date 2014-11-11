@@ -96,7 +96,7 @@ class BooksController
         return $this->templater->show($this->controllerName, 'Add', [
             'errors' => $errors,
             'categories' =>  Category::findAll(),
-            'model' => $book,
+            'book' => $book,
             'availableAuthors' => $this->getAvailableAuthors()
         ]);
     }
@@ -119,7 +119,7 @@ class BooksController
         return $this->templater->show($this->controllerName, 'Update', [
             'errors' => $errors,
             'categories' => Category::findAll(),
-            'model' => $book,
+            'book' => $book,
             'availableAuthors' => $this->getAvailableAuthors()
         ]);
     }
@@ -158,7 +158,7 @@ class BooksController
         $nameUnique = new UniqueConstraint($book, 'name');
         $authorNotBlank = new NotBlankConstraint($book, 'author');
         $linkCorrect = new LinkConstraint($book, 'link');
-        $ratingCorrect = new ChoiceConstraint($book, 'rating', $book->availableValues);
+        $ratingCorrect = new ChoiceConstraint($book, 'rating', $book->ratingValues);
         $categoryIsset = new EntityExistsConstraint($book->getCategory(), 'id', 'category');
 
         $validator = new Validator();

@@ -4,7 +4,7 @@
         <label for="name" class="col-sm-2 control-label">Название * </label>
         <div class="col-sm-10">
             <input type="text" required class="form-control" id="name" name="name"
-                   value="<?php echo $params['model']->getName(); ?>">
+                   value="<?php echo $params['book']->getName(); ?>">
             <?php if (isset($params['errors']['name'])):?>
                 <span class="help-block"> <?php echo $params['errors']['name'][0]; ?> </span>
             <?php endif;?>
@@ -15,7 +15,7 @@
         <label for="author" class="col-sm-2 control-label">Автор * </label>
         <div class="col-sm-10">
             <input type="text" required class="form-control" id="author" name="author"
-                   value="<?php echo $params['model']->getAuthor(); ?>">
+                   value="<?php echo $params['book']->getAuthor(); ?>">
             <?php if (isset($params['errors']['author'])):?>
                 <span class="help-block"> <?php echo $params['errors']['author'][0]; ?> </span>
             <?php endif;?>
@@ -27,9 +27,9 @@
         <div class="col-sm-10">
             <select class="form-control" id="category_id" name="category_id">
                 <?php foreach ($params['categories'] as $category):?>
-                    <option <?php $categoryObject = $params['model']->getCategory();
+                    <option <?php $categoryObject = $params['book']->getCategory();
                     if ($categoryObject):
-                        echo ($params['model']->getCategory()->getName() == $category->getName()) ? 'selected' : '';
+                        echo ($params['book']->getCategory()->getName() == $category->getName()) ? 'selected' : '';
                     endif; ?>
                         value="<?php echo $category->getId()?>">
                         <?php echo $category->getName() ?>
@@ -45,7 +45,7 @@
     <div class="form-group">
         <label for="name" class="col-sm-2 control-label">Аннотация</label>
         <div class="col-sm-10">
-            <textarea class="form-control" id="description" name="description"><?php echo $params['model']->getDescription(); ?></textarea>
+            <textarea class="form-control" id="description" name="description"><?php echo $params['book']->getDescription(); ?></textarea>
         </div>
     </div>
 
@@ -53,8 +53,8 @@
         <label for="name" class="col-sm-2 control-label">Рейтинг</label>
         <div class="col-sm-10">
             <select class="form-control" id="rating" name="rating">
-                <?php foreach ($params['model']->availableValues as $value):?>
-                    <option <?php echo ($params['model']->getRating() == $value) ? 'selected' : ''; ?> >
+                <?php foreach ($params['book']->ratingValues as $value):?>
+                    <option <?php echo ($params['book']->getRating() == $value) ? 'selected' : ''; ?> >
                         <?php echo $value?>
                     </option>
                 <?php endforeach; ?>
@@ -70,7 +70,7 @@
         <label for="name" class="col-sm-2 control-label">Ссылка</label>
         <div class="col-sm-10">
             <input type="text" class="form-control" id="link" name="link"
-                   value="<?php echo $params['model']->getLink(); ?>">
+                   value="<?php echo $params['book']->getLink(); ?>">
             <?php if (isset($params['errors']['link'])):?>
                 <span class="help-block"> <?php echo $params['errors']['link'][0]; ?> </span>
             <?php endif;?>

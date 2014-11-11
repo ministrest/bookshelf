@@ -52,7 +52,7 @@ class Book extends ActiveRecord
     /**
      * @var array
      */
-    public $availableValues = [0, 1, 2, 3, 4, 5];
+    public $ratingValues = [0, 1, 2, 3, 4, 5];
 
     /**
      * @return Category
