@@ -81,28 +81,71 @@ class BooksController
 
     public function addAction()
     {
-        $this->request->data['id'] = null;
         $errors = [];
-
-        $categories = Category::findAll();
+        $book = new Book();
 
         if ($this->request->isPost()) {
-            $book = new Book();
-            $book->setName($this->request->get('name'));
-            $book->setAuthor($this->request->get('author'));
-            $book->setCategory(Category::find($this->request->get('category_id')));
-            $book->setDescription($this->request->get('description'));
-            $book->setRating($this->request->get('rating'));
-            $book->setLink($this->request->get('link'));
-
-            $errors = $this->validate($book);
+            $errors = $this->fillAndValidate($book);
             if (!$errors) {
                 $book->save();
-                return $this->defaultAction();
+
+                return header('Location: /books');
             }
         }
 
-        return $this->templater->show($this->controllerName, 'Add', ['errors' => $errors, 'categories' => $categories]);
+        return $this->templater->show($this->controllerName, 'Add', [
+            'errors' => $errors,
+            'categories' =>  Category::findAll(),
+            'book' => $book,
+            'availableAuthors' => $this->getAvailableAuthors()
+        ]);
+    }
+
+    public function updateAction()
+    {
+        $book = Book::find($this->request->get('id'));
+        $errors = [];
+
+        if ($this->request->isPost()) {
+            $errors = $this->fillAndValidate($book);
+
+            if (!$errors) {
+                $book->save();
+
+                return header('Location: /books');
+            }
+        }
+
+        return $this->templater->show($this->controllerName, 'Update', [
+            'errors' => $errors,
+            'categories' => Category::findAll(),
+            'book' => $book,
+            'availableAuthors' => $this->getAvailableAuthors()
+        ]);
+    }
+
+    public function deleteAction()
+    {
+        $book = Book::find($this->request->get('id'));
+        $book->delete();
+
+        return header('Location: /books');
+    }
+
+    /**
+     * @param Book $book
+     * @return array
+     */
+    private function fillAndValidate(Book $book)
+    {
+        $book->setName($this->request->get('name'));
+        $book->setAuthor($this->request->get('author'));
+        $book->setCategory($this->request->get('category_id'));
+        $book->setDescription($this->request->get('description'));
+        $book->setRating($this->request->get('rating'));
+        $book->setLink($this->request->get('link'));
+
+        return $this->validate($book);
     }
 
     /**
@@ -115,7 +158,7 @@ class BooksController
         $nameUnique = new UniqueConstraint($book, 'name');
         $authorNotBlank = new NotBlankConstraint($book, 'author');
         $linkCorrect = new LinkConstraint($book, 'link');
-        $ratingCorrect = new ChoiceConstraint($book, 'rating', $book->availableValues);
+        $ratingCorrect = new ChoiceConstraint($book, 'rating', $book->ratingValues);
         $categoryIsset = new EntityExistsConstraint($book->getCategory(), 'id', 'category');
 
         $validator = new Validator();
@@ -129,5 +172,16 @@ class BooksController
         $errors = $validator->validate();
 
         return $errors;
+    }
+
+    public static function getAvailableAuthors()
+    {
+        $books = Book::findAll();
+        $availableTags = [];
+        foreach ($books as $book) {
+            $availableTags[] = $book->getAuthor();
+        }
+
+        return $availableTags;
     }
 }

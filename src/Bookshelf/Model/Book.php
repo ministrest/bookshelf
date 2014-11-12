@@ -52,7 +52,7 @@ class Book extends ActiveRecord
     /**
      * @var array
      */
-    public $availableValues = [0, 1, 2, 3, 4, 5];
+    public $ratingValues = [0, 1, 2, 3, 4, 5];
 
     /**
      * @return Category
@@ -68,7 +68,7 @@ class Book extends ActiveRecord
      */
     public function setCategory($category)
     {
-        $this->category = $category;
+        $this->category = Category::find($category);
 
         return $this;
     }
@@ -231,7 +231,7 @@ class Book extends ActiveRecord
         $books = array();
         foreach ($resultArray as $result) {
             $book = new Book();
-            $book->setState($result);
+            $book->initStateFromArray($result);
             $book->category = Category::find($result['category_id']);
             $books[] = $book;
         }
@@ -291,7 +291,7 @@ class Book extends ActiveRecord
      *
      * @return array
      */
-    protected function getState()
+    protected function toArray()
     {
         return [
             'id' => $this->id,
@@ -310,7 +310,7 @@ class Book extends ActiveRecord
      * @param $array
      * @return mixed|void
      */
-    protected function setState($array)
+    protected function initStateFromArray($array)
     {
         $this->name = $array['name'];
         $this->description = $array['description'];
@@ -318,6 +318,6 @@ class Book extends ActiveRecord
         $this->link = $array['link'];
         $this->author = $array['author'];
         $this->id = $array['id'];
-        $this->category = $array['category_id'];
+        $this->category = Category::find($array['category_id']);
     }
 }

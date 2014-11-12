@@ -1,0 +1,9 @@
+<?php include(__DIR__ . '/../header.html'); ?>
+
+<div class="container">
+    <legend>Редактирование книги</legend>
+    <?php $action = 'update?id=' . $params['book']->getId();
+    include(__DIR__ . '/../Books/AddBookForm.html'); ?>
+</div>
+
+<?php include(__DIR__ . '/../footer.html'); ?>

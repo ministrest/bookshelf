@@ -1,0 +1,91 @@
+<form class="form-horizontal" role="form" method="post" action="<?php echo $action; ?>">
+    <div class="form-group <?php echo (isset($params['errors']['name'])) ? ' has-error' : ''; ?>">
+
+        <label for="name" class="col-sm-2 control-label">Название * </label>
+        <div class="col-sm-10">
+            <input type="text" required class="form-control" id="name" name="name"
+                   value="<?php echo $params['book']->getName(); ?>">
+            <?php if (isset($params['errors']['name'])):?>
+                <span class="help-block"> <?php echo $params['errors']['name'][0]; ?> </span>
+            <?php endif;?>
+        </div>
+    </div>
+
+    <div class="form-group <?php echo isset($params['errors']['author']) ? 'has-error' : ''; ?>">
+        <label for="author" class="col-sm-2 control-label">Автор * </label>
+        <div class="col-sm-10">
+            <input type="text" required class="form-control" id="author" name="author"
+                   value="<?php echo $params['book']->getAuthor(); ?>">
+            <?php if (isset($params['errors']['author'])):?>
+                <span class="help-block"> <?php echo $params['errors']['author'][0]; ?> </span>
+            <?php endif;?>
+        </div>
+    </div>
+
+    <div class="form-group <?php echo isset($params['errors']['category']) ? 'has-error' : ''; ?>">
+        <label for="category" class="col-sm-2 control-label">Категория * </label>
+        <div class="col-sm-10">
+            <select class="form-control" id="category_id" name="category_id">
+                <?php foreach ($params['categories'] as $category):?>
+                    <option <?php $categoryObject = $params['book']->getCategory();
+                    if ($categoryObject):
+                        echo ($params['book']->getCategory()->getName() == $category->getName()) ? 'selected' : '';
+                    endif; ?>
+                        value="<?php echo $category->getId()?>">
+                        <?php echo $category->getName() ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <?php if (isset($params['errors']['category'])):?>
+                <span class="help-block"> <?php echo $params['errors']['category'][0]; ?> </span>
+            <?php endif;?>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="name" class="col-sm-2 control-label">Аннотация</label>
+        <div class="col-sm-10">
+            <textarea class="form-control" id="description" name="description"><?php echo $params['book']->getDescription(); ?></textarea>
+        </div>
+    </div>
+
+    <div class="form-group <?php echo isset($params['errors']['rating']) ? 'has-error' : ''; ?>">
+        <label for="name" class="col-sm-2 control-label">Рейтинг</label>
+        <div class="col-sm-10">
+            <select class="form-control" id="rating" name="rating">
+                <?php foreach ($params['book']->ratingValues as $value):?>
+                    <option <?php echo ($params['book']->getRating() == $value) ? 'selected' : ''; ?> >
+                        <?php echo $value?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <?php if (isset($params['errors']['rating'])):?>
+                <span class="help-block"> <?php echo $params['errors']['rating'][0]; ?> </span>
+            <?php endif;?>
+
+        </div>
+    </div>
+
+    <div class="form-group <?php echo isset($params['errors']['link']) ? 'has-error' : ''; ?>">
+        <label for="name" class="col-sm-2 control-label">Ссылка</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="link" name="link"
+                   value="<?php echo $params['book']->getLink(); ?>">
+            <?php if (isset($params['errors']['link'])):?>
+                <span class="help-block"> <?php echo $params['errors']['link'][0]; ?> </span>
+            <?php endif;?>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        </div>
+    </div>
+</form>
+
+<script src="/js/typeahead.bundle.min.js"></script>
+<script>
+    var tags = <?php echo json_encode($params['availableAuthors']);?>;
+</script>
+<script src="/js/typeahead.js"></script>
