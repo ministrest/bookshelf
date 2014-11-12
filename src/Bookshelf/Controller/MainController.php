@@ -52,7 +52,8 @@ class MainController
      */
     public function defaultAction()
     {
-        $this->indexAction();
+        $book = new BooksController();
+        $book->defaultAction();
     }
 
     /**
@@ -68,7 +69,7 @@ class MainController
             $param = array(
                 "title" => 'Test',
                 "text" => 'This is test so relax and be happy',
-                "menu" => $login->getLoginForm()
+                "menu" => $login->showLoginForm()
             );
             $this->templater->show($this->controllName, $actionName, $param);
         }

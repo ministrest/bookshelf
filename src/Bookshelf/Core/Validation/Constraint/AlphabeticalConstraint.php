@@ -45,7 +45,7 @@ class AlphabeticalConstraint implements ConstraintInterface
     {
         $getter = 'get' . ucfirst($this->propertyName);
         $value = $this->model->$getter();
-        if (!(preg_match_all('/^[a-z]+$/i', $value))) {
+        if (!(preg_match_all('/^[a-zа-яё]+$/iu', $value))) {
             $errors[$this->propertyName][] = $this->message;
         }
     }

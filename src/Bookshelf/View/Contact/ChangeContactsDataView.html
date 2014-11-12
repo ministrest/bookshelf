@@ -2,9 +2,9 @@
 
 <div class="container">
     <div class="col-md-1">
-        <a href="/user/change/?id=<?php echo $params['contact']->getUser()->getId() ?>"><span class="glyphicon glyphicon-chevron-left" style=""></span></a>
+        <a href="/user/show/?id=<?php echo $params['contact']->getUser()->getId() ?>"><span class="glyphicon glyphicon-chevron-left" style=""></span></a>
     </div>
-    <form class="form-signin" action="/contacts/change-data?id=<?php echo $params['contact']->getId()?>" method="post">
+    <form class="form-signin" action="/contacts/change-data?contact_id=<?php echo $params['contact']->getId()?>" method="post">
         <label>Тип контакта</label>
 
         <select  class="form-control" name="contact_type"  required>

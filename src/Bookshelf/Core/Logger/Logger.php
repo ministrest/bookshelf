@@ -5,9 +5,6 @@
 
 namespace Bookshelf\Core\Logger;
 
-
-use Bookshelf\Core\Writer\Writer;
-
 /**
  * Class that construct and send log message to class that will write this message in file
  * All that you ned just create instance of this class than you want create log message and define loglevel

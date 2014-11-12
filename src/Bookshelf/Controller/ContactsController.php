@@ -11,6 +11,7 @@ use Bookshelf\Core\Validation\Constraint\EmailConstraint;
 use Bookshelf\Core\Validation\Constraint\NotBlankConstraint;
 use Bookshelf\Core\Validation\Constraint\PhoneConstraint;
 use Bookshelf\Core\Validation\Validator;
+use InvalidArgumentException;
 
 /**
  * @author Aleksandr Kolobkov
@@ -46,16 +47,24 @@ class ContactsController
     {
         $errors = [];
         $user = User::findOneBy(['id' => $this->request->get('user_id')]);
-        if (!empty($user)) {
-            $contact = $user->createContact($this->request->get('contact_type'), $this->request->get('value'));
-            $errors = $this->checkDataByContactType($contact);
-            if (!$errors) {
-                $contact->save();
-                header("Location: /user/change/?id=" . $contact->getUser()->getId());
-                exit;
+        if ($user) {
+            if ($this->request->get('contact_type')) {
+                try {
+                    $contact = $user->createContact($this->request->get('contact_type'), $this->request->get('value'));
+                    if (!$errors) {
+                        $contact->save();
+                        header("Location: /user/show/?id=" . $contact->getUser()->getId());
+                        exit;
+                    }
+                    $errors = $this->checkDataByContactType($contact);
+                } catch (InvalidArgumentException $e) {
+                    $errors['type'] = ['Данный тип контакта не поддерживается'];
+                }
+            } else {
+                $errors['type'] = ['Это поле не может быть пустым'];
             }
         } else {
-            $errors['contact'] = 'Пользователь с таким id не существует';
+            $errors['contact'] = 'Пользователь не найден';
         }
 
         return $this->templater->show('User', 'ChangeData', ['user' => User::findOneBy(['email' => $this->session->get('email')]), 'errors' => $errors]);
@@ -64,7 +73,7 @@ class ContactsController
     /**
      * Method that show page for change user contact data
      */
-    public function changeContactAction()
+    public function showContactAction()
     {
         $user = User::findOneBy(['email' => $this->session->get('email')]);
         $id = $this->request->get('contact_id');
@@ -74,7 +83,7 @@ class ContactsController
                 return $this->templater->show('Contact', 'ChangeContactsData', ['contact' => $contact]);
             }
         }
-        $errors['contact'] = 'Контакта с данным id не существует';
+        $errors['contact'] = 'Контакт не найден';
 
         return $this->templater->show('User', 'ChangeData', ['user' => $user, 'errors' => $errors]);
     }
@@ -88,19 +97,20 @@ class ContactsController
         $id = $this->request->get('contact_id');
         $contacts = $user->getContacts();
         foreach ($contacts as $contact) {
-            if ($id === $contact->getId()) {
+            if ($id == $contact->getId()) {
+
                 $contact->setType($this->request->get('contact_type'));
                 $contact->setValue($this->request->get('value'));
 
                 $errors = $this->checkDataByContactType($contact);
                 if (!$errors) {
                     $contact->save();
-                    header("Location: /user/change/?id=" . $contact->getUser()->getId());
+                    header("Location: /user/show/?id=" . $contact->getUser()->getId());
                     exit;
                 }
             }
         }
-        $errors['contact'] = 'Контакта с данным id у данного пользователя не существует';
+        $errors['contact'] = 'Контакт не найден';
 
         return $this->templater->show('Contact', 'ChangeContactsData', ['contact' => $contacts[$id], 'errors' => $errors]);
     }
@@ -114,9 +124,9 @@ class ContactsController
         $id = $this->request->get('contact_id');
         $contacts = $user->getContacts();
         foreach ($contacts as $contact) {
-            if ($id === $contact->getId()) {
+            if ($id == $contact->getId()) {
                 $contact->delete();
-                header("Location: /user/change/?id=" . $contact->getUser()->getId());
+                header("Location: /user/show/?id=" . $contact->getUser()->getId());
                 exit;
             }
         }
@@ -134,8 +144,8 @@ class ContactsController
     private function checkDataByContactType(Contact $contact)
     {
         $validator = new Validator();
-        $notBlank = new NotBlankConstraint($contact, 'value');
-        $validator->addConstraint($notBlank);
+        $notBlankValue = new NotBlankConstraint($contact, 'value');
+        $validator->addConstraint($notBlankValue);
         if ($contact->getType() === Contact::EMAIL_TYPE) {
             $email = new EmailConstraint($contact, 'value');
             $validator->addConstraint($email);

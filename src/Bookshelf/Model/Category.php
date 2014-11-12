@@ -58,7 +58,7 @@ class Category extends ActiveRecord
         return 'categories';
     }
 
-    protected function getState()
+    protected function toArray()
     {
         return [
             'id' => $this->id,
@@ -72,7 +72,7 @@ class Category extends ActiveRecord
      * @param $array
      * @return void
      */
-    protected function setState($array)
+    protected function initStateFromArray($array)
     {
         $this->name = $array['name'];
         $this->id = $array['id'];

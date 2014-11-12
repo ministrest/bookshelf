@@ -7,7 +7,7 @@ use Bookshelf\Model\ActiveRecord;
 /**
  * @author Kolobkov Alexsandr
  */
-class PasswordConstraint implements ConstraintInterface
+class ConfirmConstraint implements ConstraintInterface
 {
     /**
      * @var ActiveRecord

@@ -1,21 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
+<?php include(__DIR__ . '/../header.html'); ?>
 
-    <meta charset="UTF-8">
-    <?php foreach($this->getCssFileList() as $value): ?>
-    <link rel="stylesheet" type="text/css" href="<?php echo $value ?>" media="screen">
-    <?php endforeach; ?>
-</head>
-<body>
-<form action="/login/register" method="post">
-    <p>Email: <input type="text" name="email" value="<?php echo $this->param['loginValue'] ?>"/></p>
-    <p>Password<input type="password" name="password" /></p>
-    <p>Confirm Password<input type="password" name="confirm_password" /></p>
-    <input type="submit" name="submit" value="Registration">
-</form>
-<?php foreach($this->getJsFileList() as $value): ?>
-    <script type="text/javascript" src="<?php echo $value ?>"></script>
-<?php endforeach; ?>
-</body>
-</html>
+<div class="container">
+    <form class="form-signin" action="/login/register" method="post">
+        <div class="form-group <?php echo (isset($params['errors']) && !empty($params['errors']['firstname'])) ? 'has-error' : ''; ?>">
+            <label class="control-label" for="firstname">Имя</label>
+            <?php if (isset($params['errors']) && !empty($params['errors']['firstname'])): ?>
+                <span class="help-block"><?php echo $params['errors']['firstname'][0] ?></span>
+            <?php endif; ?>
+            <input type="text" id="firstname" class="form-control" placeholder="Имя" name="firstname" value="<?php echo $params['user']->getFirstName() ?>" required/>
+        </div>
+
+        <div class="form-group <?php echo (isset($params['errors']) && !empty($params['errors']['lastname'])) ? 'has-error' : ''; ?>">
+            <label class="control-label" for="lastname">Фамилия</label>
+            <?php if (isset($params['errors']) && !empty($params['errors']['lastname'])): ?>
+                <span class="help-block"><?php echo $params['errors']['lastname'][0] ?></span>
+            <?php endif; ?>
+            <input type="text" id="lastname" class="form-control" placeholder="Фамилия" name="lastname" value="<?php echo $params['user']->getLastName() ?>" required/>
+        </div>
+
+        <div class="form-group <?php echo (isset($params['errors']) && !empty($params['errors']['email'])) ? 'has-error' : ''; ?>">
+            <label class="control-label" for="email">Email</label>
+            <?php if (isset($params['errors']) && !empty($params['errors']['email'])): ?>
+                <span class="help-block"><?php echo $params['errors']['email'][0] ?></span>
+            <?php endif; ?>
+            <input type="email" id="email" class="form-control" placeholder="Email" name="email" value="<?php echo $params['user']->getEmail() ?>" required/>
+        </div>
+
+        <div class="form-group <?php echo (isset($params['errors']) && !empty($params['errors']['password'])) ? 'has-error' : ''; ?>">
+            <label class="control-label" for="password">Пароль</label>
+            <?php if (isset($params['errors']) && !empty($params['errors']['password'])): ?>
+                <span class="help-block"><?php echo $params['errors']['password'][0] ?></span>
+            <?php endif; ?>
+            <input type="password" id="password" class="form-control" placeholder="Пароль" name="password" required/>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Повторите пароль</label>
+            <input type="password" class="form-control" placeholder="Повторите пароль" name="confirm_password" required/>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" name="submit" value="Registration">Регистрация</button>
+    </form>
+
+</div>
+
+<?php include(__DIR__ . '/../footer.html'); ?>
