@@ -44,7 +44,7 @@
                     <td><?php echo $book->getAuthor() ?></td>
                     <td><?php echo $book->getDescription() ?></td>
                     <td><?php echo $book->getRating() ?></td>
-                    <td><?php echo $book->getCategory() ?></td>
+                    <td><?php echo $book->getCategory()->getName() ?></td>
                     <td><a href="<?php echo $book->getLink() ?>"><span class="glyphicon glyphicon-link"></span></a></td>
                 </tr>
                 <?php endforeach; ?>

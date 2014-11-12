@@ -22,7 +22,7 @@
                     <td><?php echo $contact->getType() ?></td>
                     <td><?php echo $contact->getValue() ?></td>
                     <td>
-                        <a href="/contacts/change-contact/?contact_id=<?php echo $contact->getId() ?>"><button type="submit"><span class="glyphicon glyphicon-pencil"></span></button></a>
+                        <a href="/contacts/show-contact/?contact_id=<?php echo $contact->getId() ?>"><button type="submit"><span class="glyphicon glyphicon-pencil"></span></button></a>
                     </td>
                     <td>
                         <a href="/contacts/delete-contacts-data?contact_id=<?php echo $contact->getId() ?>"> <button type="submit"><span class="glyphicon glyphicon-trash"></span></button></a>
@@ -34,12 +34,17 @@
             </table>
             <form class="form-signin" action="/contacts/add-contact?user_id=<?php echo $params['user']->getId() ?>" method="post">
                 <legend>Тип контакта</legend>
+                <div class="form-group <?php echo (isset($params['errors']['type']) && !empty($params['errors']['type'])) ? 'has-error' : ''; ?>">
+                    <?php if (isset($params['errors']['type']) && !empty($params['errors']['type'])): ?>
+                        <span class="help-block"><?php echo $params['errors']['type'][0] ?></span>
+                    <?php endif; ?>
                 <select  class="form-control" name="contact_type" required>
                     <option selected disabled>Выберите тип контакта</option>
                     <option name="contact_type" value="<?php echo Bookshelf\Model\Contact::SKYPE_TYPE ?>">Skype</option>
                     <option name="contact_type" value="<?php echo Bookshelf\Model\Contact::EMAIL_TYPE ?>">Email</option>
                     <option name="contact_type" value="<?php echo Bookshelf\Model\Contact::PHONE_TYPE ?>">Телефон</option>
                 </select>
+                </div>
                 <div class="form-group <?php echo (isset($params['errors']['value']) && !empty($params['errors']['value'])) ? 'has-error' : ''; ?>">
                     <?php if (isset($params['errors']['value']) && !empty($params['errors']['value'])): ?>
                         <span class="help-block"><?php echo $params['errors']['value'][0] ?></span>

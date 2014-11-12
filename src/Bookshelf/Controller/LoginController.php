@@ -68,6 +68,26 @@ class LoginController
      */
     public function loginAction()
     {
+        $user = User::findOneBy([
+            'email' => $this->request->get('email'),
+            'password' => $this->request->get('password')
+        ]);
+
+        if ($user) {
+            $this->session->set('email', $user->getEmail());
+            $this->session->set('firstname', $user->getFirstName());
+            header("Location: /books");
+            exit;
+        }
+
+        $params = [
+            'email' => $this->request->get('email'),
+            'errors' => ['email' => ['Пользователя нет']]
+        ];
+
+        return $this->templater->show($this->controllName, 'Form', $params);
+
+
         $user = new User;
         $user->setEmail($this->request->get('email'));
         $user->setPassword($this->request->get('password'));
@@ -167,24 +187,24 @@ class LoginController
      * @param ActiveRecord $model
      * @return array
      */
-    private function loginValidate(ActiveRecord $model)
+    private function loginValidate(ActiveRecord $user)
     {
         $constraintList = [
-            'emailBlank' => new NotBlankConstraint($model, 'email'),
-            'passwordBlank' => new NotBlankConstraint($model, 'password'),
+            'emailBlank' => new NotBlankConstraint($user, 'email'),
+            'passwordBlank' => new NotBlankConstraint($user, 'password'),
         ];
+
         $errors = $this->validate($constraintList);
-        if ($errors) {
-            return $errors;
-        }
 
-        $user = User::findOneBy(['email' => $this->request->get('email')]);
-        if ($user) {
-            $constraintList['password'] = new ConfirmConstraint($model, $user->getPassword(), 'password', 'Неверный пароль');
-
-            return $this->validate($constraintList);
+        if (!empty($errors)) {
+            $findUser = User::findOneBy([
+                'email' => $this->request->get('email'),
+                'password' => $this->request->get('password')
+            ]);
+            if (!$findUser) {
+                $errors['email'][] = 'Пользователя не существует';
+            }
         }
-        $errors['email'][] = 'Пользователя с таким Email не существует';
 
         return $errors;
     }
