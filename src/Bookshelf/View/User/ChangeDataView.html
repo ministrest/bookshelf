@@ -54,42 +54,42 @@
                 <legend>Персональные данные</legend>
 
                 <div class="form-group <?php echo (isset($params['errors']) && !empty($params['errors']['firstname'])) ? 'has-error' : ''; ?>">
-                    <label class="control-label" for="firstnameError">Имя</label>
+                    <label class="control-label" for="firstname">Имя</label>
                     <?php if (isset($params['errors']) && !empty($params['errors']['firstname'])): ?>
                         <span class="help-block"><?php echo $params['errors']['firstname'][0] ?></span>
                     <?php endif; ?>
-                    <input type="text" id="firstnameError" class="form-control" placeholder="Имя" name="firstname" value="<?php echo $params['user']->getFirstname() ?>" required/>
+                    <input type="text" id="firstname" class="form-control" placeholder="Имя" name="firstname" value="<?php echo $params['user']->getFirstname() ?>" required/>
                 </div>
 
                 <div class="form-group <?php echo (isset($params['errors']) && !empty($params['errors']['lastname'])) ? 'has-error' : ''; ?>">
-                    <label class="control-label" for="lastnameError">Фамилия</label>
+                    <label class="control-label" for="lastname">Фамилия</label>
                     <?php if (isset($params['errors']) && !empty($params['errors']['lastname'])): ?>
                         <span class="help-block"><?php echo $params['errors']['lastname'][0] ?></span>
                     <?php endif; ?>
-                    <input type="text" id="lastnameError" class="form-control" placeholder="Фамилия" name="lastname" value="<?php echo $params['user']->getLastname()?>" required/>
+                    <input type="text" id="lastname" class="form-control" placeholder="Фамилия" name="lastname" value="<?php echo $params['user']->getLastname()?>" required/>
                 </div>
 
                 <div class="form-group <?php echo (isset($params['errors']) && !empty($params['errors']['email'])) ? 'has-error' : ''; ?>">
-                    <label class="control-label" for="emailError">Email</label>
+                    <label class="control-label" for="email">Email</label>
                     <?php if (isset($params['errors']) && !empty($params['errors']['email'])): ?>
                         <span class="help-block"><?php echo $params['errors']['email'][0] ?></span>
                     <?php endif; ?>
-                    <input type="email" id="emailError" class="form-control" placeholder="Email" name="email" value="<?php echo $params['user']->getEmail()?>" required/>
+                    <input type="email" id="email" class="form-control" placeholder="Email" name="email" value="<?php echo $params['user']->getEmail()?>" required/>
                 </div>
 
                 <label>Вы можете изменить свой пароль, или же оставьте эти поля пустыми</label>
 
                 <div class="form-group <?php echo (isset($params['errors']) && !empty($params['errors']['password'])) ? 'has-error' : ''; ?>">
-                    <label class="control-label" for="passwordError">Пароль</label>
+                    <label class="control-label" for="password">Пароль</label>
                     <?php if (isset($params['errors']) && !empty($params['errors']['password'])): ?>
                         <span class="help-block"><?php echo $params['errors']['password'][0] ?></span>
                     <?php endif; ?>
-                    <input type="password" id="passwordError" class="form-control" placeholder="Пароль" name="password" />
+                    <input type="password" id="password" class="form-control" placeholder="Пароль" name="password" />
                 </div>
 
                 <div class="form-group">
-                    <label class="control-label" for="inputError">Подтвердите пароль</label>
-                    <input type="password" class="form-control" placeholder="Потвердите пароль" name="confirm_password" />
+                    <label class="control-label" for="confirm_password">Подтвердите пароль</label>
+                    <input type="password" id="confirm_password" class="form-control" placeholder="Потвердите пароль" name="confirm_password" />
                 </div>
 
                 <button class="btn btn-lg btn-primary btn-block" type="submit" name="submit" value="Registration">Сохранить</button>
