@@ -6,14 +6,13 @@
 namespace Bookshelf\Controller;
 
 use Bookshelf\Core\Request;
+use Bookshelf\Core\Session;
 use Bookshelf\Core\Templater;
 use Bookshelf\Core\Validation\Constraint\EntityExistsConstraint;
-use Bookshelf\Core\Validation\Constraint\CategoryIssetConstraint;
 use Bookshelf\Core\Validation\Constraint\LinkConstraint;
 use Bookshelf\Core\Validation\Constraint\NotBlankConstraint;
 use Bookshelf\Core\Validation\Constraint\ChoiceConstraint;
 use Bookshelf\Core\Validation\Constraint\UniqueConstraint;
-use Bookshelf\Core\Validation\Constraint\UniqueFieldConstraint;
 use Bookshelf\Core\Validation\Validator;
 use Bookshelf\Model\Book;
 use Bookshelf\Model\Category;
@@ -21,31 +20,12 @@ use Bookshelf\Model\Category;
 /**
  * @author Danil Vasiliev <daniil.vasilev@opensoftdev.ru>
  */
-class BooksController
+class BooksController extends Controller
 {
     /**
      * @var string default name for controller
      */
     private $controllerName = 'Books';
-
-    /**
-     * @var var for Templater class instance
-     */
-    private $templater;
-
-    /**
-     * @var array Request
-     */
-    private $request;
-
-    /**
-     * Magic function that create templater class instance
-     */
-    public function __construct()
-    {
-        $this->templater = new Templater();
-        $this->request = new Request($_GET, $_POST);
-    }
 
     public function defaultAction()
     {
@@ -76,7 +56,7 @@ class BooksController
             $result[$categoryName][] = $book;
         }
 
-        return $this->templater->show($this->controllerName, 'Default', $result);
+        return $this->render($this->controllerName, 'Default', ['books' => $result]);
     }
 
     public function addAction()
@@ -88,12 +68,13 @@ class BooksController
             $errors = $this->fillAndValidate($book);
             if (!$errors) {
                 $book->save();
+                $this->addSuccessMessage('Книга успешно добавлена!');
 
-                return header('Location: /books');
+                $this->redirectTo('/books');
             }
         }
 
-        return $this->templater->show($this->controllerName, 'Add', [
+        return $this->render($this->controllerName, 'Add', [
             'errors' => $errors,
             'categories' =>  Category::findAll(),
             'book' => $book,
@@ -104,32 +85,45 @@ class BooksController
     public function updateAction()
     {
         $book = Book::find($this->request->get('id'));
-        $errors = [];
 
-        if ($this->request->isPost()) {
-            $errors = $this->fillAndValidate($book);
+        if (!$book) {
+            $this->addErrorMessage('Редактируемая книга не найдена!');
 
-            if (!$errors) {
-                $book->save();
+            $this->redirectTo('/books');
+        } else {
+            $errors = [];
+            if ($this->request->isPost()) {
+                $errors = $this->fillAndValidate($book);
 
-                return header('Location: /books');
+                if (!$errors) {
+                    $book->save();
+                    $this->addSuccessMessage('Книга успешно отредактирована!');
+
+                    $this->redirectTo('/books');
+                }
             }
-        }
 
-        return $this->templater->show($this->controllerName, 'Update', [
-            'errors' => $errors,
-            'categories' => Category::findAll(),
-            'book' => $book,
-            'availableAuthors' => $this->getAvailableAuthors()
-        ]);
+            return $this->render($this->controllerName, 'Update', [
+                'errors' => $errors,
+                'categories' => Category::findAll(),
+                'book' => $book,
+                'availableAuthors' => $this->getAvailableAuthors()
+            ]);
+        }
     }
 
     public function deleteAction()
     {
         $book = Book::find($this->request->get('id'));
-        $book->delete();
 
-        return header('Location: /books');
+        if (!$book) {
+            $this->addErrorMessage('Удаляемая книга не найдена!');
+        } else {
+            $book->delete();
+            $this->addSuccessMessage('Книга успешно удалена!');
+        }
+
+        $this->redirectTo('/books');
     }
 
     /**
@@ -174,6 +168,9 @@ class BooksController
         return $errors;
     }
 
+    /**
+     * @return array
+     */
     public static function getAvailableAuthors()
     {
         $books = Book::findAll();
@@ -183,5 +180,21 @@ class BooksController
         }
 
         return $availableTags;
+    }
+
+    /**
+     * @param string $message
+     */
+    private function addErrorMessage($message)
+    {
+        $this->session->addFlashMessage('danger', $message);
+    }
+
+    /**
+     * @param string $message
+     */
+    private function addSuccessMessage($message)
+    {
+        $this->session->addFlashMessage('success', $message);
     }
 }

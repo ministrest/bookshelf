@@ -71,6 +71,7 @@ class UserController
      * Method that show page for change user data
      */
     public function showAction()
+
     {
         $user = User::findOneBy(['id' => $this->request->get('id')]);
         $this->templater->show('User', 'ChangeData', ['user' => $user]);

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Bookshelf\Core;
 
 /**
@@ -33,6 +32,28 @@ class Session
     public function set($name, $value)
     {
         $_SESSION[$name] = $value;
+    }
+
+    /**
+     * @param string $key
+     * @param string $message
+     */
+    public function addFlashMessage($key, $message)
+    {
+        $_SESSION['flashMessages'][$key][] = $message;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFlashMessages()
+    {
+        $messages = [];
+        if (array_key_exists('flashMessages', $_SESSION)) {
+            $messages =  $_SESSION['flashMessages'];
+        }
+
+        return $messages;
     }
 
     /**
