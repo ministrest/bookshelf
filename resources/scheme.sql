@@ -1,3 +1,5 @@
+--- database structure here
+
 CREATE TABLE categories (
 id serial primary key,
 name text NOT NULL
