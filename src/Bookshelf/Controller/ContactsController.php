@@ -16,29 +16,8 @@ use InvalidArgumentException;
 /**
  * @author Aleksandr Kolobkov
  */
-class ContactsController
+class ContactsController extends Controller
 {
-    /**
-     * @var Templater
-     */
-    private $templater;
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
-     * @var Request
-     */
-    private $request;
-
-    public function __construct()
-    {
-        $this->request = new Request($_GET, $_POST);
-        $this->templater = new Templater();
-        $this->session = new Session();
-    }
 
     /**
      * Method that adding contact in base for user
@@ -53,7 +32,7 @@ class ContactsController
                     $contact = $user->createContact($this->request->get('contact_type'), $this->request->get('value'));
                     if (!$errors) {
                         $contact->save();
-                        header("Location: /user/show/?id=" . $contact->getUser()->getId());
+                        $this->redirectTo("/user/show/?id=" . $contact->getUser()->getId());
                         exit;
                     }
                     $errors = $this->checkDataByContactType($contact);
@@ -105,7 +84,7 @@ class ContactsController
                 $errors = $this->checkDataByContactType($contact);
                 if (!$errors) {
                     $contact->save();
-                    header("Location: /user/show/?id=" . $contact->getUser()->getId());
+                    $this->redirectTo("/user/show/?id=" . $contact->getUser()->getId());
                     exit;
                 }
             }
@@ -126,7 +105,7 @@ class ContactsController
         foreach ($contacts as $contact) {
             if ($id == $contact->getId()) {
                 $contact->delete();
-                header("Location: /user/show/?id=" . $contact->getUser()->getId());
+                $this->redirectTo("/user/show/?id=" . $contact->getUser()->getId());
                 exit;
             }
         }

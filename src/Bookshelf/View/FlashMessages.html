@@ -1,8 +1,7 @@
 <div id="flash-messages">
     <?php
     if (isset($params['flashMessages'])):
-
-        foreach($params['flashMessages'] as $type =>  $messages):
+        foreach($params['flashMessages'] as $type => $messages):
             foreach($params['flashMessages'][$type] as $message):
                 ?>
                 <div class="alert alert-<?php echo $type; ?>"><?php echo $message; ?></div>

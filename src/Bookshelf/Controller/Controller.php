@@ -14,7 +14,7 @@ abstract class Controller {
     /**
      * @var var for Logger class instance
      */
-    private $logger;
+    protected $logger;
 
     /**
      * @var var for Templater class instance
@@ -46,15 +46,29 @@ abstract class Controller {
      */
     protected function render($controllerName, $actionName, $params = [])
     {
-        $params['flashMessages'] = $this->session->getFlashMessages();
+        $params['flashMessages'] = $this->session->pullFlashMessages();
         $this->templater->show($controllerName, $actionName, $params);
-        $this->session->delete('flashMessages');
     }
 
-
-    protected  function redirectTo($route)
+    protected  function redirectTo($path)
     {
-        header('Location: ' . $route);
+        header('Location: ' . $path);
         exit;
+    }
+
+    /**
+     * @param string $message
+     */
+    protected function addErrorMessage($message)
+    {
+        $this->session->addFlashMessage('danger', $message);
+    }
+
+    /**
+     * @param string $message
+     */
+    protected function addSuccessMessage($message)
+    {
+        $this->session->addFlashMessage('success', $message);
     }
 }

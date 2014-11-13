@@ -35,23 +35,24 @@ class Session
     }
 
     /**
-     * @param string $key
+     * @param string $type
      * @param string $message
      */
-    public function addFlashMessage($key, $message)
+    public function addFlashMessage($type, $message)
     {
-        $_SESSION['flashMessages'][$key][] = $message;
+        $_SESSION['flashMessages'][$type][] = $message;
     }
 
     /**
      * @return array
      */
-    public function getFlashMessages()
+    public function pullFlashMessages()
     {
         $messages = [];
         if (array_key_exists('flashMessages', $_SESSION)) {
             $messages =  $_SESSION['flashMessages'];
         }
+        $this->delete('flashMessages');
 
         return $messages;
     }

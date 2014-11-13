@@ -18,13 +18,8 @@ use Bookshelf\Model\ActiveRecord;
 /**
  * @author Aleksandr Kolobkov
  */
-class LoginController
+class LoginController extends Controller
 {
-    /**
-     * @var Session
-     */
-    private $session;
-
     /**
      * @var string default name for controller
      */
@@ -32,28 +27,6 @@ class LoginController
     /**
      * @var Templater
      */
-    private $templater;
-
-    /**
-     * @var Request
-     */
-    private $request;
-
-    /**
-     * @var Logger
-     */
-    private $logger;
-
-    /**
-     * Function that create templater class instance
-     */
-    public function __construct()
-    {
-        $this->templater = new Templater();
-        $this->request = new Request($_GET, $_POST);
-        $this->session = new Session();
-        $this->logger = new Logger('../logs/');
-    }
 
     /**
      * Default action for $this class
@@ -76,7 +49,7 @@ class LoginController
         if ($user) {
             $this->session->set('email', $user->getEmail());
             $this->session->set('firstname', $user->getFirstName());
-            header("Location: /books");
+            $this->redirectTo("/books");
             exit;
         }
 
@@ -103,7 +76,7 @@ class LoginController
         $user = User::findOneBy(['email' => $this->request->get('email')]);
         $this->session->set('email', $user->getEmail());
         $this->session->set('firstname', $user->getFirstName());
-        header("Location: /");
+        $this->redirectTo("/");
         exit;
     }
 
@@ -122,7 +95,7 @@ class LoginController
     {
         $this->session->delete('email');
         $this->session->delete('firstname');
-        header("Location: /");
+        $this->redirectTo("/");
         exit;
     }
 
@@ -157,7 +130,7 @@ class LoginController
         if ($user->save()) {
             $this->session->set('email', $user->getEmail());
             $this->session->set('firstname', $user->getFirstName());
-            header("Location: /");
+            $this->redirectTo("/");
             exit;
         } else {
             $params['errors']['save_fail'][] = 'На данный момент регистрация не возможна, пожалуйста повторите попытку позднее';

@@ -88,9 +88,8 @@ class BooksController extends Controller
 
         if (!$book) {
             $this->addErrorMessage('Редактируемая книга не найдена!');
-
             $this->redirectTo('/books');
-        } else {
+        }
             $errors = [];
             if ($this->request->isPost()) {
                 $errors = $this->fillAndValidate($book);
@@ -109,7 +108,6 @@ class BooksController extends Controller
                 'book' => $book,
                 'availableAuthors' => $this->getAvailableAuthors()
             ]);
-        }
     }
 
     public function deleteAction()
@@ -180,21 +178,5 @@ class BooksController extends Controller
         }
 
         return $availableTags;
-    }
-
-    /**
-     * @param string $message
-     */
-    private function addErrorMessage($message)
-    {
-        $this->session->addFlashMessage('danger', $message);
-    }
-
-    /**
-     * @param string $message
-     */
-    private function addSuccessMessage($message)
-    {
-        $this->session->addFlashMessage('success', $message);
     }
 }
