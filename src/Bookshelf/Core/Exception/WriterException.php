@@ -6,7 +6,7 @@
  * Time: 12:18
  */
 
-namespace Bookshelf\Core\Logger;
+namespace Bookshelf\Core\Exception;
 
 use Exception;
 
