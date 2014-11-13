@@ -5,7 +5,24 @@
         }
     },
 
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "pqr/typehead",
+                "version": "1.2.3",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/twitter/typeahead.js",
+                    "reference": "master"
+                }
+            }
+        }
+    ],
+
     "require": {
-        "twbs/bootstrap": "3.2.*@dev"
+        "twbs/bootstrap": "3.2.*@dev",
+        "pqr/typehead":"1.2.3"
     }
+
 }

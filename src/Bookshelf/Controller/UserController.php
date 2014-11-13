@@ -17,39 +17,8 @@ use Bookshelf\Core\Validation\Validator;
 /**
  * @author Aleksandr Kolobkov
  */
-class UserController
+class UserController extends Controller
 {
-    /**
-     * Property for templater class instance
-     *
-     * @var Templater
-     */
-    private $templater;
-
-    /**
-     * Property for session class instance
-     *
-     * @var Session
-     */
-    private $session;
-
-    /**
-     * @var Request
-     */
-    private $request;
-
-    private $logger;
-
-    /**
-     * Method that create templater and session class instance then execute
-     */
-    public function __construct()
-    {
-        $this->logger = new Logger('../logs/');
-        $this->session = new Session();
-        $this->templater = new Templater();
-        $this->request = new Request($_GET, $_POST);
-    }
 
     /**
      * Default method that show user account page
@@ -62,7 +31,7 @@ class UserController
             $user->getContacts();
             $this->templater->show('User', 'AccountPage', $user);
         } else {
-            header("Location: /login");
+            $this->redirectTo("/login");
             exit;
         }
     }
@@ -71,6 +40,7 @@ class UserController
      * Method that show page for change user data
      */
     public function showAction()
+
     {
         $user = User::findOneBy(['id' => $this->request->get('id')]);
         $this->templater->show('User', 'ChangeData', ['user' => $user]);
@@ -100,7 +70,7 @@ class UserController
         $this->session->set('email', $this->request->get('email'));
         $this->session->set('firstname', $this->request->get('firstname'));
         if ($user->save()) {
-            header("Location: /user");
+            $this->redirectTo("/user");
             exit;
         } else {
             $params['errors']['save_fail'][] = 'Произошёл сбой при попытке сменить данные пользователя. Пожалуйста повторите попытку позднее';

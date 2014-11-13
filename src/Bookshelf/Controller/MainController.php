@@ -10,42 +10,12 @@ use Exception;
 /**
  * @author Aleksandr Kolobkov
  */
-class MainController
+class MainController extends Controller
 {
     /**
      * @var string default name for controller
      */
-    private $controllName = 'Main';
-
-    /**
-     * @var var for templater instance
-     */
-    private $templater;
-
-    /**
-     * @var var for Logger class instance
-     */
-    private $logger;
-
-    /**
-     * @var var for Session class instance
-     */
-    private $session;
-
-    /**
-     * Function that create templater and session instance
-     */
-    public function __construct()
-    {
-        $this->logger= new Logger('../logs/');
-        $this->session = new Session();
-        try {
-            $this->templater = new Templater();
-        } catch (TemplaterException $e) {
-            $this->logger->error("Can't create templater in MainController. Reason: $e");
-            throw new Exception ('Controller error');
-        }
-    }
+    private $controllerName = 'Main';
 
     /**
      * Return default action for $this controller
@@ -62,7 +32,7 @@ class MainController
     public function indexAction()
     {
         if ($this->session->get('logInStatus', 0) === 1) {
-            $this->templater->show($this->controllName, 'AccountPage', ['name' => $this->session->get('email')]);
+            $this->templater->show($this->controllerName, 'AccountPage', ['name' => $this->session->get('email')]);
         } else {
             $login = new LoginController();
             $actionName = 'index';
@@ -71,7 +41,7 @@ class MainController
                 "text" => 'This is test so relax and be happy',
                 "menu" => $login->showLoginForm()
             );
-            $this->templater->show($this->controllName, $actionName, $param);
+            $this->templater->show($this->controllerName, $actionName, $param);
         }
     }
 }
