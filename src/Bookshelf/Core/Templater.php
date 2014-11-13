@@ -4,6 +4,7 @@ namespace Bookshelf\Core;
 
 use Bookshelf\Core\Logger\Logger;
 use Exception;
+use Bookshelf\Core\Exception\TemplaterException;
 
 /**
  * @author Aleksandr Kolobkov

@@ -5,6 +5,8 @@
 
 namespace Bookshelf\Core\Logger;
 
+use Bookshelf\Core\Exception\WriterException;
+
 /**
  * Class write log message in file
  */
