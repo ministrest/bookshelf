@@ -1,6 +1,6 @@
 <?php
 
-namespace Bookshelf\Core;
+namespace Bookshelf\Core\Exception;
 
 use Exception;
 

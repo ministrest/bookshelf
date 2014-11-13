@@ -5,7 +5,7 @@ namespace Bookshelf\Controller;
 use Bookshelf\Core\Logger\Logger;
 use Bookshelf\Core\Session;
 use Bookshelf\Core\Templater;
-use Bookshelf\Core\TemplaterException;
+use Bookshelf\Core\Exception\TemplaterException;
 use Exception;
 /**
  * @author Aleksandr Kolobkov
