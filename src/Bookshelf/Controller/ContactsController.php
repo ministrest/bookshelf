@@ -2,9 +2,6 @@
 
 namespace Bookshelf\Controller;
 
-use Bookshelf\Core\Request;
-use Bookshelf\Core\Session;
-use Bookshelf\Core\Templater;
 use Bookshelf\Model\User;
 use Bookshelf\Model\Contact;
 use Bookshelf\Core\Validation\Constraint\EmailConstraint;

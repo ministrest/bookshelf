@@ -2,10 +2,6 @@
 
 namespace Bookshelf\Controller;
 
-use Bookshelf\Core\Logger\Logger;
-use Bookshelf\Core\Request;
-use Bookshelf\Core\Session;
-use Bookshelf\Core\Templater;
 use Bookshelf\Model\User;
 use Bookshelf\Core\Validation\Constraint\EmailConstraint;
 use Bookshelf\Core\Validation\Constraint\AlphabeticalConstraint;
@@ -19,7 +15,6 @@ use Bookshelf\Core\Validation\Validator;
  */
 class UserController extends Controller
 {
-
     /**
      * Default method that show user account page
      */
@@ -94,6 +89,10 @@ class UserController extends Controller
         return $validator->validate();
     }
 
+    /**
+     * @param User $user
+     * @return array
+     */
     private function validateUserUpdate($user)
     {
         $constraints = [
@@ -109,6 +108,10 @@ class UserController extends Controller
         return $this->validate($constraints);
     }
 
+    /**
+     * @param User $userFromDb
+     * @return string
+     */
     private function changePassword($userFromDb)
     {
         $confirmPassword = $this->request->get('confirm_password');

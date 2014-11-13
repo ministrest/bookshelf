@@ -2,12 +2,8 @@
 
 namespace Bookshelf\Controller;
 
-use Bookshelf\Core\Logger\Logger;
-use Bookshelf\Core\Request;
 use Bookshelf\Core\Validation\Constraint\EmailConstraint;
 use Bookshelf\Core\Validation\Constraint\AlphabeticalConstraint;
-use Bookshelf\Core\Session;
-use Bookshelf\Core\Templater;
 use Bookshelf\Core\Validation\Constraint\NotBlankConstraint;
 use Bookshelf\Core\Validation\Constraint\ConfirmConstraint;
 use Bookshelf\Core\Validation\Constraint\UniqueConstraint;
@@ -23,16 +19,18 @@ class LoginController extends Controller
     /**
      * @var string default name for controller
      */
-    private $controllName = 'Login';
-    /**
-     * @var Templater
-     */
+    private $controllerName = 'Login';
 
     /**
      * Default action for $this class
      */
     public function defaultAction()
     {
+        if ($this->session->get('email')) {
+            $this->redirectTo('/books');
+            exit;
+        }
+
         $this->showLoginForm();
     }
 
@@ -45,7 +43,6 @@ class LoginController extends Controller
             'email' => $this->request->get('email'),
             'password' => $this->request->get('password')
         ]);
-
         if ($user) {
             $this->session->set('email', $user->getEmail());
             $this->session->set('firstname', $user->getFirstName());
@@ -58,26 +55,7 @@ class LoginController extends Controller
             'errors' => ['email' => ['Пользователя нет']]
         ];
 
-        return $this->templater->show($this->controllName, 'Form', $params);
-
-
-        $user = new User;
-        $user->setEmail($this->request->get('email'));
-        $user->setPassword($this->request->get('password'));
-        $errorArray = $this->loginValidate($user);
-        if ($errorArray) {
-            $params = [
-                'email' => $this->request->get('email'),
-                'errors' => $errorArray
-            ];
-
-            return $this->templater->show($this->controllName, 'Form', $params);
-        }
-        $user = User::findOneBy(['email' => $this->request->get('email')]);
-        $this->session->set('email', $user->getEmail());
-        $this->session->set('firstname', $user->getFirstName());
-        $this->redirectTo("/");
-        exit;
+        return $this->templater->show($this->controllerName, 'Form', $params);
     }
 
     /**
@@ -85,7 +63,7 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
-        return $this->templater->show($this->controllName, 'Form');
+        return $this->templater->show($this->controllerName, 'Form');
     }
 
     /**
@@ -105,7 +83,7 @@ class LoginController extends Controller
     public function registerFormAction()
     {
         $user = new User();
-        $this->templater->show($this->controllName, 'RegisterForm', ['user' => $user]);
+        $this->templater->show($this->controllerName, 'RegisterForm', ['user' => $user]);
     }
 
     /**
@@ -125,7 +103,7 @@ class LoginController extends Controller
         if ($errorArray) {
             $params['errors'] = $errorArray;
 
-            return $this->templater->show($this->controllName, 'RegisterForm', $params);
+            return $this->templater->show($this->controllerName, 'RegisterForm', $params);
         }
         if ($user->save()) {
             $this->session->set('email', $user->getEmail());
@@ -135,7 +113,7 @@ class LoginController extends Controller
         } else {
             $params['errors']['save_fail'][] = 'На данный момент регистрация не возможна, пожалуйста повторите попытку позднее';
             $this->logger->emergency('Cant save user in DataBase');
-            return $this->templater->show($this->controllName, 'RegisterForm', $params);
+            return $this->templater->show($this->controllerName, 'RegisterForm', $params);
         }
 
     }
@@ -157,47 +135,21 @@ class LoginController extends Controller
     }
 
     /**
-     * @param ActiveRecord $model
+     * @param User $user
      * @return array
      */
-    private function loginValidate(ActiveRecord $user)
+    private function registrationValidate(ActiveRecord $user)
     {
         $constraintList = [
+            'firstnameBlank' => new NotBlankConstraint($user, 'firstname'),
+            'lastnameBlank' => new NotBlankConstraint($user, 'lastname'),
             'emailBlank' => new NotBlankConstraint($user, 'email'),
             'passwordBlank' => new NotBlankConstraint($user, 'password'),
-        ];
-
-        $errors = $this->validate($constraintList);
-
-        if (!empty($errors)) {
-            $findUser = User::findOneBy([
-                'email' => $this->request->get('email'),
-                'password' => $this->request->get('password')
-            ]);
-            if (!$findUser) {
-                $errors['email'][] = 'Пользователя не существует';
-            }
-        }
-
-        return $errors;
-    }
-
-    /**
-     * @param ActiveRecord $model
-     * @return array
-     */
-    private function registrationValidate(ActiveRecord $model)
-    {
-        $constraintList = [
-            'firstnameBlank' => new NotBlankConstraint($model, 'firstname'),
-            'lastnameBlank' => new NotBlankConstraint($model, 'lastname'),
-            'emailBlank' => new NotBlankConstraint($model, 'email'),
-            'passwordBlank' => new NotBlankConstraint($model, 'password'),
-            'firstname' => new AlphabeticalConstraint($model, 'firstname', "Имя должно состоять только из букв"),
-            'lastname' => new AlphabeticalConstraint($model, 'lastname', "Фамилия должна состоять только из букв"),
-            'emailUnique' => new UniqueConstraint($model, 'email'),
-            'emailName' => new EmailConstraint($model, 'email'),
-            'passwordConfirm' => new ConfirmConstraint($model, $this->request->get('confirm_password'), 'password')
+            'firstname' => new AlphabeticalConstraint($user, 'firstname', "Имя должно состоять только из букв"),
+            'lastname' => new AlphabeticalConstraint($user, 'lastname', "Фамилия должна состоять только из букв"),
+            'emailUnique' => new UniqueConstraint($user, 'email'),
+            'emailName' => new EmailConstraint($user, 'email'),
+            'passwordConfirm' => new ConfirmConstraint($user, $this->request->get('confirm_password'), 'password')
         ];
 
         return $this->validate($constraintList);

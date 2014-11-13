@@ -8,6 +8,7 @@
     <h4>Фамилия: <?php echo $params->getLastname() ?></h4>
     <h4>Email: <?php echo $params->getEmail() ?></h4>
     <div class="row">
+        <?php if ($params->getContacts()): ?>
         <div class="col-md-4">
             <table class="table">
                 <thead>
@@ -16,15 +17,17 @@
                 </tr>
                 </thead>
                 <tbody>
-                <?php foreach($params->getContacts() as $contact):?>
-                <tr>
-                    <td><?php echo $contact->getType() ?></td>
-                    <td><?php echo $contact->getValue() ?></td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach($params->getContacts() as $contact):?>
+                        <tr>
+                            <td><?php echo $contact->getType() ?></td>
+                            <td><?php echo $contact->getValue() ?></td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
+        <?php endif; ?>
+        <?php if ($params->getBooks()): ?>
         <div class="col-md-8">
             <table class="table">
                 <thead>
@@ -38,19 +41,20 @@
                 </tr>
                 </thead>
                 <tbody>
-                <?php foreach($params->getBooks() as $book):?>
-                <tr>
-                    <td><?php echo $book->getName() ?></td>
-                    <td><?php echo $book->getAuthor() ?></td>
-                    <td><?php echo $book->getDescription() ?></td>
-                    <td><?php echo $book->getRating() ?></td>
-                    <td><?php echo $book->getCategory()->getName() ?></td>
-                    <td><a href="<?php echo $book->getLink() ?>"><span class="glyphicon glyphicon-link"></span></a></td>
-                </tr>
-                <?php endforeach; ?>
+                    <?php foreach($params->getBooks() as $book):?>
+                        <tr>
+                            <td><?php echo $book->getName() ?></td>
+                            <td><?php echo $book->getAuthor() ?></td>
+                            <td><?php echo $book->getDescription() ?></td>
+                            <td><?php echo $book->getRating() ?></td>
+                            <td><?php echo $book->getCategory()->getName() ?></td>
+                            <td><a href="<?php echo $book->getLink() ?>"><span class="glyphicon glyphicon-link"></span></a></td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
+    <?php endif; ?>
     </div>
     <div>
         <a style="font-size: large" href="/user/show/?id=<?php echo $params->getId()?>">Изменить свои данные</a>
