@@ -212,7 +212,8 @@ class Book extends ActiveRecord
     {
         $db = Db::getInstance();
         $tableBooks = $this->getTableName();
-        $tableCategories = Category::getTableName();
+        $category = new Category();
+        $tableCategories = $category->getTableName();
 
         list($searchCondition, $searchValues) = $this->combineSearchCondition($searchParameters);
         $orderCondition = $this->combineOrderByCondition($orderBy);
