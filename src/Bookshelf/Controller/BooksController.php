@@ -5,9 +5,6 @@
 
 namespace Bookshelf\Controller;
 
-use Bookshelf\Core\Request;
-use Bookshelf\Core\Session;
-use Bookshelf\Core\Templater;
 use Bookshelf\Core\Validation\Constraint\EntityExistsConstraint;
 use Bookshelf\Core\Validation\Constraint\LinkConstraint;
 use Bookshelf\Core\Validation\Constraint\NotBlankConstraint;

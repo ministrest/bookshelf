@@ -6,6 +6,7 @@
             <a href="/user"><span class="glyphicon glyphicon-chevron-left"></span></a>
         </div>
         <div class="col-md-5">
+            <?php if ($params['user']->getContacts()): ?>
             <table class="table">
                 <thead>
                 <tr>
@@ -32,6 +33,7 @@
 
                 </tbody>
             </table>
+            <?php endif; ?>
             <form class="form-signin" action="/contacts/add-contact?user_id=<?php echo $params['user']->getId() ?>" method="post">
                 <legend>Тип контакта</legend>
                 <div class="form-group <?php echo (isset($params['errors']['type']) && !empty($params['errors']['type'])) ? 'has-error' : ''; ?>">
