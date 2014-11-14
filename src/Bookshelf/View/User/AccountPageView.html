@@ -1,14 +1,14 @@
 <?php include(__DIR__ . '/../header.html'); ?>
-
+<?php $user = $params['user'];?>
 <div class="container">
     <div class="page-header">
-        <h3>Это ваша страница, <?php echo $params->getFirstname()?></h3>
+        <h3>Это ваша страница, <?php echo $user->getFirstname()?></h3>
     </div>
-    <h4>Имя: <?php echo $params->getFirstname() ?></h4>
-    <h4>Фамилия: <?php echo $params->getLastname() ?></h4>
-    <h4>Email: <?php echo $params->getEmail() ?></h4>
+    <h4>Имя: <?php echo $user->getFirstname() ?></h4>
+    <h4>Фамилия: <?php echo $user->getLastname() ?></h4>
+    <h4>Email: <?php echo $user->getEmail() ?></h4>
     <div class="row">
-        <?php if ($params->getContacts()): ?>
+        <?php if ($user->getContacts()): ?>
         <div class="col-md-4">
             <table class="table">
                 <thead>
@@ -17,7 +17,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                    <?php foreach($params->getContacts() as $contact):?>
+                    <?php foreach($user->getContacts() as $contact):?>
                         <tr>
                             <td><?php echo $contact->getType() ?></td>
                             <td><?php echo $contact->getValue() ?></td>
@@ -27,7 +27,7 @@
             </table>
         </div>
         <?php endif; ?>
-        <?php if ($params->getBooks()): ?>
+        <?php if ($user->getBooks()): ?>
         <div class="col-md-8">
             <table class="table">
                 <thead>
@@ -41,7 +41,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                    <?php foreach($params->getBooks() as $book):?>
+                    <?php foreach($user->getBooks() as $book):?>
                         <tr>
                             <td><?php echo $book->getName() ?></td>
                             <td><?php echo $book->getAuthor() ?></td>
@@ -57,7 +57,7 @@
     <?php endif; ?>
     </div>
     <div>
-        <a style="font-size: large" href="/user/show/?id=<?php echo $params->getId()?>">Изменить свои данные</a>
+        <a style="font-size: large" href="/user/show/?id=<?php echo $user->getId()?>">Изменить свои данные</a>
     </div>
 </div>
 

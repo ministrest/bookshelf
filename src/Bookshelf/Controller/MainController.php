@@ -13,6 +13,5 @@ class MainController extends Controller
     public function defaultAction()
     {
         $this->redirectTo('/books');
-        exit;
     }
 }

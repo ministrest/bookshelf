@@ -30,7 +30,6 @@ class ContactsController extends Controller
                     if (!$errors) {
                         $contact->save();
                         $this->redirectTo("/user/show/?id=" . $contact->getUser()->getId());
-                        exit;
                     }
                     $errors = $this->checkDataByContactType($contact);
                 } catch (InvalidArgumentException $e) {
@@ -43,7 +42,7 @@ class ContactsController extends Controller
             $errors['contact'] = 'Пользователь не найден';
         }
 
-        return $this->templater->show('User', 'ChangeData', ['user' => User::findOneBy(['email' => $this->session->get('email')]), 'errors' => $errors]);
+        return $this->render('User', 'ChangeData', ['user' => User::findOneBy(['email' => $this->session->get('email')]), 'errors' => $errors]);
     }
 
     /**
@@ -56,12 +55,12 @@ class ContactsController extends Controller
         $contacts = $user->getContacts();
         foreach ($contacts as $contact) {
             if ($id == $contact->getId()) {
-                return $this->templater->show('Contact', 'ChangeContactsData', ['contact' => $contact]);
+                return $this->render('Contact', 'ChangeContactsData', ['contact' => $contact]);
             }
         }
         $errors['contact'] = 'Контакт не найден';
 
-        return $this->templater->show('User', 'ChangeData', ['user' => $user, 'errors' => $errors]);
+        return $this->render('User', 'ChangeData', ['user' => $user, 'errors' => $errors]);
     }
 
     /**
@@ -82,13 +81,12 @@ class ContactsController extends Controller
                 if (!$errors) {
                     $contact->save();
                     $this->redirectTo("/user/show/?id=" . $contact->getUser()->getId());
-                    exit;
                 }
             }
         }
         $errors['contact'] = 'Контакт не найден';
 
-        return $this->templater->show('Contact', 'ChangeContactsData', ['contact' => $contacts[$id], 'errors' => $errors]);
+        return $this->render('Contact', 'ChangeContactsData', ['contact' => $contacts[$id], 'errors' => $errors]);
     }
 
     /**
@@ -103,12 +101,11 @@ class ContactsController extends Controller
             if ($id == $contact->getId()) {
                 $contact->delete();
                 $this->redirectTo("/user/show/?id=" . $contact->getUser()->getId());
-                exit;
             }
         }
         $errors['contact'] = 'Немогу удалить несуществующий контакт';
 
-        return $this->templater->show('User', 'ChangeData', ['user' => $user, 'errors' => $errors]);
+        return $this->render('User', 'ChangeData', ['user' => $user, 'errors' => $errors]);
     }
 
     /**

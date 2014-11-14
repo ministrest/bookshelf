@@ -24,10 +24,9 @@ class UserController extends Controller
         if (!empty($email)) {
             $user = User::findOneBy(['email' => $email]);
             $user->getContacts();
-            $this->templater->show('User', 'AccountPage', $user);
+            $this->render('User', 'AccountPage', ['user' => $user]);
         } else {
             $this->redirectTo("/login");
-            exit;
         }
     }
 
@@ -35,10 +34,9 @@ class UserController extends Controller
      * Method that show page for change user data
      */
     public function showAction()
-
     {
         $user = User::findOneBy(['id' => $this->request->get('id')]);
-        $this->templater->show('User', 'ChangeData', ['user' => $user]);
+        $this->render('User', 'ChangeData', ['user' => $user]);
     }
 
     /**
@@ -60,17 +58,16 @@ class UserController extends Controller
         if ($errorArray) {
             $params['user'] = $userFromDb;
             $params['errors'] = $errorArray;
-            $this->templater->show('User', 'ChangeData', $params);
+            $this->render('User', 'ChangeData', $params);
         }
         $this->session->set('email', $this->request->get('email'));
         $this->session->set('firstname', $this->request->get('firstname'));
         if ($user->save()) {
             $this->redirectTo("/user");
-            exit;
         } else {
             $params['errors']['save_fail'][] = 'Произошёл сбой при попытке сменить данные пользователя. Пожалуйста повторите попытку позднее';
             $this->logger->emergency('Cant save user in DataBase');
-            return $this->templater->show('User', 'ChangeData', $params);
+            return $this->render('User', 'ChangeData', $params);
         }
     }
 
@@ -90,6 +87,8 @@ class UserController extends Controller
     }
 
     /**
+     * Method that validate user information then user trying update his data
+     *
      * @param User $user
      * @return array
      */
@@ -109,6 +108,9 @@ class UserController extends Controller
     }
 
     /**
+     * Method that return old password if passwords forms empty,
+     * else return new password that was input in forms
+     *
      * @param User $userFromDb
      * @return string
      */
