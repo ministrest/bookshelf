@@ -91,17 +91,13 @@ abstract class ActiveRecord
      * @param bool $isReturn
      * @return bool
      */
-    public function save($isReturn = false)
+    public function save()
     {
         try {
             $instanceState = $this->toArray();
             if (empty($instanceState['id'])) {
                 unset($instanceState['id']);
-                if ($isReturn) {
-                    $this->initStateFromArray(Db::getInstance()->insert($this->getTableName(), $instanceState, true));
-                } else {
-                    Db::getInstance()->insert($this->getTableName(), $instanceState);
-                }
+                $this->initStateFromArray(Db::getInstance()->insert($this->getTableName(), $instanceState));
             } else {
                 Db::getInstance()->update($this->getTableName(), $instanceState, ['id' => $instanceState['id']]);
             }
