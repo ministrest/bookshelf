@@ -88,7 +88,6 @@ abstract class ActiveRecord
     /**
      * Method that insert data in database if $id empty, if $id not empty will update data
      *
-     * @param bool $isReturn
      * @return bool
      */
     public function save()
@@ -97,7 +96,8 @@ abstract class ActiveRecord
             $instanceState = $this->toArray();
             if (empty($instanceState['id'])) {
                 unset($instanceState['id']);
-                $this->initStateFromArray(Db::getInstance()->insert($this->getTableName(), $instanceState));
+                $dataFromInsert = Db::getInstance()->insert($this->getTableName(), $instanceState);
+                $this->initStateFromArray($dataFromInsert);
             } else {
                 Db::getInstance()->update($this->getTableName(), $instanceState, ['id' => $instanceState['id']]);
             }

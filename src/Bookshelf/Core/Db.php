@@ -224,7 +224,8 @@ class Db
     /**
      * @param string $tableName
      * @param array $insertOptions
-     * @param bool $isReturn
+     *
+     * @return array
      */
     public function insert($tableName, $insertOptions)
     {
@@ -238,10 +239,11 @@ class Db
         $keys = implode(', ', $optionKeys);
         $values = implode(', ', $bindArray);
 
-        $sql = "INSERT INTO $tableName ($keys) VALUES($values) RETURNING *";
+        $sql = "INSERT INTO $tableName ($keys) VALUES($values) RETURNING * ";
 
         try {
             $this->execute($sql, $optionValues);
+            
             return $this->getStatement()->fetch(PDO::FETCH_ASSOC);
         } catch (DbException $e) {
             throw DbException::insertFailed($tableName, $keys, implode(', ', $optionValues), $e);
