@@ -67,6 +67,13 @@ class User extends ActiveRecord
         return array_keys(get_object_vars($this));
     }
     /**
+     * Property for user is_admin
+     *
+     * @var boolean
+     */
+    private $isAdmin;
+
+    /**
      * Method that will return array of book instances
      *
      * @return array
@@ -138,6 +145,21 @@ class User extends ActiveRecord
         $this->id = $id;
     }
 
+    /**
+     * @return bool
+     */
+    public function getIsAdmin()
+    {
+        return $this->isAdmin;
+    }
+
+    /**
+     * @param $isAdmin
+     */
+    public function setIsAdmin($isAdmin)
+    {
+        $this->id = $isAdmin;
+    }
     /**
      * @return string
      */
@@ -214,7 +236,8 @@ class User extends ActiveRecord
             'lastname' => $this->lastName,
             'email' => $this->email,
             'password' => $this->password,
-            'id' => $this->id
+            'id' => $this->id,
+            'isAdmin' => $this->isAdmin
         ];
     }
 
@@ -238,6 +261,7 @@ class User extends ActiveRecord
         $this->email = $array['email'];
         $this->password = $array['password'];
         $this->id = $array['id'];
+        $this->isAdmin = $array['is_admin'];
     }
 
     /**
@@ -255,10 +279,14 @@ class User extends ActiveRecord
     {
         // TODO Find way for sending contacts table name in user model
         $fetchResult = Db::getInstance()->fetchBy('contacts', ['user_id' => $this->getId()]);
-        foreach ($fetchResult as $contactData) {
-            $contact = $this->createContact($contactData['name'], $contactData['value']);
-            $contact->setId($contactData['id']);
-            $this->contacts[] = $contact;
+        if(isset($fetchResult)) {
+            foreach ($fetchResult as $contactData) {
+                $contact = $this->createContact($contactData['name'], $contactData['value']);
+                $contact->setId($contactData['id']);
+                $this->contacts[] = $contact;
+            }
+        } else {
+            return null;
         }
     }
 }

@@ -1,0 +1,32 @@
+<?php include(__DIR__ . '/../header.html');?>
+
+<div class="container">
+    <table class="table table-bordered table-hover bookshelf-table">
+        <tr>
+            <th></th><th>Имя</th><th>Фамилия</th><th>Электронная почта</th><th>Администратор</th>
+        </tr>
+        <?php foreach($params['users'] as $user){ ?>
+        <tr>
+            <td><?php echo $user->getId(); ?></td>
+            <td><?php echo $user->getFirstName(); ?></td>
+            <td><?php echo $user->getLastName(); ?></td>
+            <td><?php echo $user->getEmail(); ?></td>
+            <td><?php echo $user->getIsAdmin() ? 'да' : 'нет' ?></td>
+            <?php if (!empty($_SESSION['isadmin']) and $_SESSION['isadmin']==true){ ?>
+            <td align="center" class="col-md-1">
+                <a href="/user/update?id=<?php echo $user->getId(); ?>" class="btn btn-default">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </a>
+            </td>
+            <td align="center" class="col-md-1">
+                <a href="/user/delete?id=<?php echo $user->getId(); ?>" class="btn btn-default">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a>
+            </td>
+            <?php } ?>
+        </tr>
+        <?php }?>
+    </table>
+</div>
+
+<?php include(__DIR__ . '/../footer.html'); ?>

@@ -27,6 +27,9 @@
                         <ul class="nav navbar-nav">
                             <li><a href="/books/add">Добавить книгу</a></li>
                             <li><a href="/books">Книги</a></li>
+                            <?php if (!empty($_SESSION['isadmin']) and $_SESSION['isadmin']==true){ ?>
+                            <li><a href="/user/list">Пользователи</a></li>
+                            <?php } ?>
                         </ul>
                     </div><!--/.nav-collapse -->
 
