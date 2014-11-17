@@ -22,8 +22,7 @@ class UserController extends Controller
     {
         $currentUser = $this->getCurrentUser();
         if (!empty($currentUser)) {
-            $user = $this->getCurrentUser();
-            $this->render('User', 'AccountPage', ['user' => $user]);
+            $this->render('User', 'AccountPage', ['user' => $currentUser]);
         } else {
             $this->redirectTo("/login");
         }
