@@ -88,15 +88,20 @@ abstract class ActiveRecord
     /**
      * Method that insert data in database if $id empty, if $id not empty will update data
      *
+     * @param bool $isReturn
      * @return bool
      */
-    public function save()
+    public function save($isReturn = false)
     {
         try {
             $instanceState = $this->toArray();
             if (empty($instanceState['id'])) {
                 unset($instanceState['id']);
-                Db::getInstance()->insert($this->getTableName(), $instanceState);
+                if ($isReturn) {
+                    $this->initStateFromArray(Db::getInstance()->insert($this->getTableName(), $instanceState, true));
+                } else {
+                    Db::getInstance()->insert($this->getTableName(), $instanceState);
+                }
             } else {
                 Db::getInstance()->update($this->getTableName(), $instanceState, ['id' => $instanceState['id']]);
             }
@@ -108,11 +113,20 @@ abstract class ActiveRecord
     }
 
     /**
-     * Method that will delete data from table
+     * @param null $tableName
+     * @param array $conditions
      */
-    public function delete()
+    public function delete($tableName = null, array $conditions = [])
     {
-        Db::getInstance()->delete($this->getTableName(), ['id' => $this->getId()]);
+        if (!$tableName) {
+            $tableName = $this->getTableName();
+        }
+
+        if (!$conditions) {
+            $conditions = ['id' => $this->getId()];
+        }
+
+        Db::getInstance()->delete($tableName, $conditions);
     }
 
     /**
