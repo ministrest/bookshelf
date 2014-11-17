@@ -96,7 +96,8 @@ abstract class ActiveRecord
             $instanceState = $this->toArray();
             if (empty($instanceState['id'])) {
                 unset($instanceState['id']);
-                Db::getInstance()->insert($this->getTableName(), $instanceState);
+                $dataFromInsert = Db::getInstance()->insert($this->getTableName(), $instanceState);
+                $this->initStateFromArray($dataFromInsert);
             } else {
                 Db::getInstance()->update($this->getTableName(), $instanceState, ['id' => $instanceState['id']]);
             }
@@ -108,11 +109,20 @@ abstract class ActiveRecord
     }
 
     /**
-     * Method that will delete data from table
+     * @param null $tableName
+     * @param array $conditions
      */
-    public function delete()
+    public function delete($tableName = null, array $conditions = [])
     {
-        Db::getInstance()->delete($this->getTableName(), ['id' => $this->getId()]);
+        if (!$tableName) {
+            $tableName = $this->getTableName();
+        }
+
+        if (!$conditions) {
+            $conditions = ['id' => $this->getId()];
+        }
+
+        Db::getInstance()->delete($tableName, $conditions);
     }
 
     /**
