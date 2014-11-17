@@ -22,7 +22,7 @@ class ContactsController extends Controller
     public function  addContactAction()
     {
         $errors = [];
-        $user = User::findOneBy(['id' => $this->request->get('user_id')]);
+        $user = $this->getCurrentUser();
         if ($user) {
             if ($this->request->get('contact_type')) {
                 try {
@@ -42,7 +42,7 @@ class ContactsController extends Controller
             $errors['contact'] = 'Пользователь не найден';
         }
 
-        return $this->render('User', 'ChangeData', ['user' => User::findOneBy(['email' => $this->session->get('email')]), 'errors' => $errors]);
+        return $this->render('User', 'ChangeData', ['user' => $this->getCurrentUser(), 'errors' => $errors]);
     }
 
     /**
@@ -50,7 +50,7 @@ class ContactsController extends Controller
      */
     public function showContactAction()
     {
-        $user = User::findOneBy(['email' => $this->session->get('email')]);
+        $user = $this->getCurrentUser();
         $id = $this->request->get('contact_id');
         $contacts = $user->getContacts();
         foreach ($contacts as $contact) {
@@ -68,7 +68,7 @@ class ContactsController extends Controller
      */
     public function changeDataAction()
     {
-        $user = User::findOneBy(['email' => $this->session->get('email')]);
+        $user = $this->getCurrentUser();
         $id = $this->request->get('contact_id');
         $contacts = $user->getContacts();
         foreach ($contacts as $contact) {
@@ -94,9 +94,9 @@ class ContactsController extends Controller
      */
     public function deleteContactsDataAction()
     {
-        $user = User::findOneBy(['email' => $this->session->get('email')]);
+        $currentUser = $this->getCurrentUser();
         $id = $this->request->get('contact_id');
-        $contacts = $user->getContacts();
+        $contacts = $currentUser->getContacts();
         foreach ($contacts as $contact) {
             if ($id == $contact->getId()) {
                 $contact->delete();
@@ -105,7 +105,7 @@ class ContactsController extends Controller
         }
         $errors['contact'] = 'Немогу удалить несуществующий контакт';
 
-        return $this->render('User', 'ChangeData', ['user' => $user, 'errors' => $errors]);
+        return $this->render('User', 'ChangeData', ['user' => $currentUser, 'errors' => $errors]);
     }
 
     /**

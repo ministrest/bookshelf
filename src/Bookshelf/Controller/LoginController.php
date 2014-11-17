@@ -26,7 +26,7 @@ class LoginController extends Controller
      */
     public function defaultAction()
     {
-        if ($this->session->get('email')) {
+        if ($this->getCurrentUser()) {
             $this->redirectTo('/books');
         }
 
@@ -42,9 +42,10 @@ class LoginController extends Controller
             'email' => $this->request->get('email'),
             'password' => $this->request->get('password')
         ]);
+        $user->getBooks();
+        $user->getContacts();
         if ($user) {
-            $this->session->set('email', $user->getEmail());
-            $this->session->set('firstname', $user->getFirstName());
+            $this->session->set('current_user', $user);
             $this->redirectTo("/books");
         }
 
@@ -69,8 +70,7 @@ class LoginController extends Controller
      */
     public function logoutAction()
     {
-        $this->session->delete('email');
-        $this->session->delete('firstname');
+        $this->session->delete('current_user');
         $this->redirectTo("/");
     }
 
@@ -102,8 +102,7 @@ class LoginController extends Controller
             return $this->showRegisterForm($params);
         }
         if ($user->save()) {
-            $this->session->set('email', $user->getEmail());
-            $this->session->set('firstname', $user->getFirstName());
+            $this->session->set('current_user', $user);
             $this->redirectTo("/");
         } else {
             $params['errors']['save_fail'][] = 'На данный момент регистрация не возможна, пожалуйста повторите попытку позднее';

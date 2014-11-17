@@ -47,6 +47,7 @@ abstract class Controller {
     protected function render($controllerName, $actionName, $params = [])
     {
         $params['flashMessages'] = $this->session->pullFlashMessages();
+        $params['current_user'] = $this->getCurrentUser();
         $this->templater->show($controllerName, $actionName, $params);
     }
 
@@ -70,5 +71,13 @@ abstract class Controller {
     protected function addSuccessMessage($message)
     {
         $this->session->addFlashMessage('success', $message);
+    }
+
+    /**
+     * @return User
+     */
+    protected function getCurrentUser()
+    {
+        return $this->session->get('current_user');
     }
 }

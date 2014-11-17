@@ -20,10 +20,9 @@ class UserController extends Controller
      */
     public function defaultAction()
     {
-        $email = $this->session->get('email');
-        if (!empty($email)) {
-            $user = User::findOneBy(['email' => $email]);
-            $user->getContacts();
+        $currentUser = $this->getCurrentUser();
+        if (!empty($currentUser)) {
+            $user = $this->getCurrentUser();
             $this->render('User', 'AccountPage', ['user' => $user]);
         } else {
             $this->redirectTo("/login");
@@ -35,7 +34,7 @@ class UserController extends Controller
      */
     public function showAction()
     {
-        $user = User::findOneBy(['id' => $this->request->get('id')]);
+        $user = $this->getCurrentUser();
         $this->render('User', 'ChangeData', ['user' => $user]);
     }
 
@@ -51,12 +50,12 @@ class UserController extends Controller
         $user->setPassword($this->request->get('password'));
         $errorArray = $this->validateUserUpdate($user);
 
-        $userFromDb = User::findOneBy(['email' => $this->session->get('email')]);
-        $userFromDb->getContacts();
-        $user->setPassword($this->changePassword($userFromDb));
+        $currentUser = $this->getCurrentUser();
+        $currentUser->getContacts();
+        $user->setPassword($this->changePassword($currentUser));
         $params['user'] = $user;
         if ($errorArray) {
-            $params['user'] = $userFromDb;
+            $params['user'] = $currentUser;
             $params['errors'] = $errorArray;
             $this->render('User', 'ChangeData', $params);
         }
