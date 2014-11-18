@@ -279,14 +279,10 @@ class User extends ActiveRecord
     {
         // TODO Find way for sending contacts table name in user model
         $fetchResult = Db::getInstance()->fetchBy('contacts', ['user_id' => $this->getId()]);
-        if(isset($fetchResult)) {
-            foreach ($fetchResult as $contactData) {
-                $contact = $this->createContact($contactData['name'], $contactData['value']);
-                $contact->setId($contactData['id']);
-                $this->contacts[] = $contact;
-            }
-        } else {
-            return null;
+        foreach ($fetchResult as $contactData) {
+            $contact = $this->createContact($contactData['name'], $contactData['value']);
+            $contact->setId($contactData['id']);
+            $this->contacts[] = $contact;
         }
     }
 }

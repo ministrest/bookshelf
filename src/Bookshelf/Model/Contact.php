@@ -41,7 +41,7 @@ class Contact extends ActiveRecord
 
     public  static $allowableTypes = array(self::SKYPE_TYPE, self::PHONE_TYPE, self::EMAIL_TYPE);
 
-    public function __construct($user)
+    public function __construct($user = null)
     {
         $this->user = $user;
     }
