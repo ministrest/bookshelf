@@ -21,7 +21,7 @@ class UserController extends Controller
     public function defaultAction()
     {
         $currentUser = $this->getCurrentUser();
-        if (empty($currentUser)) {
+        if (!$currentUser) {
             $this->redirectTo("/login");
         }
         $this->render('User', 'AccountPage', ['user' => $currentUser]);

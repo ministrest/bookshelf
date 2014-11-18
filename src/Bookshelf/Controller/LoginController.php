@@ -42,8 +42,6 @@ class LoginController extends Controller
             'email' => $this->request->get('email'),
             'password' => $this->request->get('password')
         ]);
-        $user->getBooks();
-        $user->getContacts();
         if ($user) {
             $this->session->set('currentUser', $user);
             $this->redirectTo("/books");

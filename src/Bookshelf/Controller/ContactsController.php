@@ -42,7 +42,7 @@ class ContactsController extends Controller
             $errors['contact'] = 'Пользователь не найден';
         }
 
-        return $this->render('User', 'ChangeData', ['user' => $$user, 'errors' => $errors]);
+        return $this->render('User', 'ChangeData', ['user' => $user, 'errors' => $errors]);
     }
 
     /**

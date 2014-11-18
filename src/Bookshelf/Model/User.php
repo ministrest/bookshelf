@@ -59,6 +59,13 @@ class User extends ActiveRecord
      */
     private $id;
 
+    public function __sleep()
+    {
+        $this->books = null;
+        $this->contacts = null;
+
+        return array_keys(get_object_vars($this));
+    }
     /**
      * Method that will return array of book instances
      *
