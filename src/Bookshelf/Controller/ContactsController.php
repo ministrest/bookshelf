@@ -22,14 +22,14 @@ class ContactsController extends Controller
     public function  addContactAction()
     {
         $errors = [];
-        $user = $this->getCurrentUser();
+        $user = User::findOneBy(['id' => $this->request->get('user_id')]);
         if ($user) {
             if ($this->request->get('contact_type')) {
                 try {
                     $contact = $user->createContact($this->request->get('contact_type'), $this->request->get('value'));
                     if (!$errors) {
                         $contact->save();
-                        $this->redirectTo("/user/show/?id=" . $contact->getUser()->getId());
+                        $this->redirectTo("/user/show/?user_id=" . $this->request->get('user_id'));
                     }
                     $errors = $this->checkDataByContactType($contact);
                 } catch (InvalidArgumentException $e) {
@@ -41,7 +41,6 @@ class ContactsController extends Controller
         } else {
             $errors['contact'] = 'Пользователь не найден';
         }
-
         return $this->render('User', 'ChangeData', ['user' => $user, 'errors' => $errors]);
     }
 
@@ -50,7 +49,12 @@ class ContactsController extends Controller
      */
     public function showContactAction()
     {
-        $user = $this->getCurrentUser();
+        if($this->request->get('user_id')){
+            $user = User::findOneBy(['id' => $this->request->get('user_id')]);
+        } else {
+            die();
+            $user = $this->getCurrentUser();
+        }
         $id = $this->request->get('contact_id');
         $contacts = $user->getContacts();
         foreach ($contacts as $contact) {
@@ -68,7 +72,11 @@ class ContactsController extends Controller
      */
     public function changeDataAction()
     {
-        $user = $this->getCurrentUser();
+        if($this->request->get('user_id')){
+            $user = User::findOneBy(['id' => $this->request->get('user_id')]);
+        } else {
+            $user = $this->getCurrentUser();
+        }
         $id = $this->request->get('contact_id');
         $contacts = $user->getContacts();
         foreach ($contacts as $contact) {
@@ -80,7 +88,7 @@ class ContactsController extends Controller
                 $errors = $this->checkDataByContactType($contact);
                 if (!$errors) {
                     $contact->save();
-                    $this->redirectTo("/user/show/?id=" . $contact->getUser()->getId());
+                    $this->redirectTo("/user/show/?user_id=" . $contact->getUser()->getId());
                 }
             }
         }
@@ -94,17 +102,21 @@ class ContactsController extends Controller
      */
     public function deleteContactsDataAction()
     {
-        $currentUser = $this->getCurrentUser();
+        if($this->request->get('user_id')){
+            $user = User::findOneBy(['id' => $this->request->get('user_id')]);
+        } else {
+            $user = $this->getCurrentUser();
+        }
         $id = $this->request->get('contact_id');
-        $contacts = $currentUser->getContacts();
+        $contacts = $user->getContacts();
         foreach ($contacts as $contact) {
             if ($id == $contact->getId()) {
                 $contact->delete();
-                $this->redirectTo("/user/show/?id=" . $contact->getUser()->getId());
+                $this->redirectTo("/user/show/?user_id=" . $contact->getUser()->getId());
             }
         }
         $errors['contact'] = 'Немогу удалить несуществующий контакт';
-
+        $currentUser = $this->getCurrentUser();
         return $this->render('User', 'ChangeData', ['user' => $currentUser, 'errors' => $errors]);
     }
 

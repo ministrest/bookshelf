@@ -21,7 +21,7 @@
             <td><?php echo $user->isAdmin() ? 'да' : 'нет' ?></td>
             <?php if (isset($params['currentUser']) and $params['currentUser']->isAdmin() == true): ?>
             <td align="center" class="col-md-1">
-                <a href="/user/update?id=<?php echo $user->getId(); ?>" class="btn btn-default">
+                <a href="/user/update?idUser=<?php echo $user->getId(); ?>" class="btn btn-default">
                     <span class="glyphicon glyphicon-pencil"></span>
                 </a>
             </td>

@@ -32,7 +32,11 @@ class UserController extends Controller
      */
     public function showAction()
     {
-        $user = $this->getCurrentUser();
+        if($this->request->get('user_id')){
+            $user = User::findOneBy(['id' => $this->request->get('user_id')]);
+        } else {
+            $user = $this->getCurrentUser();
+        }
         $this->render('User', 'ChangeData', ['user' => $user]);
     }
 
@@ -49,7 +53,6 @@ class UserController extends Controller
         $errorArray = $this->validateUserUpdate($user);
 
         $currentUser = $this->getCurrentUser();
-        $currentUser->getContacts();
         $user->setPassword($this->changePassword($user));
         $params['user'] = $user;
         if ($errorArray) {
@@ -73,11 +76,12 @@ class UserController extends Controller
      */
     public function updateAction()
     {
-        $id = $this->request->get('id');
-        if ($id) {
-            $user = User::findOneBy(['id' => $id]);
+        $idUser = $this->request->get('idUser');
+        $currentUser = $this->getCurrentUser();
+        if ($idUser > 0) {
+            $user = User::findOneBy(['id' => $idUser]);
             $contacts = $user->getContacts();
-            $this->templater->show('User', 'Update', ['user' => $user, 'contacts' => $contacts]);
+            $this->templater->show('User', 'Update', ['currentUser' => $currentUser, 'user' => $user, 'contacts' => $contacts]);
         }
     }
 
