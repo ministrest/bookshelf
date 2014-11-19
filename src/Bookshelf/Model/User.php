@@ -59,6 +59,11 @@ class User extends ActiveRecord
      */
     private $id;
 
+    /**
+     * @var boolean
+     */
+    private $isAdmin;
+
     public function __sleep()
     {
         $this->books = null;
@@ -66,12 +71,6 @@ class User extends ActiveRecord
 
         return array_keys(get_object_vars($this));
     }
-    /**
-     * Property for user is_admin
-     *
-     * @var boolean
-     */
-    private $isAdmin;
 
     /**
      * Method that will return array of book instances
@@ -148,7 +147,7 @@ class User extends ActiveRecord
     /**
      * @return bool
      */
-    public function getIsAdmin()
+    public function isAdmin()
     {
         return $this->isAdmin;
     }
@@ -158,7 +157,7 @@ class User extends ActiveRecord
      */
     public function setIsAdmin($isAdmin)
     {
-        $this->id = $isAdmin;
+        $this->isAdmin = $isAdmin;
     }
     /**
      * @return string

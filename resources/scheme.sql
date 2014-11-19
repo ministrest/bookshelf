@@ -19,7 +19,8 @@ CREATE TABLE users (
     firstname text,
     lastname text,
     email varchar,
-    password VARCHAR
+    password VARCHAR,
+    is_admin BOOL
 );
 
 CREATE TABLE contacts (

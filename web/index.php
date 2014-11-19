@@ -5,7 +5,6 @@ use Bookshelf\Core\Session;
 
 include('../vendor/autoload.php');
 
-
 $session = new Session();
 $session ->init();
 
@@ -15,7 +14,6 @@ $dbName = 'bookshelf';
 $dbUserName = 'postgres';
 $dbUserPassword = 'postgres';
 Db::getInstance($dbName, $dbUserName, $dbUserPassword);
-
 
 $router = new Router();
 $router->handleRequest($_GET);

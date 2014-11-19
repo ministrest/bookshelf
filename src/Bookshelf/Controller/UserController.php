@@ -50,7 +50,7 @@ class UserController extends Controller
 
         $currentUser = $this->getCurrentUser();
         $currentUser->getContacts();
-        $user->setPassword($this->changePassword($currentUser));
+        $user->setPassword($this->changePassword($user));
         $params['user'] = $user;
         if ($errorArray) {
             $params['user'] = $currentUser;
@@ -66,6 +66,48 @@ class UserController extends Controller
             $this->logger->emergency('Cant save user in DataBase');
             return $this->render('User', 'ChangeData', $params);
         }
+    }
+
+    /**
+     * This method updates user data
+     */
+    public function updateAction()
+    {
+        $id = $this->request->get('id');
+        if ($id) {
+            $user = User::findOneBy(['id' => $id]);
+            $contacts = $user->getContacts();
+            $this->templater->show('User', 'Update', ['user' => $user, 'contacts' => $contacts]);
+        }
+    }
+
+    /**
+     * This method helps to delete user
+     */
+    public function deleteAction()
+    {
+        if (isset($_GET['id'])) {
+            $user = User::find($this->request->get('id'));
+
+            if (!$user) {
+                $this->addErrorMessage('Удаляемый пользователь не найден!');
+            } else {
+                $user->delete();
+                $this->addSuccessMessage('Пользователь успешно удален!');
+            }
+
+            $this->redirectTo("/user/list");
+        }
+    }
+
+    /**
+     * This method shows all users from database
+     */
+    public function listAction()
+    {
+        $currentUser = $this->getCurrentUser();
+        $users = User::findAll();
+        $this->templater->show('User', 'List', ['currentUser' => $currentUser, 'users' => $users]);
     }
 
     /**
