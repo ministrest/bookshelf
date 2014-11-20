@@ -49,10 +49,9 @@ class ContactsController extends Controller
      */
     public function showContactAction()
     {
-        if($this->request->get('user_id')){
+        if ($this->request->get('user_id')) {
             $user = User::findOneBy(['id' => $this->request->get('user_id')]);
         } else {
-            die();
             $user = $this->getCurrentUser();
         }
         $id = $this->request->get('contact_id');
@@ -72,7 +71,7 @@ class ContactsController extends Controller
      */
     public function changeDataAction()
     {
-        if($this->request->get('user_id')){
+        if ($this->request->get('user_id')) {
             $user = User::findOneBy(['id' => $this->request->get('user_id')]);
         } else {
             $user = $this->getCurrentUser();
@@ -102,7 +101,7 @@ class ContactsController extends Controller
      */
     public function deleteContactsDataAction()
     {
-        if($this->request->get('user_id')){
+        if ($this->request->get('user_id')) {
             $user = User::findOneBy(['id' => $this->request->get('user_id')]);
         } else {
             $user = $this->getCurrentUser();
@@ -115,7 +114,7 @@ class ContactsController extends Controller
                 $this->redirectTo("/user/show/?user_id=" . $contact->getUser()->getId());
             }
         }
-        $errors['contact'] = 'Немогу удалить несуществующий контакт';
+        $errors['contact'] = 'Не могу удалить несуществующий контакт';
         $currentUser = $this->getCurrentUser();
         return $this->render('User', 'ChangeData', ['user' => $currentUser, 'errors' => $errors]);
     }

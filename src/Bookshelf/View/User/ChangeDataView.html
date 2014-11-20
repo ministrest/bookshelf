@@ -3,7 +3,8 @@
 <div class="container">
     <div class="row">
         <div class="col-md-1">
-            <a href="<?php echo (isset($_GET['idUser']))? '/user/list' : '/user' ?>"><span class="glyphicon glyphicon-chevron-left"></span></a>
+            <a href="<?php echo (isset($_GET['idUser']))? '/user/list' : '/user' ?>"><span
+                    class="glyphicon glyphicon-chevron-left"></span></a>
         </div>
         <div class="col-md-5">
             <?php if ($params['user']->getContacts()): ?>
@@ -12,35 +13,33 @@
                 <tr>
                     <th>Контакты</th>
                     <?php if (isset($params['errors']) && !empty($params['errors']['contact'])): ?>
-                    <span style="color: red" class="help-block"><?php echo $params['errors']['contact'] ?></span>
+                    <span class="help-block"><?php echo $params['errors']['contact'] ?></span>
                     <?php endif; ?>
                 </tr>
                 </thead>
                 <tbody>
 
-                <?php
-                if(!isset($params['contacts'])){
+                <?php if(!isset($params['contacts'])){
                     $params['contacts'] = $params['user']->getContacts();
                 }?>
-                <?php
-                if($params['contacts']){
-                foreach($params['contacts'] as $contact):?>
-                <tr>
-                    <td><?php echo $contact->getType() ?></td>
-                    <td><?php echo $contact->getValue() ?></td>
-                    <td>
-                        <a href="/contacts/show-contact/?contact_id=<?php echo $contact->getId() ?>&user_id=<?php echo $params['user']->getId() ?>">
-                            <button type="submit"><span class="glyphicon glyphicon-pencil"></span></button>
-                        </a>
-                    </td>
-                    <td>
-                        <a href="/contacts/delete-contacts-data?contact_id=<?php echo $contact->getId() ?>&user_id=<?php echo $params['user']->getId() ?>">
-                            <button type="submit"><span class="glyphicon glyphicon-trash"></span></button>
-                        </a>
-                    </td>
-                </tr>
-                <?php endforeach;
-                }?>
+                <?php if($params['contacts']): ?>
+                    <?php foreach($params['contacts'] as $contact):?>
+                    <tr>
+                        <td><?php echo $contact->getType() ?></td>
+                        <td><?php echo $contact->getValue() ?></td>
+                        <td>
+                            <a href="/contacts/show-contact/?contact_id=<?php echo $contact->getId() ?>&user_id=<?php echo $params['user']->getId() ?>">
+                                <button type="submit"><span class="glyphicon glyphicon-pencil"></span></button>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="/contacts/delete-contacts-data?contact_id=<?php echo $contact->getId() ?>&user_id=<?php echo $params['user']->getId() ?>">
+                                <button type="submit"><span class="glyphicon glyphicon-trash"></span></button>
+                            </a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
 
                 </tbody>
             </table>

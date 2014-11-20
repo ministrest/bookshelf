@@ -65,7 +65,8 @@ class UserController extends Controller
         if ($user->save()) {
             $this->redirectTo("/user");
         } else {
-            $params['errors']['save_fail'][] = 'Произошёл сбой при попытке сменить данные пользователя. Пожалуйста повторите попытку позднее';
+            $params['errors']['save_fail'][] = 'Произошёл сбой при попытке сменить данные пользователя.
+            Пожалуйста повторите попытку позднее';
             $this->logger->emergency('Cant save user in DataBase');
             return $this->render('User', 'ChangeData', $params);
         }
@@ -81,7 +82,7 @@ class UserController extends Controller
         if ($idUser > 0) {
             $user = User::findOneBy(['id' => $idUser]);
             $contacts = $user->getContacts();
-            $this->templater->show('User', 'Update', ['currentUser' => $currentUser, 'user' => $user, 'contacts' => $contacts]);
+            $this->render('User', 'Update', ['user' => $user, 'contacts' => $contacts]);
         }
     }
 
@@ -90,8 +91,9 @@ class UserController extends Controller
      */
     public function deleteAction()
     {
-        if (isset($_GET['id'])) {
-            $user = User::find($this->request->get('id'));
+        $id = $this->request->get('id');
+        if (isset($id)) {
+            $user = User::find($id);
 
             if (!$user) {
                 $this->addErrorMessage('Удаляемый пользователь не найден!');
@@ -111,7 +113,7 @@ class UserController extends Controller
     {
         $currentUser = $this->getCurrentUser();
         $users = User::findAll();
-        $this->templater->show('User', 'List', ['currentUser' => $currentUser, 'users' => $users]);
+        $this->render('User', 'List', ['users' => $users]);
     }
 
     /**
