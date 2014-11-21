@@ -263,7 +263,6 @@ class Db
             $value .= ' = ?';
         }
         $values = implode(', ', $updateKeys);
-
         if (!$conditions) {
             $sql = "UPDATE $tableName SET $values";
             $conditionValues = [];

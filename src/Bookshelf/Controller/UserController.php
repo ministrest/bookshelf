@@ -32,7 +32,7 @@ class UserController extends Controller
      */
     public function showAction()
     {
-        if($this->request->get('user_id')){
+        if ($this->request->get('user_id')) {
             $user = User::findOneBy(['id' => $this->request->get('user_id')]);
         } else {
             $user = $this->getCurrentUser();
@@ -51,7 +51,7 @@ class UserController extends Controller
             $contacts = $user->getContacts();
             $this->render('User', 'ChangeData', ['user' => $user, 'contacts' => $contacts]);
         } else {
-            $id=$this->request->get('id');
+            $id = $this->request->get('id');
             if (isset($id)) {
                 $user = User::findOneBy(['id' => $id]);
             } else {
@@ -62,7 +62,7 @@ class UserController extends Controller
             $user->setLastName($this->request->get('lastname'));
             $user->setPassword($this->request->get('confirm_password'));
             $isAdmin = $this->request->get('is_admin');
-            $isAdmin = (isset($isAdmin))? 'true' : 'false';
+            $isAdmin = (isset($isAdmin)) ? 'true' : 'false';
             $user->setIsAdmin($isAdmin);
             $errorArray = $this->validateUserUpdate($user);
             $params['user'] = $user;
