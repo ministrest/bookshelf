@@ -45,44 +45,42 @@ class UserController extends Controller
      */
     public function changeUserDataAction()
     {
-        $user = new User();
-        $user->setFirstName($this->request->get('firstname'));
-        $user->setEmail($this->request->get('email'));
-        $user->setLastName($this->request->get('lastname'));
-        $user->setPassword($this->request->get('password'));
-        $errorArray = $this->validateUserUpdate($user);
-
-        $currentUser = $this->getCurrentUser();
-        $user->setPassword($this->changePassword($user));
-        $params['user'] = $user;
-        if ($errorArray) {
-            $params['user'] = $currentUser;
-            $params['errors'] = $errorArray;
-            $this->render('User', 'ChangeData', $params);
-        }
-        $this->session->set('email', $this->request->get('email'));
-        $this->session->set('firstname', $this->request->get('firstname'));
-        if ($user->save()) {
-            $this->redirectTo("/user");
-        } else {
-            $params['errors']['save_fail'][] = 'Произошёл сбой при попытке сменить данные пользователя.
-            Пожалуйста повторите попытку позднее';
-            $this->logger->emergency('Cant save user in DataBase');
-            return $this->render('User', 'ChangeData', $params);
-        }
-    }
-
-    /**
-     * This method updates user data
-     */
-    public function updateAction()
-    {
         $idUser = $this->request->get('idUser');
-        $currentUser = $this->getCurrentUser();
         if ($idUser > 0) {
             $user = User::findOneBy(['id' => $idUser]);
             $contacts = $user->getContacts();
-            $this->render('User', 'Update', ['user' => $user, 'contacts' => $contacts]);
+            $this->render('User', 'ChangeData', ['user' => $user, 'contacts' => $contacts]);
+        } else {
+            $id=$this->request->get('id');
+            if (isset($id)) {
+                $user = User::findOneBy(['id' => $id]);
+            } else {
+                $user = new User();
+            }
+            $user->setFirstName($this->request->get('firstname'));
+            $user->setEmail($this->request->get('email'));
+            $user->setLastName($this->request->get('lastname'));
+            $user->setPassword($this->request->get('confirm_password'));
+            $isAdmin = $this->request->get('is_admin');
+            $isAdmin = (isset($isAdmin))? 'true' : 'false';
+            $user->setIsAdmin($isAdmin);
+            $errorArray = $this->validateUserUpdate($user);
+            $params['user'] = $user;
+            if ($errorArray) {
+                $params['user'] = User::findOneBy(['id' => $this->request->get('id')]);
+                $params['errors'] = $errorArray;
+                $this->render('User', 'ChangeData', $params);
+            }
+            /*$this->session->set('email', $this->request->get('email'));
+            $this->session->set('firstname', $this->request->get('firstname'));*/
+            if ($user->save()) {
+                $this->redirectTo("/user/list");
+            } else {
+                $params['errors']['save_fail'][] = 'Произошёл сбой при попытке сменить данные пользователя.
+            Пожалуйста повторите попытку позднее';
+                $this->logger->emergency('Cant save user in DataBase');
+                return $this->render('User', 'ChangeData', $params);
+            }
         }
     }
 

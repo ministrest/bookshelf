@@ -236,7 +236,7 @@ class User extends ActiveRecord
             'email' => $this->email,
             'password' => $this->password,
             'id' => $this->id,
-            'isAdmin' => $this->isAdmin
+            'is_admin' => $this->isAdmin
         ];
     }
 
