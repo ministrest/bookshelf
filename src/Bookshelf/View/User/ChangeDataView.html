@@ -109,10 +109,11 @@
                 <div class="form-group">
                     <label class="control-label" for="is_admin">Администратор</label>
                     <?php $isAdmin = $params['user']->isAdmin(); ?>
-                    <?php echo "<input type=\"checkbox\" id=\"is_admin\" class=\"form-control\" name=\"is_admin\" value=\"".$isAdmin."\"".(($isAdmin == 'true')?  ' checked=\"checked\" ' : '' )." />"; ?>
+                    <?= "<input type=\"checkbox\" id=\"is_admin\" class=\"form-control\" name=\"is_admin\" value=\"".$isAdmin."\"".(($isAdmin == 'true')?  ' checked=\"checked\" ' : '' )." />"; ?>
                 </div>
                 <?php endif; ?>
 
+                <label>Вы можете изменить свой пароль, или же оставьте эти поля пустыми</label>
                 <div class="form-group <?= (isset($params['errors']) && !empty($params['errors']['password'])) ? 'has-error' : ''; ?>">
                     <label class="control-label" for="password">Пароль</label>
                     <?php if (isset($params['errors']) && !empty($params['errors']['password'])): ?>
